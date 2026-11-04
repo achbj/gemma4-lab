@@ -423,7 +423,17 @@ def main(
             )
         report = json.loads(destination.read_text())
         complete = report.get("passed", report["completed"])
-        print(json.dumps({"completed": complete, "report": str(destination)}))
+        summary = {"completed": complete, "report": str(destination)}
+        if controls_only:
+            summary["qualified_task_ids"] = report["qualified_task_ids"]
+        else:
+            cases = [event for event in report["events"] if event["stage"] == "case-result"]
+            summary.update(
+                repairs=sum(event["resolved"] for event in cases),
+                attempted_cases=len(cases),
+                qualified_cases=len(report["qualified_task_ids"]),
+            )
+        print(json.dumps(summary))
         if not complete:
             raise SystemExit(1)
         return
