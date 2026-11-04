@@ -27,6 +27,7 @@ RESOURCES = {
 }
 image = None
 CONFIG = {}
+CANDIDATE = "baseline"
 if modal.is_local():
     if os.environ.get("MODAL_PROFILE") != "ach-bj100":
         raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
@@ -40,6 +41,9 @@ if modal.is_local():
     if CONFIG["sources"]["model"] != MODEL_SOURCE:
         raise ValueError("This smoke check is pinned to the approved E4B version 2")
     RESOURCES = CONFIG["modal"]
+    CANDIDATE = os.environ.get("GEMMA4_CANDIDATE", "baseline")
+    if Path(CANDIDATE).name != CANDIDATE or not (ROOT / "submissions" / CANDIDATE).is_dir():
+        raise ValueError("Select an existing candidate directly under submissions/")
     manifest = json.loads((ROOT / "requirements/remote-runtime-wheels.json").read_text())
     wheel_root = ROOT / "data/raw/official/wheelhouse"
     expected = {item["name"] for item in manifest["wheels"]}
@@ -101,7 +105,7 @@ if modal.is_local():
         )
     )
     image = image.add_local_python_source("gemma4_lab").add_local_dir(
-        ROOT / "submissions/baseline", "/submission"
+        ROOT / "submissions" / CANDIDATE, "/submission"
     )
     if (ROOT / "data/raw/official/evaluation").is_dir():
         from gemma4_lab.remote_evaluation import fixture_identity
@@ -379,6 +383,7 @@ def main(build_only: bool = False, task_id: str = "", controls_only: bool = Fals
         result = serve_smoke.remote(task_payload)
     result.update(identity)
     result["run_config"] = CONFIG
+    result["candidate"] = CANDIDATE
     result["git_commit"] = launched_git_commit
     result["modal_image_id"] = image.object_id
     destination = report_root / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + f"-{suffix}.json")
