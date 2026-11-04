@@ -73,6 +73,7 @@ Check its allocation first and cancel any earlier request before switching. Sche
 ## Experiment plan
 
 - [Baseline and compatibility findings](docs/research/baseline.md)
+- [Fixed development-panel results](docs/research/development-panel-v1.md)
 - [Rules and experiment decisions](docs/research/rules-and-decisions.md)
 - [Dated novelty register](docs/research/novelty.md)
 - [Prize strategy and schedule](docs/research/strategy.md)
