@@ -1,0 +1,10 @@
+name: adapter_compatibility_probe
+model: gemma-4-e4b-it-qat-w4a16-ct
+adapter: probe_active
+instruction: Respond concisely to the user's synthetic request.
+generate_content_config:
+  temperature: 0
+  max_output_tokens: 512
+  thinking_config:
+    include_thoughts: true
+    thinking_budget: 4096
