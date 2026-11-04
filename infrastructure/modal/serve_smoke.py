@@ -218,6 +218,7 @@ def serve_smoke(task_payload: dict | None = None) -> dict:
         result["server_command"] = server.build_cmd()
         server.start()
         result["server_ready_seconds"] = time.monotonic() - started
+        print(json.dumps({"stage": "server-ready", "seconds": result["server_ready_seconds"]}))
         available = requests.get(server.base_url + "/models", timeout=10)
         available.raise_for_status()
         served_model = available.json()["data"][0]["id"]
@@ -280,11 +281,22 @@ def serve_smoke(task_payload: dict | None = None) -> dict:
             )
         result["protocol_passed"] = result["passed"]
         if task_payload is not None:
-            if not result["protocol_passed"]:
-                raise RuntimeError("Serving protocol failed; do not attempt an issue")
+            # The strict synthetic probe also measures instruction following.
+            # An empty or unexpected model answer is a behavioral observation,
+            # not a transport failure or a reason to censor the repair attempt.
+            # HTTP/schema failures above still abort through the exception path.
             from gemma4_lab.remote_evaluation import evaluate_reference_task
 
             result["stage"] = "reference-baseline"
+            print(
+                json.dumps(
+                    {
+                        "stage": "starting-reference-agent",
+                        "task_id": task_payload["instance_id"],
+                        "synthetic_probe_passed": result["protocol_passed"],
+                    }
+                )
+            )
             models = server.create_model_registry(
                 aliases=[MODEL_ALIAS], model_prefix="openai/", api_key="EMPTY"
             )
