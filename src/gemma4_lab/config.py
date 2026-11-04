@@ -8,6 +8,17 @@ from typing import Any
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
+def candidate_directory(root: Path, name: str) -> Path:
+    """Resolve one candidate without allowing a mount of its parent checkout."""
+    parent = (root / "submissions").resolve()
+    if name in {"", ".", ".."} or Path(name).name != name:
+        raise ValueError("Select a candidate directly under submissions/")
+    directory = (parent / name).resolve()
+    if directory.parent != parent or not directory.is_dir():
+        raise ValueError("Select an existing candidate directly under submissions/")
+    return directory
+
+
 def load_config(path: Path) -> dict[str, Any]:
     with path.open("rb") as stream:
         return tomllib.load(stream)

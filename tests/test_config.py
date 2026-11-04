@@ -1,12 +1,27 @@
 """Ensure baseline planning cannot silently select another account or overspend."""
 
+import tempfile
 import unittest
 from decimal import Decimal
+from pathlib import Path
 
-from gemma4_lab.config import PROJECT_ROOT, estimate_run, load_config
+from gemma4_lab.config import PROJECT_ROOT, candidate_directory, estimate_run, load_config
 
 
 class RunPlanTests(unittest.TestCase):
+    def test_candidate_mount_cannot_escape_into_the_checkout_or_an_external_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            candidate = root / "submissions/baseline"
+            candidate.mkdir(parents=True)
+            external = root / "external"
+            external.mkdir()
+            (root / "submissions/escape").symlink_to(external, target_is_directory=True)
+            self.assertEqual(candidate_directory(root, "baseline"), candidate.resolve())
+            for name in ("..", ".", "", "../external", "escape"):
+                with self.subTest(name=name), self.assertRaises(ValueError):
+                    candidate_directory(root, name)
+
     def setUp(self):
         self.config = load_config(PROJECT_ROOT / "configs/baseline.toml")
 

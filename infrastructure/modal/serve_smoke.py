@@ -31,7 +31,7 @@ CANDIDATE = "baseline"
 if modal.is_local():
     if os.environ.get("MODAL_PROFILE") != "ach-bj100":
         raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
-    from gemma4_lab.config import estimate_run, load_config
+    from gemma4_lab.config import candidate_directory, estimate_run, load_config
 
     config_path = (ROOT / os.environ.get("GEMMA4_RUN_CONFIG", "configs/baseline.toml")).resolve()
     if not config_path.is_relative_to(ROOT / "configs"):
@@ -42,8 +42,7 @@ if modal.is_local():
         raise ValueError("This smoke check is pinned to the approved E4B version 2")
     RESOURCES = CONFIG["modal"]
     CANDIDATE = os.environ.get("GEMMA4_CANDIDATE", "baseline")
-    if Path(CANDIDATE).name != CANDIDATE or not (ROOT / "submissions" / CANDIDATE).is_dir():
-        raise ValueError("Select an existing candidate directly under submissions/")
+    candidate_path = candidate_directory(ROOT, CANDIDATE)
     manifest = json.loads((ROOT / "requirements/remote-runtime-wheels.json").read_text())
     wheel_root = ROOT / "data/raw/official/wheelhouse"
     expected = {item["name"] for item in manifest["wheels"]}
@@ -104,9 +103,7 @@ if modal.is_local():
             }
         )
     )
-    image = image.add_local_python_source("gemma4_lab").add_local_dir(
-        ROOT / "submissions" / CANDIDATE, "/submission"
-    )
+    image = image.add_local_python_source("gemma4_lab").add_local_dir(candidate_path, "/submission")
     if (ROOT / "data/raw/official/evaluation").is_dir():
         from gemma4_lab.remote_evaluation import fixture_identity
 

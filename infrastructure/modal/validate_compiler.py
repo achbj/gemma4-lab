@@ -30,9 +30,10 @@ TOOL_NAMES = (
 image = None
 CANDIDATE = "baseline"
 if modal.is_local():
+    from gemma4_lab.config import candidate_directory
+
     CANDIDATE = os.environ.get("GEMMA4_CANDIDATE", "baseline")
-    if Path(CANDIDATE).name != CANDIDATE or not (ROOT / "submissions" / CANDIDATE).is_dir():
-        raise ValueError("Select an existing candidate directly under submissions/")
+    candidate_path = candidate_directory(ROOT, CANDIDATE)
     WHEEL_MANIFEST = json.loads((ROOT / "requirements/remote-compiler-wheels.json").read_text())
     image = modal.Image.debian_slim(python_version="3.12")
     wheel_paths = []
@@ -43,9 +44,7 @@ if modal.is_local():
         remote_path = f"/opt/compiler-wheels/{path.name}"
         image = image.add_local_file(path, remote_path, copy=True)
         wheel_paths.append(remote_path)
-    image = image.uv_pip_install(*wheel_paths).add_local_dir(
-        ROOT / "submissions" / CANDIDATE, "/submission"
-    )
+    image = image.uv_pip_install(*wheel_paths).add_local_dir(candidate_path, "/submission")
 app = modal.App("gemma4-compiler-validation")
 
 
