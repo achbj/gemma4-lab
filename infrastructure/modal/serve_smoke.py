@@ -74,6 +74,7 @@ if modal.is_local():
             "python -c 'import adk_submission, transformers, litellm; "
             'print("runtime imports passed")\''
         )
+        .uv_pip_install(requirements=[str(ROOT / "requirements/remote-evaluation-base.txt")])
         .env(
             {
                 "TRANSFORMERS_NO_TF": "1",
@@ -306,6 +307,9 @@ def main(build_only: bool = False, task_id: str = "", controls_only: bool = Fals
     if build_only:
         print(json.dumps({"image": image.object_id, "gpu_allocated": False}))
         return
+    launched_git_commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    ).strip()
     if controls_only and not task_id:
         raise ValueError("--controls-only requires --task-id")
     task_payload = None
@@ -350,11 +354,7 @@ def main(build_only: bool = False, task_id: str = "", controls_only: bool = Fals
             task_payload["patch"] = ""
         result = serve_smoke.remote(task_payload)
     result.update(identity)
-    result["git_commit"] = subprocess.check_output(
-        ["git", "rev-parse", "HEAD"],
-        cwd=ROOT,
-        text=True,
-    ).strip()
+    result["git_commit"] = launched_git_commit
     result["modal_image_id"] = image.object_id
     destination = report_root / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + f"-{suffix}.json")
     destination.write_text(json.dumps(result, indent=2) + "\n")

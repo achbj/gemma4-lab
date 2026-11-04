@@ -1,0 +1,6 @@
+# Missing test-runtime packages from the verified Kaggle image, not model edits.
+# Source: requirements/kaggle-reference-versions.json (4 November 2026).
+pytest==8.4.2
+iniconfig==2.3.0
+pluggy==1.6.0
+PySocks==1.7.1
