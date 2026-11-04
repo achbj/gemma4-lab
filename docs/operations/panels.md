@@ -29,6 +29,18 @@ MODAL_PROFILE=ach-bj100 GEMMA4_RUN_CONFIG=configs/baseline-a10g.toml GEMMA4_CAND
 
 One A10G serves each fixed batch with a single model startup. Every case has a new evaluator, sandbox, and agent context. Reference solutions are stripped before the GPU invocation; verification tests stay out of agent workspace files. The checkpoint, official wheels, tools, and candidate budgets are unchanged. This is a fixed comparison, not an automatic tuning sweep.
 
+### Matched three-minute diagnostic
+
+The separately allocated `baseline-3m` and `pagination-v1-3m` candidates change only `max_time_minutes` from 1 to 3. Keep the original candidates and reports. Compile each named candidate, then rerun CPU controls with the new evaluation file; the runner requires matching control hashes and does not silently reuse controls from a different budget:
+
+```sh
+MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=baseline-3m .venv/bin/modal run infrastructure/modal/validate_compiler.py
+MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=pagination-v1-3m .venv/bin/modal run infrastructure/modal/validate_compiler.py
+MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=baseline-3m .venv/bin/modal run infrastructure/modal/serve_smoke.py --panel configs/development-panel-v1.json --controls-only
+```
+
+Require the same two qualified cases before launching either GPU condition. Run the earlier A10G commands separately with `GEMMA4_CANDIDATE=baseline-3m` and then `GEMMA4_CANDIDATE=pagination-v1-3m`, confirming the first app stopped. Reports remain under the same frozen panel directory, with distinct timestamps and candidate names. A longer time limit leaves the ten-tool-call cap unchanged; report whichever limit is reached.
+
 The batch reserves configured agent time, 300 seconds for verification, 120 seconds for setup, and 30 seconds for shutdown before starting another case. Its Modal function still has a hard execution timeout; requested CPU/RAM and estimated cost are not provider billing caps. Preserve skipped/incomplete cases as resource failures instead of silently dropping them.
 
 ## Reports and stopping
