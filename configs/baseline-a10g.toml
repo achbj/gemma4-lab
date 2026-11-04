@@ -1,0 +1,30 @@
+# Capacity fallback only; preserve all model, agent, and runtime settings.
+[sources]
+competition = "gemma-4-developer-agent"
+starter = "ryanholbrook/getting-started-gemma-4-developer-agent"
+wheelhouse = "metric/gemma-4-developer-agent-wheelhouse"
+model = "google/gemma-4/Other/gemma-4-e4b-it-qat-w4a16-ct/2"
+
+[modal]
+profile = "ach-bj100"
+gpu = "A10G"
+gpu_count = 1
+cpu_cores = 2
+memory_gib = 16
+timeout_seconds = 1800
+startup_timeout_seconds = 900
+scaledown_seconds = 2
+max_containers = 1
+
+[budget]
+initial_run_usd = "2.00"
+additional_spending_limit_eur = "100.00"
+
+# Modal GPU Task list prices checked 2026-11-04: https://modal.com/pricing
+# CPU is charged per physical core, equivalent to two vCPUs.
+# Image builds, data staging, storage, and egress are separate from this estimate.
+[rates_usd_per_second]
+# Refreshed through ach-bj100 billing rates on 2026-11-04; rounded upward.
+gpu = "0.000305556"
+cpu_core = "0.000013139"
+memory_gib = "0.000002223"

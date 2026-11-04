@@ -32,7 +32,10 @@ if modal.is_local():
         raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
     from gemma4_lab.config import estimate_run, load_config
 
-    CONFIG = load_config(ROOT / "configs/baseline.toml")
+    config_path = (ROOT / os.environ.get("GEMMA4_RUN_CONFIG", "configs/baseline.toml")).resolve()
+    if not config_path.is_relative_to(ROOT / "configs"):
+        raise ValueError("Run settings must be inside configs/")
+    CONFIG = load_config(config_path)
     estimate_run(CONFIG)
     if CONFIG["sources"]["model"] != MODEL_SOURCE:
         raise ValueError("This smoke check is pinned to the approved E4B version 2")
@@ -375,6 +378,7 @@ def main(build_only: bool = False, task_id: str = "", controls_only: bool = Fals
             task_payload["patch"] = ""
         result = serve_smoke.remote(task_payload)
     result.update(identity)
+    result["run_config"] = CONFIG
     result["git_commit"] = launched_git_commit
     result["modal_image_id"] = image.object_id
     destination = report_root / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + f"-{suffix}.json")
