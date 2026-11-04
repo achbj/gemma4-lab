@@ -55,12 +55,12 @@ Use the authenticated account and staged checkpoint described in [setup](docs/op
 
 ```sh
 .venv/bin/gemma4-lab fetch-runtime
-.venv/bin/gemma4-lab --task-id requests_7505 fetch-task
-MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/serve_smoke.py --task-id requests_7505 --controls-only
-MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/serve_smoke.py --task-id requests_7505
+.venv/bin/gemma4-lab --task-id requests_7427 fetch-task
+MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/serve_smoke.py --task-id requests_7427 --controls-only
+MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/serve_smoke.py --task-id requests_7427
 ```
 
-The first remote command runs CPU grader controls. The second allocates one L4 only after matching controls pass. It preserves the baseline's one-minute/ten-tool-call settings, disables outbound networking, and records traces and test results under ignored `artifacts/baseline/`. Reference solutions are excluded from the agent invocation. Running the script without a task performs only a synthetic tool protocol check; `--build-only` allocates no GPU. These are development checks, with final candidates still requiring the official Kaggle environment.
+The first remote command runs CPU grader controls. The second allocates one L4 only after matching controls pass. It preserves the baseline's one-minute/ten-tool-call settings, disables outbound networking, and records traces and test results under ignored `artifacts/baseline/`. Reference solutions are excluded from the agent invocation. Running the script without a task performs only a synthetic tool protocol check; `--build-only` allocates no GPU. The [baseline findings](docs/research/baseline.md) document a per-sandbox import-path adaptation needed for the development subprocess backend. Final candidates still require the official Kaggle environment.
 
 ## Experiment plan
 
