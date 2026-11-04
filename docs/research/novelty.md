@@ -13,6 +13,10 @@ Last checked: 4 November 2026. Status: exploratory; no novel result has been dem
 
 We still need a focused review of model editing and activation-steering literature before freezing any mechanism-level claim. Existing low-rank factorization is a deployment format, not our research novelty.
 
+## Pilot status on 4 November
+
+The [baseline and pagination comparison](baseline.md#matched-pilot-prompt-control-no-repair-gain) produced zero successful repairs in both conditions on one selected issue. Generic pagination instructions reached an edit but introduced regressions. This is setup/development evidence, not a novel method, a successful intervention, or a weight-level finding. No weight analysis or edit has been performed. Broader matched controls and a fresh related-work review are required before choosing a paper claim; the Ultra checkpoint remains mandatory before weight work.
+
 ## Candidate research question
 
 Do targeted weight interventions improve multi-turn software-repair success under a fixed inference-time budget, and do any behavioral gains transfer across repositories through the competition's quantized-base-plus-adapter serving path?
