@@ -79,6 +79,7 @@ Check its allocation first and cancel any earlier request before switching. Sche
 - [Prize strategy and schedule](docs/research/strategy.md)
 - [Run and spending ledger](docs/operations/run-log.md)
 - [Fixed panel workflow](docs/operations/panels.md)
+- [Controlled adapter compatibility probe](docs/operations/adapter-probe.md)
 - [Working agreement](AGENTS.md)
 
 Initial Modal compute allocation is USD 2 estimated usage within the user's reported USD 30 credit. `plan` includes configured startup, execution, and idle time; image builds, staging, storage, and egress need separate accounting. It is an estimate, not a Modal billing limit.
