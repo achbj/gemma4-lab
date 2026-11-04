@@ -15,12 +15,12 @@ Both conditions solved zero of the two qualified cases. This is a small, selecte
 
 The first qualification policy accepted only exit 1 and excluded the timeout. Before either GPU condition, the public `rich_3480` statement identified an infinite loop. The policy was amended to allow unchanged exit 1 or 124 only when the reference resolves with exit 0. Task IDs/order, minimum of two, test content, and timeouts were unchanged. The original report, derived report, source-report hash, and classification-code hash are retained:
 
-That infinite loop is a bug in the repository under repair. It is not evidence of a loop caused by Gemma's weights; those are separate questions.
-
 - Original: `artifacts/panels/development-panel-v1/20261104T193619Z-controls.json`.
 - Amended: `artifacts/panels/development-panel-v1/20261104T194633Z-controls.json`.
 
-This attrition leaves only Rich cases, so the comparison cannot support cross-repository transfer claims. Public-kit environment problems and package shadowing were [already reported by other participants](https://www.kaggle.com/competitions/gemma-4-developer-agent/discussion/747248); our setup corrections are not a novelty claim. Staff's statements about fully validating hidden tasks are separate from our development controls.
+That infinite loop is a bug in the repository under repair. It is not evidence of a loop caused by Gemma's weights; those are separate questions.
+
+This attrition leaves only Rich cases, so the comparison cannot support cross-repository transfer claims. Environment corrections reproduce [prior validation work](https://www.kaggle.com/competitions/gemma-4-developer-agent/discussion/747248). Hidden-scorer parity remains unverified.
 
 ## Matched conditions
 
