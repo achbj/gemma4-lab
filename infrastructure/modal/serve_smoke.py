@@ -60,7 +60,8 @@ if modal.is_local():
             ROOT / "requirements/remote-runtime-base.txt", "/opt/runtime-base.txt", copy=True
         )
         .uv_pip_install(
-            requirements=["/opt/runtime-base.txt"], extra_options="--no-build-isolation"
+            requirements=[str(ROOT / "requirements/remote-runtime-base.txt")],
+            extra_options="--no-build-isolation",
         )
         # Match the starter's no-dependency wheel overlay; metadata in the
         # supplied wheels is inconsistent even in the verified reference image.
