@@ -56,7 +56,22 @@ if modal.is_local():
             index_url="https://download.pytorch.org/whl/cu128",
         )
         .add_local_dir(wheel_root, "/opt/wheelhouse", copy=True)
-        .uv_pip_install(*[f"/opt/wheelhouse/{name}" for name in sorted(expected)])
+        .add_local_file(
+            ROOT / "requirements/remote-runtime-base.txt", "/opt/runtime-base.txt", copy=True
+        )
+        .uv_pip_install(
+            requirements=["/opt/runtime-base.txt"], extra_options="--no-build-isolation"
+        )
+        # Match the starter's no-dependency wheel overlay; metadata in the
+        # supplied wheels is inconsistent even in the verified reference image.
+        .uv_pip_install(
+            *[f"/opt/wheelhouse/{name}" for name in sorted(expected)],
+            extra_options="--no-deps --reinstall",
+        )
+        .run_commands(
+            "python -c 'import adk_submission, transformers, litellm; "
+            'print("runtime imports passed")\''
+        )
         .env(
             {
                 "TRANSFORMERS_NO_TF": "1",
