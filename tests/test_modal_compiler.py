@@ -41,7 +41,7 @@ class ContainerImportTests(unittest.TestCase):
 
         fake_modal.App = FakeApp
         fake_modal.Volume = types.SimpleNamespace(from_name=lambda *args, **kwargs: object())
-        for name in ("validate_compiler.py", "serve_smoke.py"):
+        for name in ("validate_compiler.py", "serve_smoke.py", "adapter_probe.py"):
             with self.subTest(module=name):
                 source = (PROJECT_ROOT / "infrastructure/modal" / name).read_text()
                 namespace = {"__file__": f"/root/{name}", "__name__": "cloud_import_test"}
