@@ -14,9 +14,9 @@ from pathlib import Path
 
 import modal
 
+from gemma4_lab.remote_serving import MODEL_ALIAS, MODEL_SOURCE
+
 ROOT = Path(__file__).resolve().parents[2] if modal.is_local() else Path("/")
-MODEL_ALIAS = "gemma-4-e4b-it-qat-w4a16-ct"
-MODEL_SOURCE = f"google/gemma-4/Other/{MODEL_ALIAS}/2"
 RESOURCES = {
     "gpu": "L4",
     "cpu_cores": 2,
@@ -193,33 +193,10 @@ def serve_smoke(task_payload: dict | None = None) -> dict:
         "software_repair_score_measured": False,
     }
     try:
-        import torch
-        from adk_submission import VllmConfig, VllmServer
+        from gemma4_lab.remote_serving import create_approved_server
 
-        result["gpu"] = torch.cuda.get_device_name(0)
-        model_path = Path("/cache/models/e4b-v2")
-        source = json.loads((model_path / "source-manifest.json").read_text())
-        if source["model"] != MODEL_SOURCE:
-            raise ValueError("Cached model source differs from the approved checkpoint")
-        result["checkpoint_manifest"] = source
-        server = VllmServer(
-            VllmConfig(
-                model=str(model_path),
-                host="127.0.0.1",
-                port=8000,
-                tool_call_parser="gemma4",
-                reasoning_parser="gemma4",
-                max_model_len=32768,
-                dtype="bfloat16",
-                gpu_memory_utilization=0.90,
-                enable_auto_tool_choice=True,
-                enable_lora=False,
-                scheduler_reserve_full_isl=False,
-                tensor_parallel_size=1,
-                startup_timeout=1200,
-            )
-        )
-        result["server_command"] = server.build_cmd()
+        server, metadata = create_approved_server()
+        result.update(metadata)
         server.start()
         result["server_ready_seconds"] = time.monotonic() - started
         print(json.dumps({"stage": "server-ready", "seconds": result["server_ready_seconds"]}))
