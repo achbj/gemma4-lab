@@ -302,6 +302,90 @@ def serve_smoke(task_payload: dict | None = None) -> dict:
     return result
 
 
+@app.function(
+    image=image,
+    gpu=RESOURCES["gpu"],
+    cpu=RESOURCES["cpu_cores"],
+    memory=RESOURCES["memory_gib"] * 1024,
+    timeout=RESOURCES["timeout_seconds"],
+    startup_timeout=RESOURCES["startup_timeout_seconds"],
+    max_containers=1,
+    min_containers=0,
+    scaledown_window=RESOURCES["scaledown_seconds"],
+    retries=0,
+    block_network=True,
+    volumes={"/cache": volume},
+    is_generator=True,
+)
+def evaluate_panel(task_payloads: list[dict], execution_limit_seconds: int):
+    """Stream a fixed evaluation batch so completed cases survive a later failure."""
+    import platform
+    import time
+    import traceback
+    from importlib.metadata import distributions
+
+    import yaml
+
+    from gemma4_lab.remote_evaluation import evaluate_reference_task
+    from gemma4_lab.remote_serving import create_approved_server
+
+    started = time.monotonic()
+    server = None
+    completed = 0
+    final = {"stage": "finished", "completed": False}
+    try:
+        if not 1 <= len(task_payloads) <= 4:
+            raise ValueError("The fixed panel permits at most four cases")
+        if any(task.get("patch") for task in task_payloads):
+            raise ValueError("Reference solutions must be stripped before a GPU panel")
+        server, metadata = create_approved_server()
+        server.start()
+        metadata.update(
+            python=platform.python_version(),
+            packages={d.metadata["Name"]: d.version for d in distributions()},
+            server_ready_seconds=time.monotonic() - started,
+        )
+        yield {"stage": "server-ready", "metadata": metadata}
+        models = server.create_model_registry(
+            aliases=[MODEL_ALIAS], model_prefix="openai/", api_key="EMPTY"
+        )
+        settings = yaml.safe_load(Path("/submission/eval_config.yaml").read_text())["evaluation"]
+        case_allowance_seconds = float(settings["max_time_minutes"]) * 60 + 450
+        for task in task_payloads:
+            # Reserve the configured agent time, 300-second verification,
+            # two minutes for setup, and shutdown before beginning another case.
+            if execution_limit_seconds - (time.monotonic() - started) < case_allowance_seconds:
+                final["stop_reason"] = "Insufficient remaining execution allocation"
+                break
+            print(
+                json.dumps({"stage": "starting-case", "task_id": task["instance_id"]}), flush=True
+            )
+            evaluation = evaluate_reference_task(task, models)
+            outcome = evaluation["results"]["agent"]
+            completed += 1
+            yield {
+                "stage": "case-result",
+                "task_id": task["instance_id"],
+                "resolved": outcome["resolved"],
+                "evaluation": evaluation,
+                "elapsed_seconds": time.monotonic() - started,
+            }
+        final["completed"] = completed == len(task_payloads)
+    except Exception as exc:
+        final.update(
+            error_type=type(exc).__name__, error=str(exc), traceback=traceback.format_exc()
+        )
+        if getattr(exc, "output", None):
+            final["server_log"] = str(exc.output)[-150000:]
+    finally:
+        if server is not None:
+            if Path(server.log_path).is_file():
+                final["server_log"] = Path(server.log_path).read_text(errors="replace")[-150000:]
+            server.stop()
+    final.update(completed_cases=completed, elapsed_seconds=time.monotonic() - started)
+    yield final
+
+
 @app.local_entrypoint()
 def main(
     build_only: bool = False,
@@ -316,17 +400,32 @@ def main(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
     ).strip()
     if panel:
-        if task_id or not controls_only:
-            raise ValueError("Panel mode currently requires --controls-only and no --task-id")
-        from gemma4_lab.panels import load_development_panel, run_control_panel
+        if task_id:
+            raise ValueError("Select either --panel or --task-id")
+        from gemma4_lab.panels import load_development_panel, run_agent_panel, run_control_panel
 
         settings = load_development_panel(ROOT, ROOT / panel)
-        destination = run_control_panel(
-            ROOT, settings, validate_fixture, image.object_id, launched_git_commit
-        )
+        if controls_only:
+            destination = run_control_panel(
+                ROOT, settings, validate_fixture, image.object_id, launched_git_commit
+            )
+        else:
+            staging = sorted((ROOT / "artifacts/runtime-validation").glob("*-model-staging.json"))
+            if not staging or json.loads(staging[-1].read_text())["model"] != MODEL_SOURCE:
+                raise ValueError("Stage the approved checkpoint before allocating a GPU")
+            destination = run_agent_panel(
+                ROOT,
+                settings,
+                evaluate_panel,
+                image.object_id,
+                launched_git_commit,
+                CONFIG,
+                CANDIDATE,
+            )
         report = json.loads(destination.read_text())
-        print(json.dumps({"passed": report["passed"], "report": str(destination)}))
-        if not report["passed"]:
+        complete = report.get("passed", report["completed"])
+        print(json.dumps({"completed": complete, "report": str(destination)}))
+        if not complete:
             raise SystemExit(1)
         return
     if controls_only and not task_id:
