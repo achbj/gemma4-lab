@@ -312,7 +312,6 @@ def serve_smoke(task_payload: dict | None = None) -> dict:
     max_containers=1,
     min_containers=0,
     scaledown_window=RESOURCES["scaledown_seconds"],
-    retries=0,
     block_network=True,
     volumes={"/cache": volume},
     is_generator=True,

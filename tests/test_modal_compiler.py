@@ -1,5 +1,6 @@
 """Keep cloud module loading independent of the local checkout's path depth."""
 
+import importlib.util
 import sys
 import types
 import unittest
@@ -10,6 +11,20 @@ from gemma4_lab.config import PROJECT_ROOT
 
 
 class ContainerImportTests(unittest.TestCase):
+    def test_real_modal_sdk_accepts_the_panel_decorator_without_network(self):
+        import modal
+
+        path = PROJECT_ROOT / "infrastructure/modal/serve_smoke.py"
+        name = "gemma4_panel_decorator_validation"
+        spec = importlib.util.spec_from_file_location(name, path)
+        module = importlib.util.module_from_spec(spec)
+        with (
+            patch.dict(sys.modules, {name: module}),
+            patch.object(modal, "is_local", return_value=False),
+        ):
+            spec.loader.exec_module(module)
+        self.assertEqual(module.ROOT, Path("/"))
+
     def test_remote_import_needs_no_local_paths_or_wheels(self):
         fake_modal = types.ModuleType("modal")
         fake_modal.is_local = lambda: False
