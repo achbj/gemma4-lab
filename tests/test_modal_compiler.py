@@ -14,16 +14,18 @@ class ContainerImportTests(unittest.TestCase):
     def test_real_modal_sdk_accepts_the_panel_decorator_without_network(self):
         import modal
 
-        path = PROJECT_ROOT / "infrastructure/modal/serve_smoke.py"
-        name = "gemma4_panel_decorator_validation"
-        spec = importlib.util.spec_from_file_location(name, path)
-        module = importlib.util.module_from_spec(spec)
-        with (
-            patch.dict(sys.modules, {name: module}),
-            patch.object(modal, "is_local", return_value=False),
-        ):
-            spec.loader.exec_module(module)
-        self.assertEqual(module.ROOT, Path("/"))
+        for filename in ("serve_smoke.py", "adapter_probe.py"):
+            with self.subTest(module=filename):
+                path = PROJECT_ROOT / "infrastructure/modal" / filename
+                name = "gemma4_decorator_validation"
+                spec = importlib.util.spec_from_file_location(name, path)
+                module = importlib.util.module_from_spec(spec)
+                with (
+                    patch.dict(sys.modules, {name: module}),
+                    patch.object(modal, "is_local", return_value=False),
+                ):
+                    spec.loader.exec_module(module)
+                self.assertEqual(module.ROOT, Path("/"))
 
     def test_remote_import_needs_no_local_paths_or_wheels(self):
         fake_modal = types.ModuleType("modal")
