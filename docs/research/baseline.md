@@ -74,9 +74,9 @@ Next: choose a small fixed panel from the frozen development pool, check its gra
 
 ## Adapter serving interface audit, 4 November
 
-Runtime adapter compatibility is still unverified. The following observations come from reading pinned source files, without importing ML runtimes, interpreting learned tensors, constructing an adapter, or changing any serving setting:
+At this source-audit stage, runtime adapter compatibility was unverified. The later [controlled Modal probe](adapter-compatibility.md) established the tested serving path; full Kaggle scorer-environment validation remains pending. The following original observations came from reading pinned source files, without importing ML runtimes, interpreting learned tensors, constructing an adapter, or changing any serving setting:
 
-- Our shared `src/gemma4_lab/remote_serving.py` explicitly sets `enable_lora=False`. The completed inference and repair attempts therefore establish no adapter-loading or adapter-effect evidence.
+- Baseline calls to `src/gemma4_lab/remote_serving.py` keep `enable_lora=False`. The original inference and repair attempts therefore establish no adapter-loading or adapter-effect evidence. The later probe uses an explicit opt-in adapter manifest.
 - The pinned vLLM 0.19.1 `vllm/model_executor/models/gemma4_mm.py` declares `Gemma4ForConditionalGeneration` with `SupportsLoRA` at lines 883–899. That interface declaration does not establish that a particular adapter works with the approved E4B compressed-tensors checkpoint.
 - Official starter notebook cell 8 discovers adapters, enables LoRA when adapters exist, sizes adapter count/rank from discovery, and passes the manifest to `VllmServer`. The pinned `adk_submission/server.py` builds the corresponding adapter CLI arguments at lines 759–798 and registers adapter names at lines 397–421. Its rank value of 128 is a fallback; detected ranks are right-sized/rounded in code, so this value alone is not evidence of a universal rank permission or limit.
 - A later compatibility experiment must preserve the approved base/wheels, follow that discovery/registry path, validate the submission, and demonstrate that requests reach and use the intended adapter. A listed model name or successful YAML compilation alone is insufficient. The final candidate still needs the official Kaggle scorer environment.
