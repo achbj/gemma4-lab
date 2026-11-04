@@ -37,3 +37,10 @@
 - The local OpenMP workaround does not apply to remote Linux/Modal commands. Do not set `KMP_DUPLICATE_LIB_OK`, suppress crash reporting, or globally disable the sandbox.
 - Keep tokens and credentials out of project files, logs, and chat. Authenticate through the services' normal local/browser flows.
 - Confirm adapter compatibility with the official scorer before investing in adaptation. Keep development issues separate from reserved validation issues.
+
+## Rules and research claims
+
+- Before each experiment, record the relevant competition rule/source, the proposed change, its budget, and the control needed to assess it. Distinguish explicit permission from interpretation; resolve material ambiguity before relying on it in a submission.
+- Choose the best measured approach under the competition's model, harness, time, and cost constraints. Compare against simpler controls before claiming an improvement; do not claim global optimality from a limited search.
+- Treat the published weight-space programming method and its replications as prior work. Maintain a dated novelty register, recheck related work when choosing a paper claim and immediately before submission, and narrow or drop any claim already covered elsewhere.
+- Novelty remains provisional until the final review. Report only demonstrated contributions and limits, cite borrowed methods, and keep the paper's original work distinct from reproduction or integration.
