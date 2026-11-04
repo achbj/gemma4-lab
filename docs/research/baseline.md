@@ -33,10 +33,20 @@ Several supplied wheel metadata requirements are not satisfied even by that refe
 3. Verify adapter application separately before adapting weights. Weight interpretation and editing require the user's Ultra checkpoint.
 4. Recheck final candidates using the official Kaggle runtime and scorer hardware before making submission-compatibility claims.
 
-The initial Modal plan uses one L4, whereas the scorer uses four L4s. This development configuration must be labelled separately. No benchmark success or model improvement has been measured yet.
+The initial Modal plan uses one L4, whereas the scorer uses four L4s. The first real issue attempt used a documented A10G capacity fallback after an unscheduled L4 request was cancelled. These development configurations must be labelled separately. No successful repair or model improvement has been measured yet.
 
 ## Documented development adaptation: checkout import paths
 
 The unchanged `requests_7427` control unexpectedly passed alongside the reference patch. Inspection of the supplied `swegemma==0.2.11` wheel showed that both editable-package installation and dependency setup return immediately for `SubprocessManager`. Its environment supplies the workspace root on `PYTHONPATH`, but does not add `workspace/src`; an installed Requests package can consequently shadow the checkout. Such results are invalid evidence of agent repair.
 
 The development wrapper now preserves the manager's original lifecycle and writes a `workspace_paths.pth` into each sandbox's own venv after creation. It places that sandbox's workspace and `src` first on the Python import path. This restores the intended checkout imports; it changes no reference/test patch, repository source, model, sampling, budget, or official wheel. The adaptation is reported in every evaluation result and checked against a synthetic host-package shadowing regression. Repeat both grader controls before any GPU agent attempt. This deliberate runtime adaptation is not a claim of exact Kaggle/scorer parity; final candidates need independent official-environment verification.
+
+## First real agent attempt: failed pilot
+
+The corrected `requests_7427` CPU controls distinguish the unchanged checkout (one failure, 215 passed, 13 skipped) from its reference fix (216 passed, 13 skipped). The issue is an inspected development pilot and is excluded from the reserved validation partition.
+
+The unmodified baseline then ran on one NVIDIA A10G in [Modal app `ap-bobUmGLMOuYYJXoqgv7hPH`](https://modal.com/apps/ach-bj100/main/ap-bobUmGLMOuYYJXoqgv7hPH). E4B readiness took 245.27 seconds; total function time was 316.77 seconds. The agent timed out after about 63.32 seconds with 12 LLM calls, ten counted tool calls, no source modification, and no patch submission. The evaluator returned before tests (`test_exit_code=-1`); do not report this as a verified test failure or an official leaderboard score. Raw trace and result: `artifacts/baseline/20261104T141310Z-requests_7427-agent.json`.
+
+Five effective reads of the beginning of `utils.py` failed to expose the later target implementation. The agent repeated default truncated reads and once requested 500 lines despite the 150-line cap. Its analyzer also inferred that the target was absent after partial navigation. This is a behavioral observation from one issue, not a weight-level diagnosis or a general failure-rate estimate. The trace records 80,651 prompt and 4,049 completion tokens; the official task summary's zero-token total is inconsistent with its trace.
+
+The next candidate, `pagination-v1`, adds only a generic line-number/range-reading instruction to both prompts. Model/tool declarations, sampling, and evaluation budgets remain byte-identical to baseline. Compare it on the same A10G and pilot before any weight intervention. Preserve a negative result; a single success would need broader development and untouched validation evidence. No novelty claim follows from this prompt change.
