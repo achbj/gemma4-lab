@@ -46,8 +46,40 @@ Raw reports:
 - Baseline, runner `8aee809`, [Modal app](https://modal.com/apps/ach-bj100/main/ap-rtb0F5wxanOjYZabN3Ddl6): `artifacts/panels/development-panel-v1/20261104T194859Z-baseline.json`.
 - Pagination, runner `051f66e`, [Modal app](https://modal.com/apps/ach-bj100/main/ap-GS250RfWd6hF7yunyShDF5): `artifacts/panels/development-panel-v1/20261104T200028Z-pagination-v1.json`.
 
-## Decision
+## Decision after the one-minute comparison
 
 Do not promote either condition from this result. A useful next diagnostic is a separately recorded, matched increase in task time: most attempts were cut off, and the [competition overview](https://www.kaggle.com/competitions/gemma-4-developer-agent) permits per-task limits within the overall 12-hour generation budget. More time is a hypothesis, not an established fix; retain the one-minute reference and rerun both conditions at any new budget. Budget/thinking comparisons also have public prior work in the novelty register.
 
 No weight interpretation, edit, adapter, or original research contribution has been demonstrated. Confirm scorer-compatible adaptation before investing in it, and obtain the Ultra switch before weight work. Preserve reserved validation for a frozen candidate and distinguish these public development results from hidden scoring.
+
+## Matched three-minute diagnostic, 4 November
+
+`baseline-3m` and `pagination-v1-3m` copy their respective candidates with exactly one setting changed: `max_time_minutes: 1` becomes `3`. Prompts, sampling, ten counted tool calls, fifty turns, command/verification timeouts, checkpoint, A10G hardware, serving flags, official wheels, and runtime image are preserved. Original candidates and reports remain intact. This is a small diagnostic with one draw per condition; changed trajectories and stochastic variation limit causal attribution.
+
+Both candidates passed official CPU compilation. Fresh controls on all four original cases again qualified exactly the same two Rich cases; Requests exclusions, task order, and qualification policy are unchanged. Control report: `artifacts/panels/development-panel-v1/20261104T202406Z-controls.json`. Candidate evaluation/sampling hashes matched those controls. No reserved validation issue was evaluated.
+
+| Case | Three-minute condition | LLM / counted tool calls | Submission | Verification | Case seconds, including verification |
+| --- | --- | --- | --- | --- | --- |
+| `rich_3535` | Baseline | 7 / 5 | 473-character patch | 3 failed, 5 passed | 92.11 |
+| `rich_3480` | Baseline | 13 / 10 | 437-character patch | Timeout, exit 124 | 380.90 |
+| `rich_3535` | Pagination | 11 / 9 | 459-character patch | 3 failed, 5 passed | 57.33 |
+| `rich_3480` | Pagination | 16 / 10 | Empty patch submitted | Timeout, exit 124 | 444.52 |
+
+Both conditions again solved **0/2**. No three-minute attempt reported an agent/session error, versus session timeouts in three of the four earlier attempts. This does not mean every tool succeeded: budget errors and an unavailable analyzer tool appear in the traces despite a null top-level agent error. Actual repairs remain the outcome; an explicit submission or pipeline completion is insufficient.
+
+Observed failures, without weight-level attribution:
+
+- Both `rich_3535` patches removed the callable regex `.match` binding. The agents received failing targeted-test output, then claimed success and submitted. The baseline explicitly treated failures introduced by its change as pre-existing breakage. The starter prompt's permission to ignore unrelated failures is a plausible contributor, not a demonstrated cause.
+- The second baseline used all ten counted calls before its targeted test. The harness rejected that test command with `BudgetExceeded`; an unverified patch was submitted and the independent verification still hung.
+- The second pagination attempt called `run_command` from the read-only analyzer, where it is unavailable. Later, its source edit was rejected by the tool-call budget. It then submitted `patch_size=0`, and verification of the unchanged checkout timed out. Do not count this as a nonempty patch or infer that more time alone would allow an edit.
+
+Baseline model readiness/function total were 196.42/673.46 seconds; pagination was 205.05/710.57 seconds. Baseline waited for A10G capacity but scheduled within the 15-minute cancellation window. Each app was confirmed stopped before the next allocation; no jobs or deployments remained at closure.
+
+- Baseline, runner `9946d9f`, [Modal app](https://modal.com/apps/ach-bj100/main/ap-kCiHlguSlyaGWxJesLJShh): `artifacts/panels/development-panel-v1/20261104T203042Z-baseline-3m.json`.
+- Pagination, runner `ebb35ff`, [Modal app](https://modal.com/apps/ach-bj100/main/ap-a3Sujk7lOzieocGIOuzEbj): `artifacts/panels/development-panel-v1/20261104T204852Z-pagination-v1-3m.json`.
+
+## Current decision
+
+Do not promote either candidate or keep increasing limits without a defined control. More task time did not produce a repair in these runs. The next useful control is a generic prompt/workflow change that requires acting on relevant failing-test output, reserves calls for editing and verification, respects each subagent's declared tools, and checks for a nonempty patch. Test those changes separately under matched budgets before attributing failures to weights. More cases and repeated measurements will be needed to assess transfer and variance.
+
+The longer-budget comparison and observed workflow failures are development findings, not a novel method. No weight work has occurred. Scorer-compatible adapter validation and the user's confirmed Ultra switch remain prerequisites for a weight intervention; keep the reserved validation partition untouched until a candidate is frozen.
