@@ -110,6 +110,7 @@ volume = modal.Volume.from_name("gemma4-competition-model-cache")
     min_containers=0,
     scaledown_window=RESOURCES["scaledown_seconds"],
     retries=0,
+    block_network=True,
     volumes={"/cache": volume},
 )
 def serve_smoke() -> dict:
