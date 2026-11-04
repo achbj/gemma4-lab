@@ -1,7 +1,8 @@
-"""Build the official-wheel runtime and perform one bounded E4B tool-call check.
+"""Validate serving and optionally run one reference E4B repair case.
 
 ML imports occur only inside the remote Linux function. --build-only constructs
-the image without allocating a GPU. This check is not a software-repair score.
+the image without allocating a GPU. --task-id requests_7505 --controls-only runs
+CPU grader controls; repeat without --controls-only for the bounded agent run.
 """
 
 import hashlib
@@ -95,8 +96,53 @@ if modal.is_local():
             }
         )
     )
+    image = image.add_local_python_source("gemma4_lab").add_local_dir(
+        ROOT / "submissions/baseline", "/submission"
+    )
+    if (ROOT / "data/raw/official/evaluation").is_dir():
+        image = image.add_local_dir(ROOT / "data/raw/official/evaluation", "/data")
 app = modal.App("gemma4-e4b-serving-smoke")
 volume = modal.Volume.from_name("gemma4-competition-model-cache")
+
+
+@app.function(
+    image=image,
+    cpu=2,
+    memory=2048,
+    timeout=900,
+    startup_timeout=900,
+    max_containers=1,
+    min_containers=0,
+    scaledown_window=2,
+    retries=0,
+    block_network=True,
+)
+def validate_fixture(task_payload: dict) -> dict:
+    import time
+    import traceback
+    from importlib.metadata import distributions
+
+    from adk_submission import ModelRegistry
+
+    from gemma4_lab.remote_evaluation import evaluate_reference_task
+
+    started = time.monotonic()
+    result = {"stage": "grader-controls", "passed": False, "gpu_allocated": False}
+    try:
+        result["evaluation"] = evaluate_reference_task(
+            task_payload, ModelRegistry(), controls_only=True
+        )
+        controls = result["evaluation"]["results"]
+        result["passed"] = (
+            not controls["unchanged"]["resolved"]
+            and controls["unchanged"]["test_exit_code"] == 1
+            and controls["reference"]["resolved"]
+        )
+    except Exception as exc:
+        result.update(error=str(exc), traceback=traceback.format_exc())
+    result["elapsed_seconds"] = time.monotonic() - started
+    result["packages"] = {d.metadata["Name"]: d.version for d in distributions()}
+    return result
 
 
 @app.function(
@@ -113,7 +159,7 @@ volume = modal.Volume.from_name("gemma4-competition-model-cache")
     block_network=True,
     volumes={"/cache": volume},
 )
-def serve_smoke() -> dict:
+def serve_smoke(task_payload: dict | None = None) -> dict:
     import platform
     import time
     import traceback
@@ -224,7 +270,22 @@ def serve_smoke() -> dict:
             result["passed"] = bool(final_message.get("content")) and not final_message.get(
                 "tool_calls"
             )
+        result["protocol_passed"] = result["passed"]
+        if task_payload is not None:
+            if not result["protocol_passed"]:
+                raise RuntimeError("Serving protocol failed; do not attempt an issue")
+            from gemma4_lab.remote_evaluation import evaluate_reference_task
+
+            result["stage"] = "reference-baseline"
+            models = server.create_model_registry(
+                aliases=[MODEL_ALIAS], model_prefix="openai/", api_key="EMPTY"
+            )
+            result["evaluation"] = evaluate_reference_task(task_payload, models)
+            outcome = result["evaluation"]["results"]["agent"]
+            result["software_repair_score_measured"] = outcome["test_exit_code"] in (0, 1)
+            result["passed"] = result["software_repair_score_measured"]
     except Exception as exc:
+        result["passed"] = False
         result["error_type"] = type(exc).__name__
         result["error"] = str(exc)
         result["traceback"] = traceback.format_exc()
@@ -241,25 +302,61 @@ def serve_smoke() -> dict:
 
 
 @app.local_entrypoint()
-def main(build_only: bool = False):
+def main(build_only: bool = False, task_id: str = "", controls_only: bool = False):
     if build_only:
         print(json.dumps({"image": image.object_id, "gpu_allocated": False}))
         return
-    staging = sorted((ROOT / "artifacts/runtime-validation").glob("*-model-staging.json"))
-    if not staging or json.loads(staging[-1].read_text())["model"] != MODEL_SOURCE:
-        raise ValueError("Stage and verify the approved checkpoint on CPU before allocating a GPU")
-    result = serve_smoke.remote()
+    if controls_only and not task_id:
+        raise ValueError("--controls-only requires --task-id")
+    task_payload = None
+    identity = {}
+    report_root = ROOT / "artifacts/runtime-validation"
+    suffix = "serving-smoke"
+    if task_id:
+        if task_id != "requests_7505":
+            raise ValueError("The initial baseline allocation covers only requests_7505")
+        from gemma4_lab.remote_evaluation import fixture_identity
+
+        fixture = json.loads((ROOT / f"docs/research/fixtures/{task_id}.json").read_text())
+        task_payload = next(
+            task
+            for line in (ROOT / "data/raw/official/competition/tasks.jsonl")
+            .read_text()
+            .splitlines()
+            if line.strip() and (task := json.loads(line))["instance_id"] == task_id
+        )
+        identity = {
+            "source_task_sha256": hashlib.sha256(
+                json.dumps(task_payload, sort_keys=True).encode()
+            ).hexdigest(),
+            "fixture_sha256": fixture_identity(ROOT / "data/raw/official/evaluation", fixture),
+        }
+        report_root = ROOT / "artifacts/baseline"
+        report_root.mkdir(parents=True, exist_ok=True)
+        suffix = f"{task_id}-{'controls' if controls_only else 'agent'}"
+    if controls_only:
+        result = validate_fixture.remote(task_payload)
+    else:
+        staging = sorted((ROOT / "artifacts/runtime-validation").glob("*-model-staging.json"))
+        if not staging or json.loads(staging[-1].read_text())["model"] != MODEL_SOURCE:
+            raise ValueError("Stage the approved checkpoint on CPU before allocating a GPU")
+        if task_payload is not None:
+            controls = sorted(report_root.glob(f"*-{task_id}-controls.json"))
+            control = json.loads(controls[-1].read_text()) if controls else {}
+            if not control.get("passed") or any(control.get(k) != v for k, v in identity.items()):
+                raise ValueError("Matching grader controls must pass before the GPU agent run")
+            # The agent invocation never receives the reference solution, even
+            # in host task memory. Verification-only tests remain host-side.
+            task_payload["patch"] = ""
+        result = serve_smoke.remote(task_payload)
+    result.update(identity)
     result["git_commit"] = subprocess.check_output(
         ["git", "rev-parse", "HEAD"],
         cwd=ROOT,
         text=True,
     ).strip()
     result["modal_image_id"] = image.object_id
-    destination = (
-        ROOT
-        / "artifacts/runtime-validation"
-        / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-serving-smoke.json")
-    )
+    destination = report_root / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + f"-{suffix}.json")
     destination.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({"passed": result["passed"], "report": str(destination)}, indent=2))
     if not result["passed"]:
