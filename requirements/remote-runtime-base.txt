@@ -1,8 +1,9 @@
 # Supporting dependencies for Linux CPython 3.12; official wheels overlay separately.
-# Derived from the immutable wheel METADATA and the verified Kaggle reference image.
-# Starlette 0.52.1 matches that image; metrics-wheel metadata requests 1.x instead.
-# Skip nvidia-cutlass-dsl, absent in the reference and skipped by starter setup.
-# Keep all 41 official wheel versions/hashes unchanged; install those with --no-deps.
+# Derived from immutable wheel METADATA and the verified Kaggle reference image.
+# Starlette, FastAPI, NumPy, LiteLLM and the OpenTelemetry family follow that image.
+# Helpers' conflicting Starlette/telemetry metadata is not re-resolved in the overlay.
+# Cutlass DSL and torch-c-dlpack-ext are absent in the reference and omitted here.
+# Exact outcomes are recorded by each probe; complete scorer parity is unproven.
 accelerate
 aiohttp>=3.13.3
 aiosqlite>=0.21
@@ -68,18 +69,14 @@ numpy>=2.0.0
 nvidia-ml-py
 openai>=2.0.0
 opencv-python-headless>=4.13.0
-opentelemetry-api<=1.41.1,>=1.36
-opentelemetry-api>=1.27.0
+opentelemetry-api==1.38.0
 opentelemetry-exporter-gcp-logging<=1.12.0a0,>=1.9.0a0
 opentelemetry-exporter-gcp-monitoring<2,>=1.9.0a0
 opentelemetry-exporter-gcp-trace<2,>=1.9
-opentelemetry-exporter-otlp-proto-grpc==1.44.0
-opentelemetry-exporter-otlp-proto-http==1.44.0
-opentelemetry-exporter-otlp-proto-http>=1.36
+opentelemetry-exporter-otlp-proto-grpc==1.38.0
+opentelemetry-exporter-otlp-proto-http==1.38.0
 opentelemetry-resourcedetector-gcp<2,>=1.9.0a0
-opentelemetry-sdk<2,>=1.38.0
-opentelemetry-sdk<=1.41.1,>=1.36
-opentelemetry-sdk>=1.27.0
+opentelemetry-sdk==1.38.0
 opentelemetry-semantic-conventions>=0.59b0
 packaging
 packaging>=20.0
@@ -143,7 +140,6 @@ tenacity<9.2.0,>=8.2.3
 tiktoken>=0.6.0
 tiktoken>=0.7.0
 torch
-torch-c-dlpack-ext
 torch<3,>=2.2
 torch==2.10.0
 torch>=1.10.0
