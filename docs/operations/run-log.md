@@ -38,3 +38,12 @@
 - Scope: directory/schema checks and agent-tree compilation with inert model/tool registries. This does not validate real tool implementations, inference, adapters, or full scorer parity.
 - Bounds: one container, one requested physical CPU core, 2 GiB requested RAM, 120-second function timeout, 600-second startup timeout, two-second scale-down window, and zero function retries. Requested startup/function/idle compute estimates about USD 0.0127; reserve USD 0.10 including this small build. Actual billing and build overhead may differ; this reserve is part of the initial USD 2 allocation.
 - No model weights, reference task patches, credentials, or external model APIs are needed for this check. Only the submission text and public official wheels are sent to the user's Modal workspace.
+
+## 4 November 2026 — compiler result and checkpoint staging
+
+- Compiler run `ap-OWHPrMRDaiAwzxiXB7CvM9` built the image but failed on an import-time local-path assumption. The app was stopped before retrying. Fix `3d6b62c` includes an offline container-import regression test.
+- Run `ap-wqvNIM6OhQjk964urGqQ9w` passed compilation on Python 3.12.10 using image `im-xXa2wrFOMCoMLyPzVJ2tWO`. No model/tool calls occurred. Report: `artifacts/runtime-validation/20261104T123141Z-compiler.json`.
+- All 41 official Linux runtime wheels are cached locally (880,842,601 bytes) and hash-pinned. None was installed or imported on this Mac.
+- Next allocation: CPU-only staging of approved E4B version 2 into private Modal volume `gemma4-competition-model-cache`, using a temporary download URL limited to that artifact. No user credentials are uploaded. Archive members and sizes must match the official inventory; source hashes are retained alongside the cache.
+- Staging bounds: one container, two requested physical CPU cores, 2 GiB RAM, 900-second execution timeout, 60-second startup timeout, two-second scale-down window, and zero function retries. Requested compute estimate is below USD 0.03; reserve USD 0.10 for this stage within the initial USD 2 allocation. Volume storage is a separate meter; about 11.55 GB of model files will be retained for reuse.
+- No tensor runtime or model inference is involved in staging. It does not require the Ultra checkpoint.
