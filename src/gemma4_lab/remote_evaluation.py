@@ -54,6 +54,7 @@ def evaluate_reference_task(task_payload: dict, models, *, controls_only: bool =
         **settings,
     )
     evaluator = Evaluator(config)
+    configure_workspace_imports(evaluator.docker)
 
     async def run():
         if not controls_only:
@@ -91,10 +92,38 @@ def evaluate_reference_task(task_payload: dict, models, *, controls_only: bool =
         "evaluation_settings": settings,
         "verification_timeout_seconds": 300,
         "controls_only": controls_only,
+        "runtime_adaptation": "per-sandbox workspace/src import path; see baseline.md",
         "results": results,
         "artifacts": artifacts,
         "submission_sha256": submission_hashes(),
     }
+
+
+def configure_workspace_imports(manager) -> None:
+    """Restore checkout imports skipped by the official subprocess backend.
+
+    The official wheel is untouched. Its original start()/start_async() lifecycle
+    still creates the venv; only that venv receives the workspace-path .pth file.
+    This is a documented development adaptation, not official scorer parity.
+    """
+    original_start = manager.start
+
+    def start_workspace_sandbox():
+        sandbox_id = original_start()
+        paths = manager.sandboxes[sandbox_id]
+        workspace = paths["workspace"].resolve()
+        for site_packages in paths["venv"].glob("lib/python*/site-packages"):
+            # .pth files are processed after the host site-packages path. Put
+            # the checkout first to avoid an already installed package winning.
+            content = (
+                "import sys; "
+                f"sys.path.insert(0, {str(workspace)!r}); "
+                f"sys.path.insert(0, {str(workspace / 'src')!r})\n"
+            )
+            (site_packages / "workspace_paths.pth").write_text(content)
+        return sandbox_id
+
+    manager.start = start_workspace_sandbox
 
 
 def submission_hashes() -> dict[str, str]:
