@@ -5,6 +5,7 @@
   "split_sha256": "c6257b02b2830c664435e22e35c158a71085dc5a8fc4dfe5ec62bf8351d32f6f",
   "selection": "First two distinct base commits per development repository, ordered by SHA-256(development-panel-v1:<instance_id>); no replacement.",
   "minimum_qualified_tasks": 2,
+  "maximum_fixture_bytes": 134217728,
   "qualification": "Unchanged checkout must fail tests with exit 1; reference patch must resolve. Preserve every exclusion.",
   "task_ids": [
     "rich_3535",

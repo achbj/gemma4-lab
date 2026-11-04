@@ -15,7 +15,7 @@ from typing import Any
 
 MAX_BOOTSTRAP_BYTES = 25 * 1024 * 1024
 MAX_RUNTIME_BYTES = 1024 * 1024 * 1024
-MAX_FIXTURE_BYTES = 100 * 1024 * 1024
+MAX_FIXTURE_BYTES = 128 * 1024 * 1024
 HARNESS_PACKAGES = ("adk_eval_core-", "adk_submission-", "swegemma-")
 
 
@@ -243,7 +243,7 @@ def select_task_fixture(inventory: dict[str, Any], task: dict[str, Any]) -> list
     for item in selected:
         safe_destination(Path("/fixtures"), item["name"])
     if sum(item["size_bytes"] for item in selected) > MAX_FIXTURE_BYTES:
-        raise ValueError("Task fixture exceeds the 100 MiB allocation")
+        raise ValueError("Task fixture exceeds the 128 MiB allocation")
     return selected
 
 
