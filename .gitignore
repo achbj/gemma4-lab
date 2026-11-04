@@ -1,0 +1,17 @@
+.venv/
+.env
+.env.*
+!.env.example
+.local/
+__pycache__/
+*.py[cod]
+.DS_Store
+data/
+model_cache/
+artifacts/
+*.safetensors
+*.parquet
+*.egg-info/
+.ruff_cache/
+build/
+dist/
