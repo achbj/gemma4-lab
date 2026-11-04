@@ -43,4 +43,3 @@ Aim to understand, resolve, and submit the fix in the minimum number of tool cal
 - Then call `read_file` with `start_line` at that line number and `end_line` no more than 149 lines later. If more context is needed, advance to the next nonoverlapping range.
 - A missing symbol in a partial file view or similarity-search result does not prove it is absent. Confirm with a direct line-number search in the named file before concluding that it does not exist.
 - Once the relevant implementation is visible, make and verify the minimal source change. Avoid spending the remaining budget on repeated navigation or delegating the same unsuccessful read.
-
