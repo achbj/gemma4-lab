@@ -1,0 +1,88 @@
+{
+  "retrieved_at": "2026-11-04T12:01:05.160815+00:00",
+  "sources": {
+    "competition": "gemma-4-developer-agent",
+    "starter": "ryanholbrook/getting-started-gemma-4-developer-agent",
+    "wheelhouse": "metric/gemma-4-developer-agent-wheelhouse",
+    "model": "google/gemma-4/Other/gemma-4-e4b-it-qat-w4a16-ct/2"
+  },
+  "files": [
+    {
+      "name": "HARNESS_README.md",
+      "size_bytes": 55940,
+      "kind": "competition",
+      "path": "competition/HARNESS_README.md",
+      "sha256": "445000219b803942c469391ec8b69791a31e9cec2f934738c767e34b5ca0aa1f"
+    },
+    {
+      "name": "sample_submission/agent.yaml",
+      "size_bytes": 438,
+      "kind": "competition",
+      "path": "competition/sample_submission/agent.yaml",
+      "sha256": "c7fbbbbdc44778419be8e9f53a85800eeb17d0cf151e0846c46e107401b72034"
+    },
+    {
+      "name": "sample_submission/configs/sampling.yaml",
+      "size_bytes": 120,
+      "kind": "competition",
+      "path": "competition/sample_submission/configs/sampling.yaml",
+      "sha256": "3dab0b2506dae34ce92fef7b380d6073729104b23fe2cf66d44ac1d2f213aa6a"
+    },
+    {
+      "name": "sample_submission/eval_config.yaml",
+      "size_bytes": 232,
+      "kind": "competition",
+      "path": "competition/sample_submission/eval_config.yaml",
+      "sha256": "adb486b67535fa59b427b79d44dafc131176f1f1964d184e16046ed520ede02d"
+    },
+    {
+      "name": "sample_submission/prompts/analyzer.md",
+      "size_bytes": 527,
+      "kind": "competition",
+      "path": "competition/sample_submission/prompts/analyzer.md",
+      "sha256": "c762b062032cc8463015e589ad8b4f0e17296062e1b0ff1e78712eef9f5e2d43"
+    },
+    {
+      "name": "sample_submission/prompts/system.md",
+      "size_bytes": 3888,
+      "kind": "competition",
+      "path": "competition/sample_submission/prompts/system.md",
+      "sha256": "f1cbf7943ee9687382321b1dfd9cd88581d608c1c8b8e6ea61a763bd1a3234af"
+    },
+    {
+      "name": "sample_submission/sub_agents/code_analyzer.yaml",
+      "size_bytes": 361,
+      "kind": "competition",
+      "path": "competition/sample_submission/sub_agents/code_analyzer.yaml",
+      "sha256": "7a764798e36cc68aa38900256245e4aed969b5439b992c7da4105b6ebcb7e62b"
+    },
+    {
+      "name": "tasks.jsonl",
+      "size_bytes": 1984455,
+      "kind": "competition",
+      "path": "competition/tasks.jsonl",
+      "sha256": "e4b3fd60f69dbc2b9213e54eeb9636db78aefe92c1d06269d73d9f5f8f3c8ad6"
+    },
+    {
+      "name": "adk_eval_core-0.1.0-py3-none-any.whl",
+      "size_bytes": 90060,
+      "kind": "wheelhouse",
+      "path": "wheelhouse/adk_eval_core-0.1.0-py3-none-any.whl",
+      "sha256": "e614e1b2fe8d886a634871e4c57f9887e1cc66e8c27300f8503a43c6e3ca82f3"
+    },
+    {
+      "name": "adk_submission-0.2.13-py3-none-any.whl",
+      "size_bytes": 66528,
+      "kind": "wheelhouse",
+      "path": "wheelhouse/adk_submission-0.2.13-py3-none-any.whl",
+      "sha256": "f156f0bd84580ccb9334726d114d7a5481f16d3a6e2887cc4d276ced0ef8d99d"
+    },
+    {
+      "name": "swegemma-0.2.11-py3-none-any.whl",
+      "size_bytes": 119670,
+      "kind": "wheelhouse",
+      "path": "wheelhouse/swegemma-0.2.11-py3-none-any.whl",
+      "sha256": "9ad876581f3acde8ec3c369858f0834e2b9f41a3cffce3ca42f09cb090aea9d3"
+    }
+  ]
+}
