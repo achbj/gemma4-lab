@@ -11,6 +11,7 @@ from gemma4_lab.assets import (
     collect_pages,
     safe_destination,
     select_bootstrap,
+    select_runtime_wheels,
     sha256,
     verify_assets,
     write_json,
@@ -31,6 +32,16 @@ def sample_inventory():
 
 
 class AssetTests(unittest.TestCase):
+    def test_runtime_inventory_rejects_nonwheels_oversize_and_traversal(self):
+        for wheel in (
+            {"name": "model.safetensors", "size_bytes": 1},
+            {"name": "vllm.whl", "size_bytes": 2**31},
+            {"name": "../vllm.whl", "size_bytes": 1},
+        ):
+            with self.subTest(wheel=wheel), self.assertRaises(ValueError):
+                select_runtime_wheels({"wheelhouse": [wheel]})
+        self.assertEqual(len(select_runtime_wheels(sample_inventory())), 3)
+
     def test_all_pages_are_collected(self):
         calls = []
 

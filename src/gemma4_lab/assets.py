@@ -14,6 +14,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 MAX_BOOTSTRAP_BYTES = 25 * 1024 * 1024
+MAX_RUNTIME_BYTES = 1024 * 1024 * 1024
 HARNESS_PACKAGES = ("adk_eval_core-", "adk_submission-", "swegemma-")
 
 
@@ -180,3 +181,45 @@ def verify_assets(root: Path, manifest_path: Path) -> int:
         if path.stat().st_size != item["size_bytes"] or sha256(path) != item["sha256"]:
             raise ValueError(f"Asset checksum mismatch: {item['path']}")
     return len(manifest["files"])
+
+
+def select_runtime_wheels(inventory: dict[str, Any]) -> list[dict[str, Any]]:
+    """Bound the official Linux wheelhouse acquisition separately from bootstrap."""
+    wheels = inventory["wheelhouse"]
+    for item in wheels:
+        safe_destination(Path("/wheelhouse"), item["name"])
+        if not item["name"].endswith(".whl"):
+            raise ValueError("Runtime inventory must contain wheels only")
+        if type(item["size_bytes"]) is not int or item["size_bytes"] <= 0:
+            raise ValueError("Runtime wheel has an invalid size")
+    if not wheels or sum(item["size_bytes"] for item in wheels) > MAX_RUNTIME_BYTES:
+        raise ValueError("Runtime wheelhouse exceeds the 1 GiB allocation or is empty")
+    return wheels
+
+
+def fetch_runtime_wheels(
+    root: Path, sources: dict[str, str], manifest_path: Path
+) -> dict[str, Any]:
+    inventory = read_json(root / "inventory.json")
+    if inventory["sources"] != sources:
+        raise ValueError("Cached inventory belongs to different sources; refresh it first")
+    selected = select_runtime_wheels(inventory)
+    api = _kaggle_client()
+    records = []
+    for item in selected:
+        destination = safe_destination(root / "wheelhouse", item["name"])
+        if not destination.is_file() or destination.stat().st_size != item["size_bytes"]:
+            with redirect_stdout(sys.stderr):
+                api.dataset_download_file(
+                    sources["wheelhouse"],
+                    item["name"],
+                    path=str(root / "wheelhouse"),
+                    quiet=True,
+                    unzip=True,
+                )
+        if not destination.is_file() or destination.stat().st_size != item["size_bytes"]:
+            raise ValueError(f"Runtime download differs from inventory: {item['name']}")
+        records.append({**item, "sha256": sha256(destination)})
+    manifest = {"source": sources["wheelhouse"], "wheels": records}
+    write_json(manifest_path, manifest)
+    return manifest

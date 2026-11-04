@@ -5,7 +5,12 @@ import json
 import sys
 from pathlib import Path
 
-from gemma4_lab.assets import fetch_bootstrap, refresh_inventory, verify_assets
+from gemma4_lab.assets import (
+    fetch_bootstrap,
+    fetch_runtime_wheels,
+    refresh_inventory,
+    verify_assets,
+)
 from gemma4_lab.config import PROJECT_ROOT, estimate_run, load_config
 from gemma4_lab.submission import prepare_baseline
 
@@ -14,7 +19,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=PROJECT_ROOT / "configs/baseline.toml")
     parser.add_argument(
-        "command", choices=("plan", "inventory", "fetch", "verify", "prepare-baseline")
+        "command",
+        choices=("plan", "inventory", "fetch", "fetch-runtime", "verify", "prepare-baseline"),
     )
     args = parser.parse_args()
     root = PROJECT_ROOT / "data/raw/official"
@@ -31,6 +37,14 @@ def main() -> int:
             result = {
                 "downloaded_files": len(manifest["files"]),
                 "total_bytes": sum(item["size_bytes"] for item in manifest["files"]),
+            }
+        elif args.command == "fetch-runtime":
+            manifest = fetch_runtime_wheels(
+                root, config["sources"], PROJECT_ROOT / "requirements/remote-runtime-wheels.json"
+            )
+            result = {
+                "cached_wheels": len(manifest["wheels"]),
+                "total_bytes": sum(item["size_bytes"] for item in manifest["wheels"]),
             }
         elif args.command == "verify":
             result = {"verified_files": verify_assets(root, manifest_path)}
