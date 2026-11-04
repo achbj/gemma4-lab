@@ -21,6 +21,7 @@ def evaluate_reference_task(task_payload: dict, models, *, controls_only: bool =
     from swegemma.models import Task
 
     task = Task(**task_payload)
+    fixture_root = Path("/fixtures") / task.instance_id
     settings = yaml.safe_load(Path("/submission/eval_config.yaml").read_text())["evaluation"]
     limits, generation = build_submission_limits()
     validate_directory("/submission", limits=limits)
@@ -28,15 +29,15 @@ def evaluate_reference_task(task_payload: dict, models, *, controls_only: bool =
     results_dir.mkdir(exist_ok=True)
     config = EvalConfig(
         # evaluate_task accepts the task in memory; no answers file is mounted.
-        tasks_path=Path("/data/not-mounted-tasks.jsonl"),
-        snapshots_dir=Path("/data/snapshots"),
+        tasks_path=fixture_root / "not-mounted-tasks.jsonl",
+        snapshots_dir=fixture_root / "snapshots",
         results_dir=results_dir,
         submission_dir=Path("/submission"),
         models=models,
         sandbox="subprocess",
-        wheels_dir=Path("/data/wheels"),
-        graph_dir="/data/graphs",
-        embeddings_dir="/data/embeddings",
+        wheels_dir=fixture_root / "wheels",
+        graph_dir=str(fixture_root / "graphs"),
+        embeddings_dir=str(fixture_root / "embeddings"),
         verification_timeout_seconds=300,
         limits=limits,
         generation_constraints=generation,

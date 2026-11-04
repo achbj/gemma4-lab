@@ -1,7 +1,7 @@
 """Validate serving and optionally run one reference E4B repair case.
 
 ML imports occur only inside the remote Linux function. --build-only constructs
-the image without allocating a GPU. --task-id requests_7505 --controls-only runs
+the image without allocating a GPU. --task-id requests_7427 --controls-only runs
 CPU grader controls; repeat without --controls-only for the bounded agent run.
 """
 
@@ -101,7 +101,14 @@ if modal.is_local():
         ROOT / "submissions/baseline", "/submission"
     )
     if (ROOT / "data/raw/official/evaluation").is_dir():
-        image = image.add_local_dir(ROOT / "data/raw/official/evaluation", "/data")
+        from gemma4_lab.remote_evaluation import fixture_identity
+
+        for fixture_dir in (ROOT / "data/raw/official/evaluation").iterdir():
+            fixture_manifest = ROOT / f"docs/research/fixtures/{fixture_dir.name}.json"
+            if not fixture_dir.is_dir() or not fixture_manifest.is_file():
+                raise ValueError("Every mounted fixture must have a recorded manifest")
+            fixture_identity(fixture_dir, json.loads(fixture_manifest.read_text()))
+        image = image.add_local_dir(ROOT / "data/raw/official/evaluation", "/fixtures")
 app = modal.App("gemma4-e4b-serving-smoke")
 volume = modal.Volume.from_name("gemma4-competition-model-cache")
 
@@ -317,8 +324,8 @@ def main(build_only: bool = False, task_id: str = "", controls_only: bool = Fals
     report_root = ROOT / "artifacts/runtime-validation"
     suffix = "serving-smoke"
     if task_id:
-        if task_id != "requests_7505":
-            raise ValueError("The initial baseline allocation covers only requests_7505")
+        if task_id not in {"requests_7505", "requests_7427"}:
+            raise ValueError("The initial allocation covers only the recorded Requests fixtures")
         from gemma4_lab.remote_evaluation import fixture_identity
 
         fixture = json.loads((ROOT / f"docs/research/fixtures/{task_id}.json").read_text())
@@ -333,7 +340,9 @@ def main(build_only: bool = False, task_id: str = "", controls_only: bool = Fals
             "source_task_sha256": hashlib.sha256(
                 json.dumps(task_payload, sort_keys=True).encode()
             ).hexdigest(),
-            "fixture_sha256": fixture_identity(ROOT / "data/raw/official/evaluation", fixture),
+            "fixture_sha256": fixture_identity(
+                ROOT / "data/raw/official/evaluation" / task_id, fixture
+            ),
         }
         report_root = ROOT / "artifacts/baseline"
         report_root.mkdir(parents=True, exist_ok=True)

@@ -267,7 +267,7 @@ def fetch_task_fixture(
     if task is None:
         raise ValueError(f"Unknown public task: {task_id}")
     selected = select_task_fixture(inventory, task)
-    destination_root = root / "evaluation"
+    destination_root = safe_destination(root / "evaluation", task_id)
     records = []
     api = None
     for item in selected:
