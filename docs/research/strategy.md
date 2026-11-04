@@ -45,6 +45,8 @@ Requests and Rich form the development pool; HTTPX and FastAPI are reserved for 
 
 Report infrastructure qualification and exclusions, including the failed pilot controls; do not silently replace inconvenient issues or describe this selected pilot as an unbiased success-rate estimate. Keep time/hardware settings matched across comparisons and preserve exact candidate hashes. A budget adjustment becomes a separate experiment, with its own baseline at the same adjusted budget.
 
+On 4 November, a [primary competition discussion](https://www.kaggle.com/competitions/gemma-4-developer-agent/discussion/747248) was retrieved through indexed text. Participants had already documented public-kit dependency/import-shadowing failures. Staff state that test-set repositories differ from all training repositories and that their gold-patch test submission validates fully. These are host statements, not our independent test-set validation. Our public-task environment failures therefore do not establish broken hidden scoring. Generic navigation and repair behavior must transfer beyond memorized public fixes; our reserved public-repository split is only a development proxy for that transfer.
+
 ## Experiments, in priority order
 
 | Experiment | Question | Decision criterion |
