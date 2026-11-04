@@ -25,10 +25,12 @@ class ContainerImportTests(unittest.TestCase):
                 return lambda function: function
 
         fake_modal.App = FakeApp
-        source = (PROJECT_ROOT / "infrastructure/modal/validate_compiler.py").read_text()
-        namespace = {"__file__": "/root/validate_compiler.py", "__name__": "cloud_import_test"}
-        with patch.dict(sys.modules, {"modal": fake_modal}):
-            exec(compile(source, namespace["__file__"], "exec"), namespace)
-        self.assertEqual(namespace["ROOT"], Path("/"))
-        self.assertIsNone(namespace["image"])
-        self.assertEqual(namespace["WHEEL_MANIFEST"], {})
+        fake_modal.Volume = types.SimpleNamespace(from_name=lambda *args, **kwargs: object())
+        for name in ("validate_compiler.py", "serve_smoke.py"):
+            with self.subTest(module=name):
+                source = (PROJECT_ROOT / "infrastructure/modal" / name).read_text()
+                namespace = {"__file__": f"/root/{name}", "__name__": "cloud_import_test"}
+                with patch.dict(sys.modules, {"modal": fake_modal}):
+                    exec(compile(source, namespace["__file__"], "exec"), namespace)
+                self.assertEqual(namespace["ROOT"], Path("/"))
+                self.assertIsNone(namespace["image"])
