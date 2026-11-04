@@ -8,6 +8,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from gemma4_lab.panels import (
+    controls_qualify,
     json_identity,
     load_development_panel,
     qualified_tasks,
@@ -16,6 +17,22 @@ from gemma4_lab.panels import (
 
 
 class PanelTests(unittest.TestCase):
+    def test_timeout_requires_a_successful_reference_control(self):
+        result = {
+            "evaluation": {
+                "results": {
+                    "unchanged": {"resolved": False, "test_exit_code": 124},
+                    "reference": {"resolved": True, "test_exit_code": 0},
+                }
+            }
+        }
+        self.assertTrue(controls_qualify(result))
+        result["evaluation"]["results"]["reference"]["resolved"] = False
+        self.assertFalse(controls_qualify(result))
+        result["evaluation"]["results"]["reference"]["resolved"] = True
+        result["evaluation"]["results"]["unchanged"]["test_exit_code"] = 2
+        self.assertFalse(controls_qualify(result))
+
     def test_interrupted_batch_preserves_results_and_never_sends_reference_solutions(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -6,7 +6,8 @@
   "selection": "First two distinct base commits per development repository, ordered by SHA-256(development-panel-v1:<instance_id>); no replacement.",
   "minimum_qualified_tasks": 2,
   "maximum_fixture_bytes": 134217728,
-  "qualification": "Unchanged checkout must fail tests with exit 1; reference patch must resolve. Preserve every exclusion.",
+  "qualification_version": 2,
+  "qualification": "Unchanged checkout must fail tests (exit 1) or time out (exit 124); reference patch must resolve with exit 0. Amendment before agent outcomes: rich_3480 explicitly reports an infinite loop. Original control results are preserved.",
   "task_ids": [
     "rich_3535",
     "rich_3480",

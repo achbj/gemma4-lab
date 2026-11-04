@@ -99,6 +99,54 @@ def save_report(path: Path, value: dict) -> None:
     temporary.replace(path)
 
 
+def controls_qualify(result: dict) -> bool:
+    controls = result.get("evaluation", {}).get("results", {})
+    unchanged = controls.get("unchanged", {})
+    reference = controls.get("reference", {})
+    return (
+        unchanged.get("resolved") is False
+        and unchanged.get("test_exit_code") in (1, 124)
+        and reference.get("resolved") is True
+        and reference.get("test_exit_code") == 0
+    )
+
+
+def reclassify_controls(root: Path, panel: dict, source_path: Path) -> Path:
+    """Apply the documented pre-agent timeout amendment without rerunning tests."""
+    report = json.loads(source_path.read_text())
+    if not report["completed"] or report["panel"]["task_ids"] != panel["task_ids"]:
+        raise ValueError("Reclassification requires the same completed fixed panel")
+    if report["panel"]["split_sha256"] != panel["split_sha256"]:
+        raise ValueError("Reclassification cannot change the frozen split")
+    for task in load_task_payloads(root, panel["task_ids"]):
+        case = report["cases"][task["instance_id"]]
+        if case["identity"] != task_identity(root, task):
+            raise ValueError("Control source or runtime changed; rerun qualification")
+        case["prior_qualification_passed"] = case["passed"]
+        case["passed"] = controls_qualify(case)
+    report["qualification_amendment"] = {
+        "version": 2,
+        "source_report": source_path.relative_to(root).as_posix(),
+        "source_report_sha256": hashlib.sha256(source_path.read_bytes()).hexdigest(),
+        "reason": (
+            "Accept an unchanged test timeout when the reference fix resolves; "
+            "no agent outcomes used"
+        ),
+        "source_code_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    }
+    report["panel"] = panel
+    report["panel_sha256"] = json_identity(panel)
+    report["qualified_task_ids"] = [i for i in panel["task_ids"] if report["cases"][i]["passed"]]
+    report["passed"] = len(report["qualified_task_ids"]) >= panel["minimum_qualified_tasks"]
+    destination = source_path.parent / (
+        datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-controls.json"
+    )
+    if destination == source_path:
+        raise ValueError("Preserve the original control report")
+    save_report(destination, report)
+    return destination
+
+
 def run_control_panel(root: Path, panel: dict, function, image_id: str, git_commit: str) -> Path:
     """Run the four preregistered CPU controls and retain each result immediately."""
     destination = (
@@ -121,6 +169,8 @@ def run_control_panel(root: Path, panel: dict, function, image_id: str, git_comm
         task_id = task["instance_id"]
         identity = task_identity(root, task)
         result = function.remote(task)
+        result["runner_qualification_passed"] = result["passed"]
+        result["passed"] = controls_qualify(result)
         result["identity"] = identity
         report["cases"][task_id] = result
         save_report(destination, report)
