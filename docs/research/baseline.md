@@ -50,3 +50,24 @@ The unmodified baseline then ran on one NVIDIA A10G in [Modal app `ap-bobUmGLMOu
 Five effective reads of the beginning of `utils.py` failed to expose the later target implementation. The agent repeated default truncated reads and once requested 500 lines despite the 150-line cap. Its analyzer also inferred that the target was absent after partial navigation. This is a behavioral observation from one issue, not a weight-level diagnosis or a general failure-rate estimate. The trace records 80,651 prompt and 4,049 completion tokens; the official task summary's zero-token total is inconsistent with its trace.
 
 The next candidate, `pagination-v1`, adds only a generic line-number/range-reading instruction to both prompts. Model/tool declarations, sampling, and evaluation budgets remain byte-identical to baseline. Compare it on the same A10G and pilot before any weight intervention. Preserve a negative result; a single success would need broader development and untouched validation evidence. No novelty claim follows from this prompt change.
+
+## Matched pilot prompt control: no repair gain
+
+`pagination-v1` compiled on CPU with the official compiler, then ran on the same A10G/image/checkpoint and reference budgets in [Modal app `ap-kUQRXIkAt18z5EqxbrcE5N`](https://modal.com/apps/ach-bj100/main/ap-kUQRXIkAt18z5EqxbrcE5N). Report: `artifacts/baseline/20261104T192220Z-requests_7427-agent.json`; runner commit `02dc98e`. Model readiness took 252.27 seconds and total function time was 327.88 seconds.
+
+| Pilot observation | Baseline | Pagination prompt |
+| --- | --- | --- |
+| LLM calls | 12 | 8 |
+| Counted tool calls | 10 | 8 |
+| Source patch | None | One source file edited |
+| Explicit patch submission | No | No |
+| Agent timeout | Yes | Yes |
+| Verification | Not reached | 213 passed, 3 failed, 13 skipped |
+| Successful repairs | 0 | 0 |
+| Trace-reported prompt/completion tokens | 80,651 / 4,049 | 59,858 / 4,357 |
+
+The candidate used a line-number search and a bounded read to reach the target implementation. It created a patch but dropped existing host-with-port handling; the verifier found regressions. The agent timed out with a test command in flight, so it did not receive that result or submit explicitly. The harness recovered its working-tree diff and ran verification separately. The report's top-level `passed=true` means the pipeline reached a test outcome; the authoritative repair result is `evaluation.results.agent.resolved=false`.
+
+This is one unseeded draw per condition on a selected development pilot. Reduced navigation/call counts are proxy observations, not proof of better repair success or a causal weight mechanism. Keep both outcomes; do not promote a winner from this comparison. Token totals are trace-reported and may omit a cancelled in-flight response; they are not paid API charges.
+
+Next: choose a small fixed panel from the frozen development pool, check its grader controls, and compare the baseline and pagination candidate under matched budgets. If the reference one-minute budget is changed, create a separate experiment and rerun both conditions at the same new budget after checking host limits and cost. Preserve the 68 reserved validation issues. Confirm adapter deployment before any adaptation; ask for Ultra before weight interpretation or editing. No weight experiment or novel research finding is established by these pilots.
