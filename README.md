@@ -9,7 +9,7 @@ configs/                Run plans, model/source identifiers, and cost assumption
 docs/
   operations/           Setup instructions and run/spend ledger
   research/             Strategy, baseline notes, and official-asset checksums
-requirements/           Local tooling dependency lock
+requirements/           Client lock, official wheel hashes, and runtime recipes
 infrastructure/         Modal runners and private Kaggle runtime diagnostics
 src/gemma4_lab/          Python orchestration and asset preparation
 submissions/baseline/   Editable YAML agent configuration and prompts
@@ -48,6 +48,19 @@ Kaggle authentication and competition access have been verified. For a fresh mac
 `inventory` lists all pages. `fetch` downloads at most 25 MiB of task descriptions, sample agent text, and three small harness wheels; it excludes weights and dummy adapters. `verify` checks recorded sizes and SHA-256 hashes. `prepare-baseline` copies the official sample, selects E4B for every agent, and removes incompatible 31B adapter references while preserving prompts, sampling, and evaluation settings. It refuses to overwrite an existing candidate.
 
 These commands do not launch Modal compute or execute downloaded code. The prepared YAML still requires validation with the official remote harness before submission.
+
+## Run the prepared baseline
+
+Use the authenticated account and staged checkpoint described in [setup](docs/operations/setup.md). Record a new allocation in the [run ledger](docs/operations/run-log.md) before remote execution. The initial runner deliberately permits only one public development issue.
+
+```sh
+.venv/bin/gemma4-lab fetch-runtime
+.venv/bin/gemma4-lab --task-id requests_7505 fetch-task
+MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/serve_smoke.py --task-id requests_7505 --controls-only
+MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/serve_smoke.py --task-id requests_7505
+```
+
+The first remote command runs CPU grader controls. The second allocates one L4 only after matching controls pass. It preserves the baseline's one-minute/ten-tool-call settings, disables outbound networking, and records traces and test results under ignored `artifacts/baseline/`. Reference solutions are excluded from the agent invocation. Running the script without a task performs only a synthetic tool protocol check; `--build-only` allocates no GPU. These are development checks, with final candidates still requiring the official Kaggle environment.
 
 ## Experiment plan
 
