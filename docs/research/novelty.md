@@ -24,6 +24,8 @@ The subsequent [fixed development panel](development-panel-v1.md) retained two q
 
 The matched three-minute follow-up on 4 November again produced 0/2 repairs for each condition, despite removing session timeouts in these draws. Traces expose dismissed failing tests, exhausted tool-call budgets, and an analyzer's unavailable-tool call. These are behavioral development observations, not a novel method or a causal weight explanation. Generic prompt/workflow controls and scorer-compatible adapter validation must precede any weight-intervention claim; no original paper contribution is established.
 
+The feedback-only prompt screen on 4 November also solved 0/2 against that historical baseline. One case passed its visible tests but failed independent verification; the other attempted corrections/retesting but still submitted a syntax error. This single development screen does not establish a causal mechanism, repair gain, or novelty. The pinned adapter interface was audited without tensor work; runtime compatibility remains unverified.
+
 ## Candidate research question
 
 Do targeted weight interventions improve multi-turn software-repair success under a fixed inference-time budget, and do any behavioral gains transfer across repositories through the competition's quantized-base-plus-adapter serving path?
