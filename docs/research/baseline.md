@@ -71,3 +71,14 @@ The candidate used a line-number search and a bounded read to reach the target i
 This is one unseeded draw per condition on a selected development pilot. Reduced navigation/call counts are proxy observations, not proof of better repair success or a causal weight mechanism. Keep both outcomes; do not promote a winner from this comparison. Token totals are trace-reported and may omit a cancelled in-flight response; they are not paid API charges.
 
 Next: choose a small fixed panel from the frozen development pool, check its grader controls, and compare the baseline and pagination candidate under matched budgets. If the reference one-minute budget is changed, create a separate experiment and rerun both conditions at the same new budget after checking host limits and cost. Preserve the 68 reserved validation issues. Confirm adapter deployment before any adaptation; ask for Ultra before weight interpretation or editing. No weight experiment or novel research finding is established by these pilots.
+
+## Adapter serving interface audit, 4 November
+
+Runtime adapter compatibility is still unverified. The following observations come from reading pinned source files, without importing ML runtimes, interpreting learned tensors, constructing an adapter, or changing any serving setting:
+
+- Our shared `src/gemma4_lab/remote_serving.py` explicitly sets `enable_lora=False`. The completed inference and repair attempts therefore establish no adapter-loading or adapter-effect evidence.
+- The pinned vLLM 0.19.1 `vllm/model_executor/models/gemma4_mm.py` declares `Gemma4ForConditionalGeneration` with `SupportsLoRA` at lines 883–899. That interface declaration does not establish that a particular adapter works with the approved E4B compressed-tensors checkpoint.
+- Official starter notebook cell 8 discovers adapters, enables LoRA when adapters exist, sizes adapter count/rank from discovery, and passes the manifest to `VllmServer`. The pinned `adk_submission/server.py` builds the corresponding adapter CLI arguments at lines 759–798 and registers adapter names at lines 397–421. Its rank value of 128 is a fallback; detected ranks are right-sized/rounded in code, so this value alone is not evidence of a universal rank permission or limit.
+- A later compatibility experiment must preserve the approved base/wheels, follow that discovery/registry path, validate the submission, and demonstrate that requests reach and use the intended adapter. A listed model name or successful YAML compilation alone is insufficient. The final candidate still needs the official Kaggle scorer environment.
+
+Pinned wheel identifiers, source-member hashes, line references, and starter-notebook hash are saved in ignored `artifacts/runtime-validation/adapter-interface-audit.json`. This is an engineering audit, not a weight diagnosis, edit design, runtime success, or novelty claim. The user's Ultra checkpoint remains in force before weight work.
