@@ -26,6 +26,10 @@ The matched three-minute follow-up on 4 November again produced 0/2 repairs for 
 
 The feedback-only prompt screen on 4 November also solved 0/2 against that historical baseline. One case passed its visible tests but failed independent verification; the other attempted corrections/retesting but still submitted a syntax error. This single development screen does not establish a causal mechanism, repair gain, or novelty. The pinned adapter interface was audited without tensor work; runtime compatibility remains unverified.
 
+The subsequent [controlled adapter probe](adapter-compatibility.md) established application through the pinned Modal compiler/resolver/serving path for one rank-8 E4B projection. Zero/base controls matched in the measured lists, all three active effects passed the fixed threshold, and both compiled-agent routes responded. This verifies documented LoRA functionality for the tested configuration; it is an engineering prerequisite, not a novel method, repair improvement, or causal circuit result. Full Kaggle scorer-environment validation remains pending before repair adaptation.
+
+An additional author-post lead surfaced on 4 November: [Scaffolding helps the smallest Gemma 4 agent, not the larger ones](https://medium.com/@toeda/scaffolding-helps-the-smallest-gemma-4-agent-not-the-larger-ones-63da369962b0). Full review is pending; no results from that post are relied on here. Include it in the next claim-time review rather than treating generic E4B scaffolding or prompt controls as novel.
+
 ## Candidate research question
 
 Do targeted weight interventions improve multi-turn software-repair success under a fixed inference-time budget, and do any behavioral gains transfer across repositories through the competition's quantized-base-plus-adapter serving path?
