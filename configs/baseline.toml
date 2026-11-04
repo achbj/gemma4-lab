@@ -24,6 +24,7 @@ additional_spending_limit_eur = "100.00"
 # CPU is charged per physical core, equivalent to two vCPUs.
 # Image builds, data staging, storage, and egress are separate from this estimate.
 [rates_usd_per_second]
-gpu = "0.000222"
-cpu_core = "0.0000131"
-memory_gib = "0.00000222"
+# Refreshed through ach-bj100 billing rates on 2026-11-04; rounded upward.
+gpu = "0.000222223"
+cpu_core = "0.000013139"
+memory_gib = "0.000002223"

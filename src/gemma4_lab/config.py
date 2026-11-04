@@ -32,8 +32,9 @@ def estimate_run(config: dict[str, Any]) -> dict[str, Any]:
     modal = config["modal"]
     if modal["profile"] != "ach-bj100":
         raise ValueError("Only Modal profile ach-bj100 is authorized for this project")
-    if modal["gpu"] != "L4":
-        raise ValueError("This rate card is for an L4; update the plan before changing GPU")
+    checked_hourly_rates = {"L4": Decimal("0.80"), "A10G": Decimal("1.10")}
+    if modal["gpu"] not in checked_hourly_rates:
+        raise ValueError("Only documented L4/A10G baseline plans are supported")
     for field in (
         "gpu_count",
         "cpu_cores",
@@ -48,6 +49,8 @@ def estimate_run(config: dict[str, Any]) -> dict[str, Any]:
     if modal["gpu_count"] != 1 or modal["max_containers"] != 1:
         raise ValueError("The initial baseline is limited to one container with one GPU")
     rates = config["rates_usd_per_second"]
+    if _positive_decimal(rates["gpu"], "rate.gpu") * 3600 < checked_hourly_rates[modal["gpu"]]:
+        raise ValueError("GPU rate underestimates the checked hourly rate for this hardware")
     per_second = sum(
         _positive_decimal(rates[rate], f"rate.{rate}") * modal[quantity]
         for rate, quantity in (

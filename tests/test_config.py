@@ -16,6 +16,13 @@ class RunPlanTests(unittest.TestCase):
         self.assertLess(Decimal(result["estimated_compute_usd"]), Decimal("2"))
         self.assertFalse(result["launches_compute"])
 
+    def test_a10g_cannot_reuse_the_cheaper_l4_rate(self):
+        self.config["modal"]["gpu"] = "A10G"
+        with self.assertRaisesRegex(ValueError, "underestimates"):
+            estimate_run(self.config)
+        self.config["rates_usd_per_second"]["gpu"] = "0.000305556"
+        self.assertLess(Decimal(estimate_run(self.config)["estimated_compute_usd"]), Decimal("2"))
+
     def test_wrong_account_and_multiple_gpus_are_rejected(self):
         self.config["modal"]["profile"] = "other-account"
         with self.assertRaisesRegex(ValueError, "authorized"):
