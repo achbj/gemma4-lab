@@ -18,6 +18,10 @@ The approved model source is `google/gemma-4/Other/gemma-4-e4b-it-qat-w4a16-ct/2
 
 ## Remote compatibility work remaining
 
+Compiler milestone passed on 4 November 2026: Python 3.12.10, official compiler/ADK wheels, and an E4B agent tree compiled with inert registries. [Modal run](https://modal.com/apps/ach-bj100/main/ap-wqvNIM6OhQjk964urGqQ9w), runner commit `3d6b62c`, image `im-xXa2wrFOMCoMLyPzVJ2tWO`. The raw report and resolved package inventory are saved at `artifacts/runtime-validation/20261104T123141Z-compiler.json`. Real tool implementations, competition limits, inference, and scoring were not exercised.
+
+All 41 official runtime wheels are now cached (880,842,601 bytes) with hashes in `requirements/remote-runtime-wheels.json`. The official vLLM wheel metadata pins `torch==2.10.0`, `torchaudio==2.10.0`, `torchvision==0.25.0`, `compressed-tensors==0.15.0.1`, and FlashInfer 0.6.6. Preserve these constraints when constructing the separate serving image.
+
 1. Reproduce a Python 3.12 Linux environment using the official wheelhouse and compatible base dependencies. The wheelhouse contains `vllm==0.19.1` and `transformers==5.13.1`; exact wheel hashes matter.
 2. Prove checkpoint load and a tool-call round trip before evaluating an issue. Use the starter's Gemma tool/reasoning parsers, 32,768-token context, and documented environment settings.
 3. Verify the YAML using the official compiler/validator. Current local tests cover preparation, asset integrity, and spending estimates; they do not establish acceptance by the scorer.
