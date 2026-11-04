@@ -29,3 +29,12 @@
 - Choose GPU, timeout, and exact command after reading the current official harness and model requirements. Record startup/download costs as well as inference costs.
 - Success evidence: exact checkpoint and package versions, task ID, raw trace, candidate patch, test outcome, elapsed time, and estimated/observed cost.
 - Weight interpretation/editing requires the user's Ultra checkpoint first.
+
+## 4 November 2026 — compiler validation allocation
+
+- Rules review and dated novelty register are committed under `docs/research/`. No original research claim is established.
+- The starter's exact `gcr.io/kaggle-private-byod/python` image digest returned an authentication challenge; the registry's anonymous token endpoint returned HTTP 403. Do not spend a Modal build trying to pull it anonymously.
+- Planned next run: CPU-only Python 3.12 validation using the official `adk-submission==0.2.13`, `google-adk==1.36.1`, and `google-genai==2.11.0` wheels, pinned by SHA-256. Their dependencies are resolved in a separate development image and recorded after the run.
+- Scope: directory/schema checks and agent-tree compilation with inert model/tool registries. This does not validate real tool implementations, inference, adapters, or full scorer parity.
+- Bounds: one container, one requested physical CPU core, 2 GiB requested RAM, 120-second function timeout, 600-second startup timeout, two-second scale-down window, and zero function retries. Requested startup/function/idle compute estimates about USD 0.0127; reserve USD 0.10 including this small build. Actual billing and build overhead may differ; this reserve is part of the initial USD 2 allocation.
+- No model weights, reference task patches, credentials, or external model APIs are needed for this check. Only the submission text and public official wheels are sent to the user's Modal workspace.
