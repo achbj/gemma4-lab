@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gemma4-lab"
+version = "0.1.0"
+description = "Reproducible experiments for the Gemma 4 Developer Agent competition"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "modal==1.6.3",
+    "kaggle==2.2.5",
+    "huggingface_hub==2.4.0",
+    # Kaggle 2.2.5 imports six without declaring it.
+    "six==1.17.0",
+]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.14"]
+
+[project.scripts]
+gemma4-lab = "gemma4_lab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
