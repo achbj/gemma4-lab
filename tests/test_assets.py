@@ -12,6 +12,7 @@ from gemma4_lab.assets import (
     safe_destination,
     select_bootstrap,
     select_runtime_wheels,
+    select_task_fixture,
     sha256,
     verify_assets,
     write_json,
@@ -32,6 +33,21 @@ def sample_inventory():
 
 
 class AssetTests(unittest.TestCase):
+    def test_task_fixture_is_scoped_and_size_bounded(self):
+        task = {"repo": "psf/requests", "base_commit": "abc", "instance_id": "requests_1"}
+        names = [
+            "snapshots/requests_1.tgz",
+            "graphs/requests_abc.json",
+            "embeddings/requests_abc.npz",
+            "wheels/pytest.whl",
+            "snapshots/unrelated.tgz",
+        ]
+        inventory = {"competition": [{"name": name, "size_bytes": 10} for name in names]}
+        self.assertEqual(len(select_task_fixture(inventory, task)), 4)
+        inventory["competition"][0]["size_bytes"] = 200 * 1024 * 1024
+        with self.assertRaisesRegex(ValueError, "allocation"):
+            select_task_fixture(inventory, task)
+
     def test_runtime_inventory_rejects_nonwheels_oversize_and_traversal(self):
         for wheel in (
             {"name": "model.safetensors", "size_bytes": 1},

@@ -15,6 +15,7 @@ from typing import Any
 
 MAX_BOOTSTRAP_BYTES = 25 * 1024 * 1024
 MAX_RUNTIME_BYTES = 1024 * 1024 * 1024
+MAX_FIXTURE_BYTES = 100 * 1024 * 1024
 HARNESS_PACKAGES = ("adk_eval_core-", "adk_submission-", "swegemma-")
 
 
@@ -221,5 +222,70 @@ def fetch_runtime_wheels(
             raise ValueError(f"Runtime download differs from inventory: {item['name']}")
         records.append({**item, "sha256": sha256(destination)})
     manifest = {"source": sources["wheelhouse"], "wheels": records}
+    write_json(manifest_path, manifest)
+    return manifest
+
+
+def select_task_fixture(inventory: dict[str, Any], task: dict[str, Any]) -> list[dict[str, Any]]:
+    stem = f"{task['repo'].split('/')[-1]}_{task['base_commit']}"
+    required = {
+        f"snapshots/{task['instance_id']}.tgz",
+        f"graphs/{stem}.json",
+        f"embeddings/{stem}.npz",
+    }
+    selected = [
+        item
+        for item in inventory["competition"]
+        if item["name"] in required or item["name"].startswith("wheels/")
+    ]
+    if not required.issubset({item["name"] for item in selected}):
+        raise ValueError("Task fixture is missing its snapshot, graph, or embeddings")
+    for item in selected:
+        safe_destination(Path("/fixtures"), item["name"])
+    if sum(item["size_bytes"] for item in selected) > MAX_FIXTURE_BYTES:
+        raise ValueError("Task fixture exceeds the 100 MiB allocation")
+    return selected
+
+
+def fetch_task_fixture(
+    root: Path,
+    sources: dict[str, str],
+    task_id: str,
+    manifest_path: Path,
+) -> dict[str, Any]:
+    inventory = read_json(root / "inventory.json")
+    if inventory["sources"] != sources:
+        raise ValueError("Cached inventory belongs to different sources")
+    task = next(
+        (
+            json.loads(line)
+            for line in (root / "competition/tasks.jsonl").read_text().splitlines()
+            if line.strip() and json.loads(line)["instance_id"] == task_id
+        ),
+        None,
+    )
+    if task is None:
+        raise ValueError(f"Unknown public task: {task_id}")
+    selected = select_task_fixture(inventory, task)
+    destination_root = root / "evaluation"
+    records = []
+    api = None
+    for item in selected:
+        path = safe_destination(destination_root, item["name"])
+        if not path.is_file() or path.stat().st_size != item["size_bytes"]:
+            if api is None:
+                api = _kaggle_client()
+            with redirect_stdout(sys.stderr):
+                api.competition_download_file(
+                    sources["competition"],
+                    item["name"],
+                    path=str(destination_root),
+                    quiet=True,
+                    unzip=True,
+                )
+        if not path.is_file() or path.stat().st_size != item["size_bytes"]:
+            raise ValueError(f"Task fixture differs from inventory: {item['name']}")
+        records.append({**item, "sha256": sha256(path)})
+    manifest = {"source": sources["competition"], "task_id": task_id, "files": records}
     write_json(manifest_path, manifest)
     return manifest

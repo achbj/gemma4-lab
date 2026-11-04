@@ -8,6 +8,7 @@ from pathlib import Path
 from gemma4_lab.assets import (
     fetch_bootstrap,
     fetch_runtime_wheels,
+    fetch_task_fixture,
     refresh_inventory,
     verify_assets,
 )
@@ -18,9 +19,18 @@ from gemma4_lab.submission import prepare_baseline
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=PROJECT_ROOT / "configs/baseline.toml")
+    parser.add_argument("--task-id", help="Public development task for fetch-task")
     parser.add_argument(
         "command",
-        choices=("plan", "inventory", "fetch", "fetch-runtime", "verify", "prepare-baseline"),
+        choices=(
+            "plan",
+            "inventory",
+            "fetch",
+            "fetch-runtime",
+            "fetch-task",
+            "verify",
+            "prepare-baseline",
+        ),
     )
     args = parser.parse_args()
     root = PROJECT_ROOT / "data/raw/official"
@@ -46,6 +56,17 @@ def main() -> int:
                 "cached_wheels": len(manifest["wheels"]),
                 "total_bytes": sum(item["size_bytes"] for item in manifest["wheels"]),
             }
+        elif args.command == "fetch-task":
+            if not args.task_id or Path(args.task_id).name != args.task_id:
+                raise ValueError("fetch-task requires a safe --task-id")
+            verify_assets(root, manifest_path)
+            manifest = fetch_task_fixture(
+                root,
+                config["sources"],
+                args.task_id,
+                PROJECT_ROOT / "docs/research/fixtures" / f"{args.task_id}.json",
+            )
+            result = {"task_id": args.task_id, "files": len(manifest["files"])}
         elif args.command == "verify":
             result = {"verified_files": verify_assets(root, manifest_path)}
         else:
