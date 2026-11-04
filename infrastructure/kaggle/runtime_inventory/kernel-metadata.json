@@ -1,0 +1,16 @@
+{
+  "id": "bjacharya/gemma4-runtime-inventory-20261104",
+  "title": "Gemma4 Runtime Inventory 20261104",
+  "code_file": "export_runtime.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "dataset_sources": ["metric/gemma-4-developer-agent-wheelhouse"],
+  "competition_sources": ["gemma-4-developer-agent"],
+  "model_sources": [],
+  "docker_image_pinning_type": "original",
+  "docker_image": "gcr.io/kaggle-private-byod/python@sha256:37c64f7dd9c54116ecd1bcc88817c5469b88387388fade02bfa8bf3fc647d461"
+}
