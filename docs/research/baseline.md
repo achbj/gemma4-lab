@@ -14,7 +14,7 @@ The official starter's model-selection procedure is followed for `submissions/ba
 
 The sample evaluation budget is one minute and ten tool calls per issue. This is a compatibility reference, not a tuned competition configuration. Any later budget or prompt change must be a named experiment with a comparison against this reference.
 
-The approved model source is `google/gemma-4/Other/gemma-4-e4b-it-qat-w4a16-ct/2`, exactly as listed in the starter's input metadata. Its file listing reports a single 11,513,861,828-byte weight file. Model metadata was listed; weights have not been downloaded or inspected. Single-L4 fit must be measured, not inferred from the E4B name.
+The approved model source is `google/gemma-4/Other/gemma-4-e4b-it-qat-w4a16-ct/2`, exactly as listed in the starter's input metadata. Its single weight file is 11,513,861,828 bytes. The unmodified checkpoint is staged in the private Modal cache with source hashes. No tensor-level inspection or editing has occurred.
 
 ## Remote compatibility work remaining
 
@@ -24,12 +24,13 @@ All 41 official runtime wheels are now cached (880,842,601 bytes) with hashes in
 
 The private CPU [reference inventory run](https://www.kaggle.com/code/bjacharya/gemma4-runtime-inventory-20261104) completed successfully against the exact starter-image digest. Its returned image metadata matched the requested digest. The resulting 970-package inventory is recorded in `requirements/kaggle-reference-versions.json`: Python 3.12.13, Torch 2.10.0+cu128, Starlette 0.52.1, FastAPI 0.136.1, NumPy 2.0.2, and LiteLLM 1.82.4.
 
+The one-L4 serving milestone passed in [Modal run `ap-X5bA7whrQaI6m0tYq4rZJ1`](https://modal.com/apps/ach-bj100/main/ap-X5bA7whrQaI6m0tYq4rZJ1): Python 3.12.10, server readiness in 221.77 seconds, total function time 225.46 seconds. E4B loaded with the starter's parsers and 32,768-token context setting, produced a native `get_status` call, and answered a synthetic tool result. Outbound networking was blocked. This short input establishes protocol compatibility and initial fit, not long-context capacity, successful repairs, or official scorer parity.
+
 Several supplied wheel metadata requirements are not satisfied even by that reference image after its `--no-deps` overlay. In particular, ADK's Starlette range and the supplied metrics wheel's range cannot both satisfy a fresh resolver. The Modal assembly therefore installs supporting dependencies separately, retains the observed Starlette/FastAPI/NumPy/LiteLLM versions, and overlays all supplied wheels without dependency resolution, as the starter does. The supporting recipe is `requirements/remote-runtime-base.txt`; exact resulting packages must be recorded with each run. This is a documented development reconstruction, not a claim of complete scorer parity. The CUDA wheel source follows the [official PyTorch 2.10.0 installation instructions](https://pytorch.org/get-started/previous-versions/).
 
-1. Reproduce a Python 3.12 Linux environment using the official wheelhouse and compatible base dependencies. The wheelhouse contains `vllm==0.19.1` and `transformers==5.13.1`; exact wheel hashes matter.
-2. Prove checkpoint load and a tool-call round trip before evaluating an issue. Use the starter's Gemma tool/reasoning parsers, 32,768-token context, and documented environment settings.
-3. Verify the YAML using the official compiler/validator. Current local tests cover preparation, asset integrity, and spending estimates; they do not establish acceptance by the scorer.
-4. Attempt one public Requests issue and record the raw trace, patch, verification result, exact package versions, runtime, and cost. Start with `requests_7505` only if its repository/test setup passes the reference controls.
-5. Verify adapter application separately before adapting weights. Weight interpretation and editing require the user's Ultra checkpoint.
+1. Validate real issue scoring with the official harness and competition limits. The first CPU controls found missing pytest in the reconstructed base; neither the unchanged nor reference-patch control reached tests. This is an infrastructure failure, not an agent result. Restore the observed pytest 8.4.2 and supporting test packages from the reference inventory in `requirements/remote-evaluation-base.txt`; preserve all supplied model/harness wheels.
+2. Attempt public development issue `requests_7505` only after the unchanged/reference controls distinguish failure from success. Record the raw trace, patch, verification result, exact packages, submission hashes, runtime, and cost. Reference answers must never be mounted into the agent invocation.
+3. Verify adapter application separately before adapting weights. Weight interpretation and editing require the user's Ultra checkpoint.
+4. Recheck final candidates using the official Kaggle runtime and scorer hardware before making submission-compatibility claims.
 
-The initial Modal plan uses one L4, whereas the scorer uses four L4s. This development configuration must be labelled separately, and final candidates must be rechecked in the official Kaggle environment. No benchmark success or model improvement has been measured yet.
+The initial Modal plan uses one L4, whereas the scorer uses four L4s. This development configuration must be labelled separately. No benchmark success or model improvement has been measured yet.
