@@ -25,8 +25,8 @@ def evaluate_reference_task(task_payload: dict, models, *, controls_only: bool =
     settings = yaml.safe_load(Path("/submission/eval_config.yaml").read_text())["evaluation"]
     limits, generation = build_submission_limits()
     validate_directory("/submission", limits=limits)
-    results_dir = Path("/runs")
-    results_dir.mkdir(exist_ok=True)
+    results_dir = Path("/runs") / task.instance_id
+    results_dir.mkdir(parents=True, exist_ok=True)
     config = EvalConfig(
         # evaluate_task accepts the task in memory; no answers file is mounted.
         tasks_path=fixture_root / "not-mounted-tasks.jsonl",
