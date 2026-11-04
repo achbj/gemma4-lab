@@ -41,6 +41,15 @@ MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=baseline-3m .venv/bin/modal run infrast
 
 Require the same two qualified cases before launching either GPU condition. Run the earlier A10G commands separately with `GEMMA4_CANDIDATE=baseline-3m` and then `GEMMA4_CANDIDATE=pagination-v1-3m`, confirming the first app stopped. Reports remain under the same frozen panel directory, with distinct timestamps and candidate names. A longer time limit leaves the ten-tool-call cap unchanged; report whichever limit is reached.
 
+### Feedback-only development screen
+
+`feedback-v1-3m` changes only the root test-feedback policy relative to `baseline-3m`. Its separate allocation uses the saved three-minute baseline as a historical control. Existing three-minute CPU controls may be reused only if the runner's image, fixture, source, evaluation, and sampling identity checks pass; a prompt change does not change verification. Keep the fixed cases and exclusions. This screen is exploratory, with no fresh baseline draw.
+
+```sh
+MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=feedback-v1-3m .venv/bin/modal run infrastructure/modal/validate_compiler.py
+MODAL_PROFILE=ach-bj100 GEMMA4_RUN_CONFIG=configs/baseline-a10g.toml GEMMA4_CANDIDATE=feedback-v1-3m .venv/bin/modal run infrastructure/modal/serve_smoke.py --panel configs/development-panel-v1.json
+```
+
 The batch reserves configured agent time, 300 seconds for verification, 120 seconds for setup, and 30 seconds for shutdown before starting another case. Its Modal function still has a hard execution timeout; requested CPU/RAM and estimated cost are not provider billing caps. Preserve skipped/incomplete cases as resource failures instead of silently dropping them.
 
 ## Reports and stopping
