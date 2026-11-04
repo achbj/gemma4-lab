@@ -62,6 +62,14 @@ MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/serve_smoke.py 
 
 The first remote command runs CPU grader controls. The second allocates one L4 only after matching controls pass. It preserves the baseline's one-minute/ten-tool-call settings, disables outbound networking, and records traces and test results under ignored `artifacts/baseline/`. Reference solutions are excluded from the agent invocation. Running the script without a task performs only a synthetic tool protocol check; `--build-only` allocates no GPU. The [baseline findings](docs/research/baseline.md) document a per-sandbox import-path adaptation needed for the development subprocess backend. Final candidates still require the official Kaggle environment.
 
+If L4 capacity is unavailable, the recorded A10G development fallback uses the same agent/model settings and a separate rate card:
+
+```sh
+MODAL_PROFILE=ach-bj100 GEMMA4_RUN_CONFIG=configs/baseline-a10g.toml .venv/bin/modal run infrastructure/modal/serve_smoke.py --task-id requests_7427
+```
+
+Check its allocation first and cancel any earlier request before switching. Scheduling time is separate from Modal's startup/execution limits; monitor the request and cancel it if still unscheduled after 15 minutes. Leave no unattended queued app or deployment. Keep comparisons on matched hardware and budgets.
+
 ## Experiment plan
 
 - [Baseline and compatibility findings](docs/research/baseline.md)
