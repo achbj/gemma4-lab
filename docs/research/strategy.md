@@ -37,6 +37,14 @@ Current small-model standings could not be retrieved in this investigation. This
 
 Deliverable: a working baseline, deployment proof for adapters, and a ranked failure analysis. If serving is blocked, resolve that before training.
 
+## Frozen evaluation boundary
+
+`configs/evaluation-split.json`, frozen on 4 November, partitions all 129 public tasks using only instance IDs, repository names, and base commits. Its source SHA-256 identifies the exact task file. Requests `7505` and `7427`, including any shared base commits, are pilot cases because their verification behavior has been inspected. They are excluded from reserved validation.
+
+Requests and Rich form the development pool; HTTPX and FastAPI are reserved for a repository-level transfer check. IDs are unique and shared repository/base-commit groups cannot cross partitions. Choose a bounded screening panel from development before adaptation. Do not inspect reserved problem statements, reference patches, tests, or agent outcomes to design prompts, select edits, or tune settings. Host-side verification data is used only to grade frozen candidates.
+
+Report infrastructure qualification and exclusions, including the failed pilot controls; do not silently replace inconvenient issues or describe this selected pilot as an unbiased success-rate estimate. Keep time/hardware settings matched across comparisons and preserve exact candidate hashes. A budget adjustment becomes a separate experiment, with its own baseline at the same adjusted budget.
+
 ## Experiments, in priority order
 
 | Experiment | Question | Decision criterion |
