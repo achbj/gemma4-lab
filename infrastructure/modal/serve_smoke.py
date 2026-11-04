@@ -228,11 +228,14 @@ def serve_smoke() -> dict:
         result["error_type"] = type(exc).__name__
         result["error"] = str(exc)
         result["traceback"] = traceback.format_exc()
+        if getattr(exc, "output", None):
+            result["server_log"] = str(exc.output)[-150000:]
     finally:
         if server is not None:
-            server.stop()
             if Path(server.log_path).is_file():
                 result["server_log"] = Path(server.log_path).read_text(errors="replace")[-150000:]
+            # The official stop() removes its temporary log file.
+            server.stop()
     result["elapsed_seconds"] = time.monotonic() - started
     return result
 
