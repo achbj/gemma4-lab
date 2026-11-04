@@ -55,3 +55,11 @@
 - Preserve every supplied wheel/version. Obtain the starter's base-package inventory instead of silently upgrading or downgrading a research dependency. Saved failure log: `artifacts/runtime-validation/serving-image-build.log`; failed final image: `im-LI2XG4qhUZcE9j2ZkR2tJt`.
 - Private CPU-only Kaggle diagnostic `bjacharya/gemma4-runtime-inventory-20261104`, version 1, was started with the starter's exact image digest and official wheel overlay. It exports package metadata before/after installation, does not import a tensor runtime, uses no GPU, and is not a competition submission.
 - Latest observed workspace billing snapshot: USD 0 billed; USD 0.01 applied credits; ephemeral-app usage USD 0.01137950. Billing can lag and this is not a remaining-credit report. No GPU inference or software-repair score exists yet.
+
+## 4 November 2026 — serving image ready; GPU probe allocation
+
+- The private Kaggle inventory completed and its actual image digest matched the starter. Observed package metadata is committed in `requirements/kaggle-reference-versions.json`.
+- Portable assembly was corrected to use the observed Starlette/OpenTelemetry family and the starter's `--no-deps` official wheel overlay. All official wheel hashes remain unchanged. Nonbundled supporting packages are a documented development reconstruction, not full scorer parity.
+- CPU-only build `ap-BH5EsW1YYA5XqGXXSjH8t9` succeeded, including compiler/Transformers/LiteLLM import checks. Serving image: `im-gZnS5ebpNKdzlneWpOhl87`.
+- Next run uses the committed serving probe: one L4, two requested physical CPU cores, 16 GiB requested RAM, 1,800-second function timeout, 900-second startup timeout, two-second scale-down window, zero function retries, and outbound networking blocked. The earlier requested-compute estimate is USD 0.766611, within the initial USD 2 allocation including small CPU-stage reserves.
+- Scope: checkpoint load, one native tool call, and a synthetic local tool-result follow-up. No issue, reference patch, training data, adapter, or weight change is involved. A pass is protocol evidence, not a repair score or novel paper result.
