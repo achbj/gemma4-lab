@@ -10,6 +10,7 @@ docs/
   operations/           Setup instructions and run/spend ledger
   research/             Strategy, baseline notes, and official-asset checksums
 requirements/           Local tooling dependency lock
+infrastructure/         Modal runners and private Kaggle runtime diagnostics
 src/gemma4_lab/          Python orchestration and asset preparation
 submissions/baseline/   Editable YAML agent configuration and prompts
 tests/                 Offline regression checks
@@ -51,6 +52,8 @@ These commands do not launch Modal compute or execute downloaded code. The prepa
 ## Experiment plan
 
 - [Baseline and compatibility findings](docs/research/baseline.md)
+- [Rules and experiment decisions](docs/research/rules-and-decisions.md)
+- [Dated novelty register](docs/research/novelty.md)
 - [Prize strategy and schedule](docs/research/strategy.md)
 - [Run and spending ledger](docs/operations/run-log.md)
 - [Working agreement](AGENTS.md)
