@@ -78,8 +78,32 @@ Baseline model readiness/function total were 196.42/673.46 seconds; pagination w
 - Baseline, runner `9946d9f`, [Modal app](https://modal.com/apps/ach-bj100/main/ap-kCiHlguSlyaGWxJesLJShh): `artifacts/panels/development-panel-v1/20261104T203042Z-baseline-3m.json`.
 - Pagination, runner `ebb35ff`, [Modal app](https://modal.com/apps/ach-bj100/main/ap-a3Sujk7lOzieocGIOuzEbj): `artifacts/panels/development-panel-v1/20261104T204852Z-pagination-v1-3m.json`.
 
-## Current decision
+## Decision after the three-minute comparison
 
 Do not promote either candidate or keep increasing limits without a defined control. More task time did not produce a repair in these runs. The next useful control is a generic prompt/workflow change that requires acting on relevant failing-test output, reserves calls for editing and verification, respects each subagent's declared tools, and checks for a nonempty patch. Test those changes separately under matched budgets before attributing failures to weights. More cases and repeated measurements will be needed to assess transfer and variance.
 
 The longer-budget comparison and observed workflow failures are development findings, not a novel method. No weight work has occurred. Scorer-compatible adapter validation and the user's confirmed Ultra switch remain prerequisites for a weight intervention; keep the reserved validation partition untouched until a candidate is frozen.
+
+## Feedback-only development screen, 4 November
+
+`feedback-v1-3m` copies `baseline-3m` and changes only the root prompt's targeted-test feedback policy: read exit codes, correct failures related to the task/edit, require evidence before dismissing a failure as pre-existing, and describe unresolved verification honestly. No task-specific code/path/example was added. The analyzer, navigation, tools, sampling, time/call budgets, official wheels, checkpoint, A10G hardware, and runtime image remain unchanged.
+
+This is an exploratory screen against the saved three-minute baseline (0/2), with no fresh baseline draw. Existing CPU controls are reused only after source/fixture/image/evaluation/sampling identity checks; the same two Rich cases and both Requests exclusions are retained. Compiler, reference-report hashes, and preflight checks are preserved in `artifacts/runtime-validation/feedback-v1-preflight.json`. None of the 68 reserved validation cases was evaluated.
+
+| Case | LLM / counted tool calls | Submitted patch | Visible targeted tests | Independent verification | Case seconds |
+| --- | --- | --- | --- | --- | --- |
+| `rich_3535` | 10 / 8 | 756 characters | 7 passed | Import error, exit 2 | 68.63 |
+| `rich_3480` | 11 / 9 | 470 characters | Collection errors before and after attempted correction | Syntax error, exit 2 | 99.01 |
+
+Result: **0/2 repairs**, with no session or call-budget termination. Both submissions were nonempty; neither was correct.
+
+- In `rich_3535`, the agent removed a regex helper and replaced its fast-path use with a direct width comparison. The visible tests passed, but verification imports the removed helper and failed. This is a patch regression, not a new environment exclusion. There was no failing-test feedback for the agent to respond to in this trajectory, so it does not test the intended response-to-failure mechanism.
+- In `rich_3480`, a replacement matched an incomplete source-line prefix and left trailing text, creating a syntax error. After a failing test, the agent attempted two further edits and reran the targeted test. Those replacements repeated the prefix mistake and made the line worse. The retest still failed; the agent nevertheless submitted and claimed a fix. A corrective-edit/retest sequence is observed, but repair success and honest interpretation of the final failure were not demonstrated. Its causal relationship to the prompt is unresolved in this single historical-control screen.
+
+Report: `artifacts/panels/development-panel-v1/20261104T211036Z-feedback-v1-3m.json`, runner `1f2f3b2`, [Modal app](https://modal.com/apps/ach-bj100/main/ap-saXf1R8NVLDS2KIlRvSuM7). Model readiness/function total: 249.12/422.19 seconds. The app and local CLI completed; final workspace inspection found no active project app or queued request.
+
+## Current decision
+
+Do not promote the feedback candidate or claim an improvement from attempted corrections. Keep this simple prompt control as a recorded negative repair result. The fixed panel is too small and already inspected to establish generalization; any later candidate needs fresh development evidence and a frozen validation decision.
+
+The next gate is adapter compatibility through the pinned official serving path, following the [read-only interface audit](baseline.md#adapter-serving-interface-audit-4-november). Runtime loading/effect remains unverified. Stop for the user's confirmed Ultra switch before constructing/applying adapter weights or designing a weight intervention, as required by the working agreement. No weight-level cause or novel method follows from these traces.
