@@ -10,12 +10,15 @@ Last checked: 4 November 2026. Status: exploratory; no novel result has been dem
 | [ValerioDolci/frontier-weight-edit](https://github.com/ValerioDolci/frontier-weight-edit), README blob `08ecf4d1a88a3cd6af851dc7d7fd3f3fced353ab` | Reports Gemma 4 12B translation edits, prompt/ablation/LoRA comparisons, held-out controls, and a separate Qwen edit surviving Q4_K_M quantization. These are author-reported experiments, not independently validated here. | Neither using Gemma, comparing with LoRA, nor demonstrating some quantization survival is sufficient novelty by itself. |
 | [Program-as-Weights](https://arxiv.org/abs/2607.02512) (2 July 2026) | A trained compiler produces parameter-efficient programs for a frozen interpreter. | Generating adapters from a natural-language specification is established adjacent work; distinguish its trained compiler from direct editing. |
 | [csinva/weight-space-programming-autoresearch](https://github.com/csinva/weight-space-programming-autoresearch) | Public autonomous weight-programming experiments were surfaced by search. Detailed audit remains pending. | A generic editing harness or autoresearch loop must not be presented as a new contribution without comparison. |
+| [Public grader/environment discussion](https://www.kaggle.com/competitions/gemma-4-developer-agent/discussion/747248) and its linked grader-rebuild notebook | Participants already report missing dependencies, package shadowing, and false positives on Requests, including `requests_7427`. This primary discussion was retrieved through indexed text on 4 November; the linked rebuild has not been audited here. | Our rediscovery and import-path correction are development validation, not an original resource contribution. |
 
 We still need a focused review of model editing and activation-steering literature before freezing any mechanism-level claim. Existing low-rank factorization is a deployment format, not our research novelty.
 
 ## Pilot status on 4 November
 
 The [baseline and pagination comparison](baseline.md#matched-pilot-prompt-control-no-repair-gain) produced zero successful repairs in both conditions on one selected issue. Generic pagination instructions reached an edit but introduced regressions. This is setup/development evidence, not a novel method, a successful intervention, or a weight-level finding. No weight analysis or edit has been performed. Broader matched controls and a fresh related-work review are required before choosing a paper claim; the Ultra checkpoint remains mandatory before weight work.
+
+Public [time/budget/thinking experiments](https://www.kaggle.com/competitions/gemma-4-developer-agent/discussion/747696) also surfaced on 4 November. Detailed audit is pending; a generic task-budget or reasoning-budget comparison must not be described as novel without it.
 
 ## Candidate research question
 
