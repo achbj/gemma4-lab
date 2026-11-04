@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 from gemma4_lab.remote_evaluation import fixture_identity
@@ -94,3 +95,38 @@ def save_report(path: Path, value: dict) -> None:
     temporary = path.with_suffix(".tmp")
     temporary.write_text(json.dumps(value, indent=2) + "\n")
     temporary.replace(path)
+
+
+def run_control_panel(root: Path, panel: dict, function, image_id: str, git_commit: str) -> Path:
+    """Run the four preregistered CPU controls and retain each result immediately."""
+    destination = (
+        root
+        / "artifacts/panels"
+        / panel["name"]
+        / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-controls.json")
+    )
+    report = {
+        "stage": "panel-grader-controls",
+        "panel": panel,
+        "panel_sha256": json_identity(panel),
+        "modal_image_id": image_id,
+        "git_commit": git_commit,
+        "cases": {},
+        "completed": False,
+    }
+    save_report(destination, report)
+    for task in load_task_payloads(root, panel["task_ids"]):
+        task_id = task["instance_id"]
+        identity = task_identity(root, task)
+        result = function.remote(task)
+        result["identity"] = identity
+        report["cases"][task_id] = result
+        save_report(destination, report)
+        print(
+            json.dumps({"stage": "grader-control", "task_id": task_id, "passed": result["passed"]})
+        )
+    report["completed"] = True
+    report["qualified_task_ids"] = [i for i in panel["task_ids"] if report["cases"][i]["passed"]]
+    report["passed"] = len(report["qualified_task_ids"]) >= panel["minimum_qualified_tasks"]
+    save_report(destination, report)
+    return destination

@@ -326,13 +326,32 @@ def serve_smoke(task_payload: dict | None = None) -> dict:
 
 
 @app.local_entrypoint()
-def main(build_only: bool = False, task_id: str = "", controls_only: bool = False):
+def main(
+    build_only: bool = False,
+    task_id: str = "",
+    controls_only: bool = False,
+    panel: str = "",
+):
     if build_only:
         print(json.dumps({"image": image.object_id, "gpu_allocated": False}))
         return
     launched_git_commit = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
     ).strip()
+    if panel:
+        if task_id or not controls_only:
+            raise ValueError("Panel mode currently requires --controls-only and no --task-id")
+        from gemma4_lab.panels import load_development_panel, run_control_panel
+
+        settings = load_development_panel(ROOT, ROOT / panel)
+        destination = run_control_panel(
+            ROOT, settings, validate_fixture, image.object_id, launched_git_commit
+        )
+        report = json.loads(destination.read_text())
+        print(json.dumps({"passed": report["passed"], "report": str(destination)}))
+        if not report["passed"]:
+            raise SystemExit(1)
+        return
     if controls_only and not task_id:
         raise ValueError("--controls-only requires --task-id")
     task_payload = None
