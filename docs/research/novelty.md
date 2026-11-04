@@ -20,6 +20,8 @@ The [baseline and pagination comparison](baseline.md#matched-pilot-prompt-contro
 
 Public [time/budget/thinking experiments](https://www.kaggle.com/competitions/gemma-4-developer-agent/discussion/747696) also surfaced on 4 November. Detailed audit is pending; a generic task-budget or reasoning-budget comparison must not be described as novel without it.
 
+The subsequent [fixed development panel](development-panel-v1.md) retained two qualified Rich cases and excluded two Requests cases after host-side controls. Both candidates solved 0/2. No repair gain, cross-repository transfer, or weight-level contribution follows from that result; the repository's infinite-loop task is not a model-weight diagnosis.
+
 ## Candidate research question
 
 Do targeted weight interventions improve multi-turn software-repair success under a fixed inference-time budget, and do any behavioral gains transfer across repositories through the competition's quantized-base-plus-adapter serving path?
