@@ -28,7 +28,11 @@ TOOL_NAMES = (
 )
 
 image = None
+CANDIDATE = "baseline"
 if modal.is_local():
+    CANDIDATE = os.environ.get("GEMMA4_CANDIDATE", "baseline")
+    if Path(CANDIDATE).name != CANDIDATE or not (ROOT / "submissions" / CANDIDATE).is_dir():
+        raise ValueError("Select an existing candidate directly under submissions/")
     WHEEL_MANIFEST = json.loads((ROOT / "requirements/remote-compiler-wheels.json").read_text())
     image = modal.Image.debian_slim(python_version="3.12")
     wheel_paths = []
@@ -40,7 +44,7 @@ if modal.is_local():
         image = image.add_local_file(path, remote_path, copy=True)
         wheel_paths.append(remote_path)
     image = image.uv_pip_install(*wheel_paths).add_local_dir(
-        ROOT / "submissions/baseline", "/submission"
+        ROOT / "submissions" / CANDIDATE, "/submission"
     )
 app = modal.App("gemma4-compiler-validation")
 
@@ -126,6 +130,7 @@ def main():
     if image is None:
         raise RuntimeError("Compiler validation must start from the local entry point")
     result = validate_compiler.remote()
+    result["candidate"] = CANDIDATE
     result["profile"] = "ach-bj100"
     result["git_commit"] = subprocess.check_output(
         ["git", "rev-parse", "HEAD"],
@@ -135,16 +140,16 @@ def main():
     result["modal_image_id"] = image.object_id
     result["official_wheels"] = WHEEL_MANIFEST
     result["submission_sha256"] = {
-        path.relative_to(ROOT / "submissions/baseline").as_posix(): hashlib.sha256(
+        path.relative_to(ROOT / "submissions" / CANDIDATE).as_posix(): hashlib.sha256(
             path.read_bytes()
         ).hexdigest()
-        for path in sorted((ROOT / "submissions/baseline").rglob("*"))
+        for path in sorted((ROOT / "submissions" / CANDIDATE).rglob("*"))
         if path.is_file()
     }
     destination = (
         ROOT
         / "artifacts/runtime-validation"
-        / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-compiler.json")
+        / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + f"-{CANDIDATE}-compiler.json")
     )
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
