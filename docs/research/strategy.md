@@ -12,7 +12,9 @@ Treat weight-space programming as a bounded research experiment within this proj
 
 The [controlled adapter package](adapter-compatibility.md) now works on both Modal A10 and the official Kaggle image/L4x4 setup, with unchanged weights and fixed numerical/compiled-agent controls. This clears the tested inference deployment prerequisite. The small [development panel](development-panel-v1.md) still shows no repair gain from pagination, a longer task budget, or the feedback-only prompt; it is too small and inspected to establish generalization. All 68 reserved validation issues remain untouched.
 
-Next build focused behavioral diagnostics for edit integrity and handling failed tests, retain simple controls, and obtain fresh development evidence before selecting a weight intervention. New weight analysis/design still requires the user's Ultra checkpoint. The compatibility work is expected engineering validation, with no established original paper contribution.
+The [fixed synthetic diagnostic](behavior-diagnostic-v1.md) completed all 24 trajectories. Each prompt completed seven of nine initially wrong cases and all three passing controls. Both failed the same two prefix-corruption cases, with delayed rereading and unsuccessful edits. Simple assertion failures and irrelevant passing tests were handled correctly in this screen; a general failed-test deficit is not established.
+
+Next test a specific reread/full-line replacement instruction against the baseline on fresh synthetic cases, then require verified repairs on fresh development issues before promotion. Keep passing controls and matched budgets. These inspected synthetic cases cannot establish transfer or competition accuracy. New weight analysis/design still requires the user's Ultra checkpoint, a suitable behavioral target, and comparison with the best measured simple control. No original paper contribution is established.
 
 ## Budget constraint
 
