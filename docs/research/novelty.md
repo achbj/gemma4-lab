@@ -34,6 +34,8 @@ Also on 5 November, the [paired synthetic diagnostic](behavior-diagnostic-v1.md)
 
 The subsequent [fresh-coefficient screen](behavior-diagnostic-v2.md) produced two paired workflow wins and zero losses for the reread/full-line prompt, preserving all passing controls. It passes its prespecified synthetic gate but establishes no SWE repair transfer. The two jointly changed instructions are ordinary prompt/workflow controls, not a novel method. Fresh real-development controls and matched inference are required before promotion. No new prior-work search or weight analysis occurred in this phase; claim-selection and final reviews remain pending.
 
+The following [four-issue development comparison](development-panel-v2.md) produced 0/4 verified repairs for both prompts, with all base/reference controls qualified. It exposed tool-budget/navigation failures, false confidence from visible tests, and a context/output allocation error. These are engineering/development observations, without established repair transfer, a causal weight explanation, or an original method/resource claim. The synthetic prompt remains unpromoted. A new prior-work review is still required when selecting any paper claim and immediately before submission; no such claim was selected in this phase.
+
 An additional author-post lead surfaced on 4 November: [Scaffolding helps the smallest Gemma 4 agent, not the larger ones](https://medium.com/@toeda/scaffolding-helps-the-smallest-gemma-4-agent-not-the-larger-ones-63da369962b0). Full review is pending; no results from that post are relied on here. Include it in the next claim-time review rather than treating generic E4B scaffolding or prompt controls as novel.
 
 ## Candidate research question
