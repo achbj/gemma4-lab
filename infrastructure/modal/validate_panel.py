@@ -9,6 +9,7 @@ import modal
 
 ROOT = Path(__file__).resolve().parents[2] if modal.is_local() else Path("/")
 image = None
+CANDIDATE = "baseline-3m"
 if modal.is_local():
     if os.environ.get("MODAL_PROFILE") != "ach-bj100":
         raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
@@ -16,6 +17,7 @@ if modal.is_local():
     from gemma4_lab.modal_runtime import build_runtime_image
     from gemma4_lab.remote_evaluation import fixture_identity
 
+    CANDIDATE = os.environ.get("GEMMA4_CANDIDATE", CANDIDATE)
     fixtures = ROOT / "data/raw/official/evaluation"
     for directory in fixtures.iterdir():
         manifest = ROOT / f"docs/research/fixtures/{directory.name}.json"
@@ -26,7 +28,7 @@ if modal.is_local():
         build_runtime_image(ROOT)
         .add_local_python_source("gemma4_lab")
         .add_local_dir(fixtures, "/fixtures")
-        .add_local_dir(candidate_directory(ROOT, "baseline-3m"), "/submission")
+        .add_local_dir(candidate_directory(ROOT, CANDIDATE), "/submission")
     )
 
 app = modal.App("gemma4-panel-cpu-controls")
@@ -77,4 +79,7 @@ def main(panel: str):
     settings = load_development_panel(ROOT, ROOT / panel)
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     destination = run_control_panel(ROOT, settings, validate_fixture, image.object_id, commit)
-    print(json.dumps({"report": str(destination), "gpu_allocated": False}), flush=True)
+    print(
+        json.dumps({"report": str(destination), "candidate": CANDIDATE, "gpu_allocated": False}),
+        flush=True,
+    )
