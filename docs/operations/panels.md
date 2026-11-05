@@ -11,7 +11,7 @@ The approved checkpoint and official wheel cache must already be staged as descr
 .venv/bin/gemma4-lab --task-id rich_3480 fetch-task
 .venv/bin/gemma4-lab --task-id requests_6757 fetch-task
 .venv/bin/gemma4-lab --task-id requests_6629 fetch-task
-MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/serve_smoke.py --panel configs/development-panel-v1.json --controls-only
+MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=baseline .venv/bin/modal run infrastructure/modal/validate_panel.py --panel configs/development-panel-v1.json
 ```
 
 Fixture manifests belong in `docs/research/fixtures/`; raw files remain ignored. The limit is 128 MiB per fixture. CPU controls run all four cases, save each output, and preserve exclusions. A usable case requires an unchanged-checkout test failure (exit 1) or timeout (exit 124), followed by a reference fix that resolves with exit 0. A timeout alone is insufficient. The timeout amendment and original reports are retained in the ledger.
@@ -36,7 +36,7 @@ The separately allocated `baseline-3m` and `pagination-v1-3m` candidates change 
 ```sh
 MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=baseline-3m .venv/bin/modal run infrastructure/modal/validate_compiler.py
 MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=pagination-v1-3m .venv/bin/modal run infrastructure/modal/validate_compiler.py
-MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=baseline-3m .venv/bin/modal run infrastructure/modal/serve_smoke.py --panel configs/development-panel-v1.json --controls-only
+MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=baseline-3m .venv/bin/modal run infrastructure/modal/validate_panel.py --panel configs/development-panel-v1.json
 ```
 
 Require the same two qualified cases before launching either GPU condition. Run the earlier A10G commands separately with `GEMMA4_CANDIDATE=baseline-3m` and then `GEMMA4_CANDIDATE=pagination-v1-3m`, confirming the first app stopped. Reports remain under the same frozen panel directory, with distinct timestamps and candidate names. A longer time limit leaves the ten-tool-call cap unchanged; report whichever limit is reached.
@@ -51,6 +51,27 @@ MODAL_PROFILE=ach-bj100 GEMMA4_RUN_CONFIG=configs/baseline-a10g.toml GEMMA4_CAND
 ```
 
 The batch reserves configured agent time, 300 seconds for verification, 120 seconds for setup, and 30 seconds for shutdown before starting another case. Its Modal function still has a hard execution timeout; requested CPU/RAM and estimated cost are not provider billing caps. Preserve skipped/incomplete cases as resource failures instead of silently dropping them.
+
+### Isolated context-correction check
+
+`edit-integrity-v1-8k` changes only the shared output allowance from 16,384 to 8,192
+relative to `edit-integrity-v1-3m`. `development-context-v1` preserves all four already
+inspected v2 issues/order and requires all four matching controls. This operational
+screen runs one corrected arm; historical outcomes are descriptive, not a new matched
+prompt comparison. Record its allocation before executing commands separately:
+
+```sh
+MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=edit-integrity-v1-8k .venv/bin/modal run infrastructure/modal/validate_compiler.py
+MODAL_PROFILE=ach-bj100 GEMMA4_CANDIDATE=edit-integrity-v1-8k .venv/bin/modal run infrastructure/modal/validate_panel.py --panel configs/development-context-v1.json
+MODAL_PROFILE=ach-bj100 GEMMA4_RUN_CONFIG=configs/baseline-a10g.toml GEMMA4_CANDIDATE=edit-integrity-v1-8k .venv/bin/modal run infrastructure/modal/serve_smoke.py --panel configs/development-context-v1.json
+```
+
+The dedicated CPU validator declares no GPU function and mounts the explicit selected
+candidate; its default is `baseline-3m`. Old controls with different sampling hashes
+remain ineligible. Require stopped CPU apps, exact candidate compilation and all four
+qualified cases before the single GPU job. Record verified/unverified outcomes, context
+errors, truncations and actual trace token usage. The corrected allowance leaves 24,576
+input tokens; absence of an error alone does not prove this admission boundary was tested.
 
 ## Reports and stopping
 
