@@ -4,7 +4,7 @@ Decision brief, 4 November 2026. The user set a compute/API spending ceiling of 
 
 ## Recommended direction
 
-Build an E4B coding agent, switching to E2B if serving compatibility or measured throughput warrants it. Avoid a broad model sweep on this budget. Target the small-model award first. Use the same experiments and reusable evaluation tools for a paper-track submission if the evidence is strong enough before its deadline.
+Develop an E4B coding agent and a Paper Track study in parallel, as the user explicitly requested on 5 November. Avoid a broad model sweep. Target the small-model award while collecting a bounded, original and reproducible study for the earlier paper deadline. A paper's claims must follow the evidence; no positive weight effect or novelty is promised.
 
 Treat weight-space programming as a bounded research experiment within this project. Do not make the entire competition attempt depend on it working.
 
@@ -16,7 +16,9 @@ The [fixed synthetic diagnostic](behavior-diagnostic-v1.md) completed all 24 tra
 
 The [fresh-coefficient edit-recovery screen](behavior-diagnostic-v2.md) passed its frozen gate: the focused prompt completed 9/9 initially wrong cases versus baseline's 7/9, with 3/3 passing controls preserved, two prefix wins and zero paired losses. The subsequent [four-issue real-development comparison](development-panel-v2.md) produced 0/4 verified repairs for both baseline-3m and edit-integrity-v1-3m. All four base/reference controls qualified. The candidate remains unpromoted; a synthetic gain has not established repair transfer.
 
-Next resolve the observed context/output allocation failure and measure a simpler navigation/delegation control under matched budgets. Navigation consumed the shared tool budget, and visible passing tests did not guarantee required behavior. These observations do not identify a weight defect. Keep configuration changes explicit, with no outcome-driven case replacement. Both real panels are now inspected Rich development data, not cross-repository validation. New weight analysis/design still requires the user's Ultra checkpoint, a suitable behavioral target, and comparison with the best measured simple control. No original paper contribution is established.
+The central WSP capability remains untested: no task-directed numerical-weight interpretation/edit has been attempted. The random adapter check does not test that capability, and failed prompt baselines do not refute the article. Execute the [deadline-bound WSP protocol](weight-space-study-v1.md) next, after Ultra confirmation. Correct the known context/output mismatch once in parallel; stop open-ended prompt/navigation screening before the first genuine WSP attempt. The [paper draft](paper/draft.md) is started with completed evidence and explicitly pending weight experiments. Paper entry still needs separate confirmation.
+
+First feasibility decision is due 7 November; evidence/claims freeze 10 November; target submitted Writeup 11 November, ahead of the 12 November 23:59 UTC deadline. Keep all controls and failures, restrict the attempt to one primary intervention plus at most one revision, and require frozen-candidate reserved evaluation before transfer claims. Both real panels are now inspected Rich development data. New weight work still requires Ultra; no original paper contribution is established.
 
 ## Budget constraint
 
@@ -76,10 +78,11 @@ Keep the evaluation panel, budgets, checkpoint, and harness version fixed during
 
 ## Schedule and decisions
 
-- 4–5 November: baseline, adapter deployment checks, failure analysis.
-- 6–9 November: compare the simplest fixes; run one bounded weight-editing experiment if a suitable failure exists.
-- 10 November: decide whether there is a distinct, supported paper contribution. If yes, freeze the paper experiments and document data provenance, costs, controls, and limitations.
-- 11–12 November: finish and submit the paper/resource entry. A draft is insufficient. If evidence is weak, prioritize the main entry instead of inventing a result.
+- 5–6 November: one context correction, genuine WSP inspection/attempt after Ultra confirmation, paper draft and fresh overlap review.
+- By 7 November: first controlled WSP feasibility result and a fixed research direction; at most one documented revision, no new search branch.
+- 8–9 November: freeze candidate, held-out/negative controls and required ablation/repeat within budget.
+- 10 November: freeze evidence and claims, complete provenance and final novelty review.
+- 11 November: review and submit the paper Writeup; verify submitted status. Reserve 12 November as buffer. A rigorous negative/feasibility result needs an original insight; setup work must not be presented as one.
 - 13–26 November: improve the best small-model configuration using broader validation and measured time allocation. Avoid a larger-model branch unless free quota, deployment compatibility, and measured results justify it.
 - 27 November–1 December: freeze candidates and complete clean end-to-end submission checks. Reserve a final selection for the eligible small-model candidate.
 - By 2 December: verify selected final submissions before the deadline.
