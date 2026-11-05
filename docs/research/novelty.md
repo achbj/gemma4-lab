@@ -9,6 +9,7 @@ Last focused overlap check: 5 November 2026. Status: exploratory; no novel resul
 | [Takehi et al., Sparks of Weight-Space Programming](https://rikiyat.github.io/blog/weight-space-programming/) (2 November 2026) | Frontier-model reasoning over weights and direct edits, including a Qwen looping correction; also a Gemma experiment without an established improvement. | We cannot claim to invent LLM-directed weight editing or assume that it transfers to Gemma coding agents. |
 | [ValerioDolci/frontier-weight-edit](https://github.com/ValerioDolci/frontier-weight-edit), README blob `08ecf4d1a88a3cd6af851dc7d7fd3f3fced353ab` | Reports Gemma 4 12B translation edits, prompt/ablation/LoRA comparisons, held-out controls, and a separate Qwen edit surviving Q4_K_M quantization. These are author-reported experiments, not independently validated here. | Neither using Gemma, comparing with LoRA, nor demonstrating some quantization survival is sufficient novelty by itself. |
 | [Program-as-Weights](https://arxiv.org/abs/2607.02512) (2 July 2026) | A trained compiler produces parameter-efficient programs for a frozen interpreter. | Generating adapters from a natural-language specification is established adjacent work; distinguish its trained compiler from direct editing. |
+| [Meng et al., ROME](https://arxiv.org/abs/2202.05262) | Rank-one model rewriting for factual associations. | A rank-one update is not itself a new method; our static-prototype heuristic is not ROME. |
 | [csinva/weight-space-programming-autoresearch](https://github.com/csinva/weight-space-programming-autoresearch), checked 5 November | Author repository now reports 420 Qwen edit-prediction tests comparing numerical-weight access with the same edit description without numbers, with mostly negative findings and modest incremental predictive value. Not independently reproduced here. | A generic weights-versus-no-numbers prediction study is already covered; an autoresearch harness is insufficient novelty. |
 | [LoopFix author model-card lead](https://huggingface.co/nitayrabi/Cyber-Tiel-Coder-35B-A3B-LoopFix-GGUF), indexed primary text surfaced 5 November | Indexed card text describes quantized coding-agent edits plus chat-template changes and session evaluations. Canonical card/API/raw retrieval failed, so detailed attribution/performance remains unverified. | Generic quantized coding-agent loop editing may overlap directly. Retrieve and audit this lead before any such claim; do not treat reported gains as verified weight-only effects. |
 | [Public grader/environment discussion](https://www.kaggle.com/competitions/gemma-4-developer-agent/discussion/747248) and its linked grader-rebuild notebook | Participants already report missing dependencies, package shadowing, and false positives on Requests, including `requests_7427`. This primary discussion was retrieved through indexed text on 4 November; the linked rebuild has not been audited here. | Our rediscovery and import-path correction are development validation, not an original resource contribution. |
@@ -18,11 +19,17 @@ We still need a focused review of model editing and activation-steering literatu
 The linked article was reread on 5 November. Its no-feedback game construction and
 raw-weight task-identification demonstrations differ from its tool/feedback-assisted
 language-model editing. Its unsuccessful math extension concerns Gemma 3 270M, not
-our E4B checkpoint. None of our current experiments reproduces those capability tests:
-the zero/random adapter probe tested deployment, and the subsequent failures concern
-prompts and agent execution. No task-directed numerical-weight interpretation/edit
-has been attempted. Sol at Ultra would be a related transfer test, not an exact
-replication of an Astra result.
+our E4B checkpoint. Our experiments do not reproduce those capability tests. The
+zero/random probe tested deployment; the [first designed weight edit](wsp-screen-v1.md)
+now tests one task-informed static-prototype heuristic and fails its behavioral gate.
+It does not infer an unknown network's training task, construct a game policy or
+establish a causal error detector. Sol at Ultra is not an exact Astra replication.
+
+The unresolved LoopFix lead received another bounded canonical-card/raw-README/API
+retrieval attempt on 5 November. No content was obtained; the API also failed certificate
+verification. No publication date, controls, weight-only effect or author-linked source
+was newly verified. Retain the indexed-lead qualification and resolve it before relying
+on a distinct quantized coding-agent editing claim.
 
 ## Pilot status on 4 November
 
@@ -50,6 +57,14 @@ An additional author-post lead surfaced on 4 November: [Scaffolding helps the sm
 
 ## Candidate research question
 
+The first task-directed numerical edit completed 9/12 synthetic workflows, versus
+10/12 for base/zero/random and 12/12 for the prompt control. Application and exact
+identity controls passed, but the fixed prototype hypothesis produced one regression
+and no workflow wins. This is an honest negative feasibility observation, not a new
+mechanism, a repair improvement or a refutation of WSP. No numerical-access ablation
+isolates the value of seeing weights. A single failed heuristic and deployment
+engineering do not yet establish an original prize-worthy paper contribution.
+
 Do targeted weight interventions improve multi-turn software-repair success under a fixed inference-time budget, and do any behavioral gains transfer across repositories through the competition's quantized-base-plus-adapter serving path?
 
 This is a question to test, not a novelty or performance claim. Possible useful findings include a repeatable gain, a measured failure to transfer, or evidence that fewer loops/invalid tools fail to improve completed repairs. A negative result needs a meaningful, well-supported insight to be competitive.
@@ -68,4 +83,4 @@ This is a question to test, not a novelty or performance claim. Possible useful 
 - Search original papers, author repositories, and competition discussions; record the date and directly overlapping results. Social/news summaries are leads, not evidence for technical claims.
 - If new work covers the proposed contribution, cite it and narrow the claim or change the paper's emphasis. Do not manufacture a novelty distinction based on a model name alone.
 - Keep our submission itself original and unpublished as required. Cite prior methods and reproduce their baselines honestly. Public prior work does not automatically disqualify our own distinct empirical contribution.
-- Paper deadline remains 12 November 2026 at 23:59 UTC, subject to host updates. No paper draft or original result exists yet.
+- Paper deadline remains 12 November 2026 at 23:59 UTC, subject to host updates. An internal [draft](paper/draft.md) now records the experiments; an original contribution remains unestablished. Complete claim-time and pre-submission review before publication.
