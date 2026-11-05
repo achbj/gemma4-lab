@@ -22,6 +22,7 @@ class ContainerImportTests(unittest.TestCase):
             "inventory_checkpoint.py",
             "inspect_numeric.py",
             "prepare_wsp.py",
+            "evaluate_wsp.py",
         ):
             with self.subTest(module=filename):
                 path = PROJECT_ROOT / "infrastructure/modal" / filename
@@ -61,6 +62,7 @@ class ContainerImportTests(unittest.TestCase):
             "inventory_checkpoint.py",
             "inspect_numeric.py",
             "prepare_wsp.py",
+            "evaluate_wsp.py",
         ):
             with self.subTest(module=name):
                 source = (PROJECT_ROOT / "infrastructure/modal" / name).read_text()
@@ -89,3 +91,19 @@ class ContainerImportTests(unittest.TestCase):
                     }[name]
                     self.assertEqual(resources[0]["memory"], expected[0])
                     self.assertEqual(resources[0]["timeout"], expected[1])
+                if name == "evaluate_wsp.py":
+                    resources = namespace["app"].resources
+                    self.assertEqual(len(resources), 1)
+                    for key, expected in {
+                        "gpu": "A10G",
+                        "cpu": 2,
+                        "memory": 16384,
+                        "timeout": 1800,
+                        "startup_timeout": 900,
+                        "max_containers": 1,
+                        "min_containers": 0,
+                        "scaledown_window": 2,
+                        "block_network": True,
+                        "is_generator": True,
+                    }.items():
+                        self.assertEqual(resources[0][key], expected)
