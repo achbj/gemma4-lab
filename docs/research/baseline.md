@@ -74,7 +74,7 @@ Next: choose a small fixed panel from the frozen development pool, check its gra
 
 ## Adapter serving interface audit, 4 November
 
-At this source-audit stage, runtime adapter compatibility was unverified. The later [controlled Modal probe](adapter-compatibility.md) established the tested serving path; full Kaggle scorer-environment validation remains pending. The following original observations came from reading pinned source files, without importing ML runtimes, interpreting learned tensors, constructing an adapter, or changing any serving setting:
+At this source-audit stage, runtime adapter compatibility was unverified. The later [controlled Modal and Kaggle probes](adapter-compatibility.md) established the tested inference path, including the official image and L4x4 hardware. Full SWE judging and repair gains remain separate checks. The following original observations came from reading pinned source files, without importing ML runtimes, interpreting learned tensors, constructing an adapter, or changing any serving setting:
 
 - Baseline calls to `src/gemma4_lab/remote_serving.py` keep `enable_lora=False`. The original inference and repair attempts therefore establish no adapter-loading or adapter-effect evidence. The later probe uses an explicit opt-in adapter manifest.
 - The pinned vLLM 0.19.1 `vllm/model_executor/models/gemma4_mm.py` declares `Gemma4ForConditionalGeneration` with `SupportsLoRA` at lines 883–899. That interface declaration does not establish that a particular adapter works with the approved E4B compressed-tensors checkpoint.
