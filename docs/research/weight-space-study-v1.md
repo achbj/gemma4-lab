@@ -10,12 +10,14 @@ This protocol sets the research scope; it does not authorize an unspecified GPU 
 | --- | --- |
 | Infer an unknown network's training task from its weights | Not attempted |
 | Construct a game-playing network without feedback | Not attempted; does not produce an eligible Gemma coding agent |
-| Diagnose a learned Gemma behavior from numerical weights and deliberately edit it | Not attempted |
+| Inspect numerical Gemma weights and construct a deliberate task-directed edit | First static-prototype construction tested on 5 November; 9/12 workflows versus base/random 10/12; failed its gate |
+| Establish a causal learned-behavior diagnosis from weights | Not established; static token prototypes are not actual deep-layer states |
 | Load a synthetic adapter and measure its application | Passed on Modal and the official Kaggle image; diagnostic random weights only |
 | Improve repair performance with prompt controls | Synthetic edit-recovery gain; no verified gain on the four-case real development screen |
 
 The existing zero/random adapter probe is deployment evidence, not semantic weight
-understanding. Our failed agent runs do not test or refute the article's claims.
+understanding. The [first task-directed edit](wsp-screen-v1.md) now provides a genuine
+but limited construction/test attempt. Its negative result does not refute the article's claims.
 The article's small-network demonstrations, feedback-assisted Qwen editing, and
 unsuccessful Gemma 3 math experiment have different conditions. We have not reproduced
 them. The current chat/model is not evidence of a matched GPT-6 Astra replication.
@@ -30,6 +32,23 @@ This is a transfer/feasibility question, not an assertion that Gemma or LoRA mak
 method new. The actual mechanism, inspected tensors and intervention must be selected
 only after the required Ultra confirmation. No matrix, direction or amplitude is
 chosen by this document.
+
+## First feasibility decision — 5 November
+
+The primary static-prototype edit is rejected: application/identity controls passed,
+but all 60 valid trajectories show no workflow wins, one regression, and no first-action
+source rereads. Keep it out of the real-task panel and final candidate. All three passing
+controls survive; this is a failed specific behavioral hypothesis, not an infrastructure
+failure or a general WSP conclusion. No reserved issue has been inspected.
+
+Complete the already-planned shared context correction on development data before
+spending on another full-agent comparison. A weight revision needs a stronger,
+falsifiable account of the actual model states than static label prototypes provide;
+changing the amplitude or trying another token direction alone is not justified here.
+At most one documented revision remains available. If no defensible revision is frozen
+by 7 November, close this WSP branch and preserve the negative result. No additional
+GPU launch is allocated by this decision. The paper draft records the result but still
+lacks a demonstrated original contribution and held-out evidence.
 
 ## Bound the work
 
