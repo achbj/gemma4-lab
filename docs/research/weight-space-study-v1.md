@@ -41,8 +41,11 @@ source rereads. Keep it out of the real-task panel and final candidate. All thre
 controls survive; this is a failed specific behavioral hypothesis, not an infrastructure
 failure or a general WSP conclusion. No reserved issue has been inspected.
 
-Complete the already-planned shared context correction on development data before
-spending on another full-agent comparison. A weight revision needs a stronger,
+The planned [shared context correction](development-context-v1.md) has now had its
+one development check, with 0/4 repairs and no observed context error, but no
+requests exercising the old admission boundary. The subsequent [tool-budget
+control](development-tool-budget-v1.md) also had 0/4 and did not use the extra calls.
+Neither is an original paper result. A weight revision needs a stronger,
 falsifiable account of the actual model states than static label prototypes provide;
 changing the amplitude or trying another token direction alone is not justified here.
 At most one documented revision remains available. If no defensible revision is frozen
