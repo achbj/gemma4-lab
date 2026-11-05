@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "name": "behavior-diagnostic-v2",
+  "runtime_config": "configs/baseline-a10g.toml",
+  "context_prompt": "submissions/behavior-diagnostic-v1/prompts/context.md",
+  "conditions": [
+    {
+      "name": "baseline",
+      "system_prompt": "submissions/baseline-3m/prompts/system.md"
+    },
+    {
+      "name": "edit_integrity",
+      "system_prompt": "submissions/edit-integrity-v1-3m/prompts/system.md"
+    }
+  ],
+  "max_actions": 6,
+  "case_timeout_seconds": 60,
+  "request_timeout_seconds": 30,
+  "max_tokens": 1536,
+  "temperature": 0,
+  "top_p": 0.95,
+  "seed": 20261105,
+  "order": "baseline then edit_integrity for even case indices; reverse for odd indices",
+  "cases": [
+    {
+      "id": "prefix-fresh-01",
+      "family": "prefix_corruption",
+      "factor": 3,
+      "offset": 4
+    },
+    {
+      "id": "prefix-fresh-02",
+      "family": "prefix_corruption",
+      "factor": -2,
+      "offset": 7
+    },
+    {
+      "id": "prefix-fresh-03",
+      "family": "prefix_corruption",
+      "factor": 4,
+      "offset": -6
+    },
+    {
+      "id": "assertion-fresh-01",
+      "family": "failing_assertion",
+      "factor": 2,
+      "offset": 5
+    },
+    {
+      "id": "assertion-fresh-02",
+      "family": "failing_assertion",
+      "factor": -3,
+      "offset": 4
+    },
+    {
+      "id": "assertion-fresh-03",
+      "family": "failing_assertion",
+      "factor": 5,
+      "offset": -2
+    },
+    {
+      "id": "passing-fresh-01",
+      "family": "passing_control",
+      "factor": 2,
+      "offset": -7
+    },
+    {
+      "id": "passing-fresh-02",
+      "family": "passing_control",
+      "factor": -4,
+      "offset": 6
+    },
+    {
+      "id": "passing-fresh-03",
+      "family": "passing_control",
+      "factor": 6,
+      "offset": 3
+    },
+    {
+      "id": "smoke-fresh-01",
+      "family": "irrelevant_pass",
+      "factor": 4,
+      "offset": 6
+    },
+    {
+      "id": "smoke-fresh-02",
+      "family": "irrelevant_pass",
+      "factor": -2,
+      "offset": -4
+    },
+    {
+      "id": "smoke-fresh-03",
+      "family": "irrelevant_pass",
+      "factor": 3,
+      "offset": 5
+    }
+  ],
+  "screening_gate": {
+    "required_prefix_workflow_wins": 2,
+    "maximum_workflow_losses": 0,
+    "required_passing_control_completions": 3,
+    "maximum_premature_submissions": 0,
+    "require_complete_valid_coverage": true,
+    "consequence": "Only a synthetic screening gate; verified fresh development repairs required before promotion."
+  }
+}
