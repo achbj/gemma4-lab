@@ -11,6 +11,19 @@ Run from the repository with its orchestration environment:
 MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/behavior_diagnostic.py
 ```
 
+For the separately frozen fresh-case edit-recovery screen, select its configuration
+before the Modal module is imported (resource decorators are evaluated at import):
+
+```sh
+MODAL_PROFILE=ach-bj100 GEMMA4_DIAGNOSTIC_CONFIG=configs/behavior-diagnostic-v2.json \
+  .venv/bin/modal run infrastructure/modal/behavior_diagnostic.py
+```
+
+The selector accepts JSON files directly under `configs/`, and requires the diagnostic
+name to match the filename. Version 1 remains the default. Version 2 retains its
+generation/checker settings and adds a fixed screening gate; changing coefficients
+does not create an independent task distribution or establish competition gains.
+
 The command starts one ephemeral A10G container using the existing official-wheel
 image and approved E4B cache. It creates no deployment or adapter. Only synthetic
 case data and the two prompts are sent to the function. Network access is blocked;
@@ -39,7 +52,7 @@ Skipped/error rows remain in the output. Interpret a paired comparison only afte
 complete coverage and successful protocol/API checks.
 
 Outputs are atomically saved after each event in ignored
-`artifacts/behavior-diagnostic-v1/<UTC timestamp>/run.json`. Reports include input
+`artifacts/<diagnostic name>/<UTC timestamp>/run.json`. Reports include input
 hashes, source commit, runtime identity, raw requests/responses, tool actions, final
 source, and separate correctness/workflow/budget/error fields. A completed workflow
 requires a nonempty explicit submission and a successful target check after the last
