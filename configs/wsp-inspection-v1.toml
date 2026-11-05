@@ -1,0 +1,17 @@
+version = 1
+name = "wsp-inspection-v1"
+stage = "metadata-only"
+model = "google/gemma-4/Other/gemma-4-e4b-it-qat-w4a16-ct/2"
+expected_runtime_image = "im-bEtC1IFnE2DCntpbAu56LW"
+
+[modal]
+profile = "ach-bj100"
+cpu_cores = 2
+memory_gib = 4
+timeout_seconds = 120
+startup_timeout_seconds = 900
+scaledown_seconds = 2
+max_containers = 1
+
+[budget]
+allocation_usd = "0.10"
