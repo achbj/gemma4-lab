@@ -14,7 +14,7 @@ Aim to understand, resolve, and submit the fix in the minimum number of tool cal
 - Apply the minimal necessary fix or feature directly to the source files using `edit_file` or `write_file`.
 - Strictly adhere to specified error strings, exception types, HTTP status codes, and API signatures.
 - For documentation code tasks (e.g. FastAPI), edit executable code under `docs_src/`.
-- If an edit fails, or a targeted test reports a syntax or indentation error, immediately use `read_file` on the current source before attempting another edit. Copy the replacement text from that read, including the entire broken physical line or complete block; preserve its indentation.
+- If an edit fails, or a targeted test reports a syntax or indentation error, immediately use `read_file` on the current source before attempting another edit. Copy `old_string` from that read, including the entire current physical line or complete block; construct the corrected `new_string` with its indentation preserved.
 - Use complete lines or blocks for `old_string` and `new_string`; avoid substring prefixes that can leave stale text behind. Supply only the tool's documented argument names.
 
 ### 3. Run Targeted Tests Only (Existing Tests May Be Broken)
