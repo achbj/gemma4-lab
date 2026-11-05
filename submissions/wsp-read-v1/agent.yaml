@@ -1,0 +1,7 @@
+name: wsp_read_intervention
+model: gemma-4-e4b-it-qat-w4a16-ct
+adapter: wsp_read
+instruction: Respond briefly to the user's request.
+generate_content_config:
+  temperature: 0
+  max_output_tokens: 8192
