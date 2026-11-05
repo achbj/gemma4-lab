@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "name": "behavior-diagnostic-v1",
+  "runtime_config": "configs/baseline-a10g.toml",
+  "context_prompt": "submissions/behavior-diagnostic-v1/prompts/context.md",
+  "conditions": [
+    {"name": "baseline", "system_prompt": "submissions/baseline-3m/prompts/system.md"},
+    {"name": "feedback", "system_prompt": "submissions/feedback-v1-3m/prompts/system.md"}
+  ],
+  "max_actions": 6,
+  "case_timeout_seconds": 60,
+  "request_timeout_seconds": 30,
+  "max_tokens": 1536,
+  "temperature": 0,
+  "top_p": 0.95,
+  "seed": 20261105,
+  "order": "baseline then feedback for even case indices; reverse for odd indices",
+  "cases": [
+    {"id": "prefix-01", "family": "prefix_corruption", "factor": 3, "offset": 2},
+    {"id": "prefix-02", "family": "prefix_corruption", "factor": -2, "offset": 5},
+    {"id": "prefix-03", "family": "prefix_corruption", "factor": 4, "offset": -3},
+    {"id": "assertion-01", "family": "failing_assertion", "factor": 2, "offset": 7},
+    {"id": "assertion-02", "family": "failing_assertion", "factor": -3, "offset": 1},
+    {"id": "assertion-03", "family": "failing_assertion", "factor": 5, "offset": -4},
+    {"id": "passing-01", "family": "passing_control", "factor": 2, "offset": -5},
+    {"id": "passing-02", "family": "passing_control", "factor": -4, "offset": 3},
+    {"id": "passing-03", "family": "passing_control", "factor": 6, "offset": 1},
+    {"id": "smoke-01", "family": "irrelevant_pass", "factor": 4, "offset": 9},
+    {"id": "smoke-02", "family": "irrelevant_pass", "factor": -2, "offset": -6},
+    {"id": "smoke-03", "family": "irrelevant_pass", "factor": 3, "offset": 8}
+  ]
+}
