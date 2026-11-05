@@ -1,6 +1,6 @@
 # Novelty register
 
-Last checked: 4 November 2026. Status: exploratory; no novel result has been demonstrated. A search cannot establish that an idea is absent from all prior work or guarantee that nobody publishes before our submission.
+Last focused overlap check: 5 November 2026. Status: exploratory; no novel result has been demonstrated. A search cannot establish that an idea is absent from all prior work or guarantee that nobody publishes before our submission. The deadline-bound next study is specified in [the WSP protocol](weight-space-study-v1.md).
 
 ## Verified overlapping work
 
@@ -9,10 +9,20 @@ Last checked: 4 November 2026. Status: exploratory; no novel result has been dem
 | [Takehi et al., Sparks of Weight-Space Programming](https://rikiyat.github.io/blog/weight-space-programming/) (2 November 2026) | Frontier-model reasoning over weights and direct edits, including a Qwen looping correction; also a Gemma experiment without an established improvement. | We cannot claim to invent LLM-directed weight editing or assume that it transfers to Gemma coding agents. |
 | [ValerioDolci/frontier-weight-edit](https://github.com/ValerioDolci/frontier-weight-edit), README blob `08ecf4d1a88a3cd6af851dc7d7fd3f3fced353ab` | Reports Gemma 4 12B translation edits, prompt/ablation/LoRA comparisons, held-out controls, and a separate Qwen edit surviving Q4_K_M quantization. These are author-reported experiments, not independently validated here. | Neither using Gemma, comparing with LoRA, nor demonstrating some quantization survival is sufficient novelty by itself. |
 | [Program-as-Weights](https://arxiv.org/abs/2607.02512) (2 July 2026) | A trained compiler produces parameter-efficient programs for a frozen interpreter. | Generating adapters from a natural-language specification is established adjacent work; distinguish its trained compiler from direct editing. |
-| [csinva/weight-space-programming-autoresearch](https://github.com/csinva/weight-space-programming-autoresearch) | Public autonomous weight-programming experiments were surfaced by search. Detailed audit remains pending. | A generic editing harness or autoresearch loop must not be presented as a new contribution without comparison. |
+| [csinva/weight-space-programming-autoresearch](https://github.com/csinva/weight-space-programming-autoresearch), checked 5 November | Author repository now reports 420 Qwen edit-prediction tests comparing numerical-weight access with the same edit description without numbers, with mostly negative findings and modest incremental predictive value. Not independently reproduced here. | A generic weights-versus-no-numbers prediction study is already covered; an autoresearch harness is insufficient novelty. |
+| [LoopFix author model-card lead](https://huggingface.co/nitayrabi/Cyber-Tiel-Coder-35B-A3B-LoopFix-GGUF), indexed primary text surfaced 5 November | Indexed card text describes quantized coding-agent edits plus chat-template changes and session evaluations. Canonical card/API/raw retrieval failed, so detailed attribution/performance remains unverified. | Generic quantized coding-agent loop editing may overlap directly. Retrieve and audit this lead before any such claim; do not treat reported gains as verified weight-only effects. |
 | [Public grader/environment discussion](https://www.kaggle.com/competitions/gemma-4-developer-agent/discussion/747248) and its linked grader-rebuild notebook | Participants already report missing dependencies, package shadowing, and false positives on Requests, including `requests_7427`. This primary discussion was retrieved through indexed text on 4 November; the linked rebuild has not been audited here. | Our rediscovery and import-path correction are development validation, not an original resource contribution. |
 
 We still need a focused review of model editing and activation-steering literature before freezing any mechanism-level claim. Existing low-rank factorization is a deployment format, not our research novelty.
+
+The linked article was reread on 5 November. Its no-feedback game construction and
+raw-weight task-identification demonstrations differ from its tool/feedback-assisted
+language-model editing. Its unsuccessful math extension concerns Gemma 3 270M, not
+our E4B checkpoint. None of our current experiments reproduces those capability tests:
+the zero/random adapter probe tested deployment, and the subsequent failures concern
+prompts and agent execution. No task-directed numerical-weight interpretation/edit
+has been attempted. Sol at Ultra would be a related transfer test, not an exact
+replication of an Astra result.
 
 ## Pilot status on 4 November
 
