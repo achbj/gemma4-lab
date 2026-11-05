@@ -14,7 +14,12 @@ class ContainerImportTests(unittest.TestCase):
     def test_real_modal_sdk_accepts_the_panel_decorator_without_network(self):
         import modal
 
-        for filename in ("serve_smoke.py", "adapter_probe.py", "behavior_diagnostic.py"):
+        for filename in (
+            "serve_smoke.py",
+            "adapter_probe.py",
+            "behavior_diagnostic.py",
+            "validate_panel.py",
+        ):
             with self.subTest(module=filename):
                 path = PROJECT_ROOT / "infrastructure/modal" / filename
                 name = "gemma4_decorator_validation"
@@ -33,9 +38,10 @@ class ContainerImportTests(unittest.TestCase):
 
         class FakeApp:
             def __init__(self, *args, **kwargs):
-                pass
+                self.resources = []
 
             def function(self, **kwargs):
+                self.resources.append(kwargs)
                 return lambda function: function
 
             def local_entrypoint(self):
@@ -48,6 +54,7 @@ class ContainerImportTests(unittest.TestCase):
             "serve_smoke.py",
             "adapter_probe.py",
             "behavior_diagnostic.py",
+            "validate_panel.py",
         ):
             with self.subTest(module=name):
                 source = (PROJECT_ROOT / "infrastructure/modal" / name).read_text()
@@ -56,3 +63,11 @@ class ContainerImportTests(unittest.TestCase):
                     exec(compile(source, namespace["__file__"], "exec"), namespace)
                 self.assertEqual(namespace["ROOT"], Path("/"))
                 self.assertIsNone(namespace["image"])
+                if name == "validate_panel.py":
+                    resources = namespace["app"].resources
+                    self.assertEqual(len(resources), 1)
+                    self.assertNotIn("gpu", resources[0])
+                    self.assertEqual(resources[0]["max_containers"], 1)
+                    self.assertEqual(resources[0]["retries"], 0)
+                    self.assertEqual(resources[0]["cpu"], 2)
+                    self.assertEqual(resources[0]["timeout"], 900)
