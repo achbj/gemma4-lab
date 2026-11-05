@@ -8,7 +8,7 @@ Develop an E4B coding agent and a Paper Track study in parallel, as the user exp
 
 Treat weight-space programming as a bounded research experiment within this project. Do not make the entire competition attempt depend on it working.
 
-## Measured status, 5 November
+## Measured status, 6 November
 
 The [controlled adapter package](adapter-compatibility.md) now works on both Modal A10 and the official Kaggle image/L4x4 setup, with unchanged weights and fixed numerical/compiled-agent controls. This clears the tested inference deployment prerequisite. The small [development panel](development-panel-v1.md) still shows no repair gain from pagination, a longer task budget, or the feedback-only prompt; it is too small and inspected to establish generalization. All 68 reserved validation issues remain untouched.
 
@@ -18,7 +18,9 @@ The [fresh-coefficient edit-recovery screen](behavior-diagnostic-v2.md) passed i
 
 The [first genuine weight construction/test](wsp-screen-v1.md) is now complete after Ultra confirmation. It used inspected numerical weights and a fixed static-prototype rank-one heuristic. Application and identity controls passed; the proposed edit completed 9/12 workflows, versus base/zero/random 10/12 and prompt 12/12. It produced one regression and no workflow wins. Reject this candidate and its real-task promotion. This tests one task-informed hypothesis, not the article's blind task-identification or game-network claims. The [paper draft](paper/draft.md) records the negative result; an original contribution remains unestablished. Paper entry still needs separate confirmation.
 
-Next complete the already-planned shared context correction on development data, rather than tune the failed edit's amplitude. A single weight revision requires a stronger falsifiable account of actual model states and frozen controls by 7 November; otherwise close that branch. No further GPU launch is allocated here. Evidence/claims freeze 10 November; target submitted Writeup 11 November, ahead of the 12 November 23:59 UTC deadline. Keep failures, restrict the attempt to one primary intervention plus at most one revision, and require frozen-candidate reserved evaluation before transfer claims. Both real panels are inspected Rich development data. Later weight stages still require Ultra confirmation.
+The [context check](development-context-v1.md) and [30-call control](development-tool-budget-v1.md) each produced 0/4 verified repairs on the same inspected issues. Neither encountered a context error or crossed the old input boundary. The 30-call arm reached verification on all four, but every trajectory used at most nine calls and failed its tests. Neither change establishes a repair gain. Retain the cheaper 8,192-token/ten-call control and stop cap tuning.
+
+Next test one allowed workflow change: use the available commands to check the requested behavior itself before submission, alongside relevant stock tests, under the same budget. Prior attempts reached edits or stock-test passes without satisfying the independent verifier. No further GPU launch is allocated here. A single weight revision still requires a stronger falsifiable account of actual model states and frozen controls by 7 November; otherwise close that branch. Evidence/claims freeze 10 November; target submitted Writeup 11 November, ahead of the 12 November 23:59 UTC deadline. Keep failures, restrict the attempt to one primary intervention plus at most one revision, and require frozen-candidate reserved evaluation before transfer claims. These are inspected Rich development data, not an original-paper claim. Later weight stages still require Ultra confirmation.
 
 ## Budget constraint
 
