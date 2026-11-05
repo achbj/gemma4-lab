@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "name": "development-panel-v2",
+  "split_path": "configs/evaluation-split.json",
+  "split_sha256": "c6257b02b2830c664435e22e35c158a71085dc5a8fc4dfe5ec62bf8351d32f6f",
+  "selection": "First four Rich tasks with distinct base commits, excluding all v1 base commits, ordered by SHA-256(development-panel-v2:<instance_id>); metadata only, no replacement. Rich-only follow-up because Requests reference controls failed in v1; not a representative cross-repository sample.",
+  "minimum_qualified_tasks": 2,
+  "maximum_fixture_bytes": 134217728,
+  "qualification_version": 2,
+  "qualification": "Unchanged checkout must fail (exit 1) or time out (exit 124), and reference patch must resolve with exit 0. Preserve all exclusions; at least two of the four frozen cases must qualify.",
+  "task_ids": [
+    "rich_3942",
+    "rich_3518",
+    "rich_2943",
+    "rich_3676"
+  ]
+}
