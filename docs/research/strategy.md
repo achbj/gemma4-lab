@@ -14,7 +14,9 @@ The [controlled adapter package](adapter-compatibility.md) now works on both Mod
 
 The [fixed synthetic diagnostic](behavior-diagnostic-v1.md) completed all 24 trajectories. Each prompt completed seven of nine initially wrong cases and all three passing controls. Both failed the same two prefix-corruption cases, with delayed rereading and unsuccessful edits. Simple assertion failures and irrelevant passing tests were handled correctly in this screen; a general failed-test deficit is not established.
 
-Next test a specific reread/full-line replacement instruction against the baseline on fresh synthetic cases, then require verified repairs on fresh development issues before promotion. Keep passing controls and matched budgets. These inspected synthetic cases cannot establish transfer or competition accuracy. New weight analysis/design still requires the user's Ultra checkpoint, a suitable behavioral target, and comparison with the best measured simple control. No original paper contribution is established.
+The [fresh-coefficient edit-recovery screen](behavior-diagnostic-v2.md) passed its frozen gate: the focused prompt completed 9/9 initially wrong cases versus baseline's 7/9, with 3/3 passing controls preserved, two prefix wins and zero paired losses. This is a useful simple control, with no real-repair transfer established. The candidate remains unpromoted.
+
+Next qualify the four metadata-selected tasks in `configs/development-panel-v2.json` using unchanged/reference controls, then compare baseline-3m and edit-integrity-v1-3m with matched budgets on the qualified cases. Keep all exclusions and avoid replacements. The Rich-only panel is selected development data, not cross-repository validation. New weight analysis/design still requires the user's Ultra checkpoint, a suitable behavioral target, and comparison with the best measured simple control. No original paper contribution is established.
 
 ## Budget constraint
 
