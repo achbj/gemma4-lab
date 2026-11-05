@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "name": "development-tool-budget-v1",
+  "split_path": "configs/evaluation-split.json",
+  "split_sha256": "c6257b02b2830c664435e22e35c158a71085dc5a8fc4dfe5ec62bf8351d32f6f",
+  "selection": "Reuse all four already-inspected development-context-v1 Rich tasks in the same order. Compare one 30-tool-call candidate with the preserved 10-call control at the same wall time and sampling. No replacements.",
+  "minimum_qualified_tasks": 4,
+  "maximum_fixture_bytes": 134217728,
+  "qualification_version": 2,
+  "qualification": "Unchanged checkout must fail (exit 1) or time out (exit 124), and reference patch must resolve with exit 0. All four frozen cases must qualify; preserve failures and stop instead of replacing them.",
+  "task_ids": [
+    "rich_3942",
+    "rich_3518",
+    "rich_2943",
+    "rich_3676"
+  ]
+}
