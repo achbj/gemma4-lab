@@ -34,8 +34,14 @@ if modal.is_local():
     from gemma4_lab.config import estimate_run, load_config
     from gemma4_lab.modal_runtime import build_runtime_image
 
-    config_path = ROOT / "configs/behavior-diagnostic-v1.json"
+    config_path = (
+        ROOT / os.environ.get("GEMMA4_DIAGNOSTIC_CONFIG", "configs/behavior-diagnostic-v1.json")
+    ).resolve()
+    if config_path.parent != (ROOT / "configs").resolve() or config_path.suffix != ".json":
+        raise ValueError("Select a JSON diagnostic directly inside configs/")
     SETTINGS = json.loads(config_path.read_text())
+    if SETTINGS["name"] != config_path.stem or SETTINGS["name"] in {"", ".", ".."}:
+        raise ValueError("Diagnostic name must match its configuration filename")
     CONFIG = load_config(ROOT / SETTINGS["runtime_config"])
     ESTIMATE = estimate_run(CONFIG)
     RESOURCES = CONFIG["modal"]
@@ -44,7 +50,7 @@ if modal.is_local():
     PROMPTS = {c["name"]: (ROOT / c["system_prompt"]).read_text() for c in SETTINGS["conditions"]}
     CONTEXT = (ROOT / SETTINGS["context_prompt"]).read_text()
     names = [
-        "configs/behavior-diagnostic-v1.json",
+        config_path.relative_to(ROOT).as_posix(),
         SETTINGS["runtime_config"],
         SETTINGS["context_prompt"],
         *[c["system_prompt"] for c in SETTINGS["conditions"]],
@@ -57,7 +63,7 @@ if modal.is_local():
     INPUT_HASHES = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in names}
     image = build_runtime_image(ROOT).add_local_python_source("gemma4_lab")
 
-app = modal.App("gemma4-behavior-diagnostic-v1")
+app = modal.App("gemma4-behavior-diagnostic")
 volume = modal.Volume.from_name("gemma4-competition-model-cache")
 
 
@@ -87,7 +93,8 @@ def main():
         raise ValueError("Use the local entrypoint with MODAL_PROFILE=ach-bj100")
     destination = (
         ROOT
-        / "artifacts/behavior-diagnostic-v1"
+        / "artifacts"
+        / SETTINGS["name"]
         / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ"))
         / "run.json"
     )
