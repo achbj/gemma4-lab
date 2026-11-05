@@ -21,6 +21,7 @@ class ContainerImportTests(unittest.TestCase):
             "validate_panel.py",
             "inventory_checkpoint.py",
             "inspect_numeric.py",
+            "prepare_wsp.py",
         ):
             with self.subTest(module=filename):
                 path = PROJECT_ROOT / "infrastructure/modal" / filename
@@ -59,6 +60,7 @@ class ContainerImportTests(unittest.TestCase):
             "validate_panel.py",
             "inventory_checkpoint.py",
             "inspect_numeric.py",
+            "prepare_wsp.py",
         ):
             with self.subTest(module=name):
                 source = (PROJECT_ROOT / "infrastructure/modal" / name).read_text()
@@ -67,7 +69,12 @@ class ContainerImportTests(unittest.TestCase):
                     exec(compile(source, namespace["__file__"], "exec"), namespace)
                 self.assertEqual(namespace["ROOT"], Path("/"))
                 self.assertIsNone(namespace["image"])
-                if name in {"validate_panel.py", "inventory_checkpoint.py", "inspect_numeric.py"}:
+                if name in {
+                    "validate_panel.py",
+                    "inventory_checkpoint.py",
+                    "inspect_numeric.py",
+                    "prepare_wsp.py",
+                }:
                     resources = namespace["app"].resources
                     self.assertEqual(len(resources), 1)
                     self.assertNotIn("gpu", resources[0])
@@ -78,6 +85,7 @@ class ContainerImportTests(unittest.TestCase):
                         "validate_panel.py": (2048, 900),
                         "inventory_checkpoint.py": (4096, 120),
                         "inspect_numeric.py": (6144, 600),
+                        "prepare_wsp.py": (4096, 300),
                     }[name]
                     self.assertEqual(resources[0]["memory"], expected[0])
                     self.assertEqual(resources[0]["timeout"], expected[1])
