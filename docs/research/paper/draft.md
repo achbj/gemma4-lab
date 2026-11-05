@@ -2,7 +2,7 @@
 
 ## A controlled feasibility study of quantized Gemma coding agents
 
-Internal draft, 5 November 2026. **Not ready for submission.** The first task-directed
+Internal draft, 6 November 2026. **Not ready for submission.** The first task-directed
 weight edit failed its behavioral gate. An original contribution and held-out evidence
 remain unestablished. Final Kaggle Writeup limit: 3,000 words. Author information is
 not yet finalized.
@@ -80,6 +80,7 @@ matched prompt comparison. A candidate must be frozen before reserved content is
 | Fresh-coefficient recovery screen | Prompt control 9/9 initially wrong cases versus baseline 7/9; both preserved 3/3 passing controls | Synthetic, shared templates |
 | Fresh four-issue Rich comparison | 0/4 verified repairs for both prompts | Selected development cases, one draw per condition |
 | 8,192-token context correction | 0/4 verified repairs; no observed context error; two unverified tool-budget stops | No successful input exceeded the old 16,384-token boundary |
+| Tool cap 10 → 30 at fixed time and sampling | 0/4 verified repairs in both draws; four verified failures at cap 30 | All new attempts used at most nine charged calls; extra allowance unexercised |
 | Task-directed static-prototype weight edit | Base/zero/random 10/12, proposed edit 9/12, prompt 12/12; all 60 trajectories valid | Failed specific synthetic hypothesis; no real-repair promotion |
 | Frozen-candidate reserved evaluation | Pending | No generalization claim yet |
 
@@ -95,6 +96,12 @@ the ten-tool cap. The maximum successful input was 15,751 tokens, so the new hea
 was not directly exercised. No token-limit nudge was observed, but the pinned ATIF
 recorder omits response finish reasons and cannot certify no truncation. This ordinary
 configuration check adds no original method or repair-gain claim.
+
+The follow-up changed only the tool cap while preserving the wall-clock allowance.
+It reached verification on all four cases and failed all four. The two previously
+unverified cases each used seven calls in the new draw, within the original cap. Thus
+their progress cannot establish that additional calls helped; the cap control failed
+its repair gate. This conventional comparison does not support a novelty claim.
 
 The weight screen had exact base/zero action/source/workflow agreement, zero measured
 token-control drift and detected effects from both active edits. All three compiled
@@ -143,5 +150,6 @@ Internal evidence: [protocol](../weight-space-study-v1.md),
 [adapter validation](../adapter-compatibility.md),
 [synthetic screen](../behavior-diagnostic-v2.md),
 [real-task screen](../development-panel-v2.md), [context check](../development-context-v1.md),
+[tool-budget control](../development-tool-budget-v1.md),
 [first designed weight edit](../wsp-screen-v1.md),
 [run ledger](../../operations/run-log.md).
