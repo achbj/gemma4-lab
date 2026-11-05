@@ -30,6 +30,8 @@ The subsequent [controlled adapter probe](adapter-compatibility.md) established 
 
 On 5 November, the identical package also passed on the official Kaggle image with L4x4/tensor parallelism 4, with all source/checkpoint/wheel hashes and fixed controls retained. This clears the tested inference deployment prerequisite. Full SWE judging and useful repair gains remain unmeasured; the environment check adds no novelty claim. Recheck prior work when selecting a distinct behavioral/weight-intervention claim and again before submission.
 
+Also on 5 November, the [paired synthetic diagnostic](behavior-diagnostic-v1.md) found identical correctness/workflow counts for the baseline and feedback-only prompts: seven of nine initially wrong cases and all three passing controls per condition. Both failed the same two prefix-corruption cases. This is a small, inspected development diagnostic using native editing and a restricted arithmetic checker; it is not a new method/resource claim, a competition repair gain, or weight-level evidence. Generic rereading and full-line replacement instructions are simple controls to test before selecting any intervention. This experiment update is not a new prior-work search; the claim-selection and pre-submission reviews remain required.
+
 An additional author-post lead surfaced on 4 November: [Scaffolding helps the smallest Gemma 4 agent, not the larger ones](https://medium.com/@toeda/scaffolding-helps-the-smallest-gemma-4-agent-not-the-larger-ones-63da369962b0). Full review is pending; no results from that post are relied on here. Include it in the next claim-time review rather than treating generic E4B scaffolding or prompt controls as novel.
 
 ## Candidate research question
