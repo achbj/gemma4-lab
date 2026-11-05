@@ -112,6 +112,11 @@ def validate_compiler() -> dict:
         "platform": platform.platform(),
         "root_agent_name": agent.name,
         "root_agent_class": type(agent).__name__,
+        "effective_root_generation_config": agent.generate_content_config.model_dump(
+            mode="json", exclude_none=True
+        )
+        if agent.generate_content_config is not None
+        else None,
         "declared_models": sorted(declared),
         "model_calls": 0,
         "tool_calls": 0,
