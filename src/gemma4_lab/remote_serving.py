@@ -8,9 +8,17 @@ MODEL_SOURCE = f"google/gemma-4/Other/{MODEL_ALIAS}/2"
 MODEL_PATH = Path("/cache/models/e4b-v2")
 
 
-def create_approved_server(*, submission_directory: Path | None = None):
+def create_approved_server(
+    *,
+    submission_directory: Path | None = None,
+    model_path: Path | None = None,
+    tensor_parallel_size: int = 1,
+):
     """Construct the official server remotely; caller owns start/stop and logs."""
-    source = json.loads((MODEL_PATH / "source-manifest.json").read_text())
+    model_path = MODEL_PATH if model_path is None else model_path
+    if type(tensor_parallel_size) is not int or tensor_parallel_size < 1:
+        raise ValueError("Tensor parallel size must be a positive integer")
+    source = json.loads((model_path / "source-manifest.json").read_text())
     if source["model"] != MODEL_SOURCE:
         raise ValueError("Cached model source differs from the approved checkpoint")
     import torch
@@ -37,7 +45,7 @@ def create_approved_server(*, submission_directory: Path | None = None):
 
     server = VllmServer(
         VllmConfig(
-            model=str(MODEL_PATH),
+            model=str(model_path),
             host="127.0.0.1",
             port=8000,
             tool_call_parser="gemma4",
@@ -47,7 +55,7 @@ def create_approved_server(*, submission_directory: Path | None = None):
             gpu_memory_utilization=0.90,
             enable_auto_tool_choice=True,
             scheduler_reserve_full_isl=False,
-            tensor_parallel_size=1,
+            tensor_parallel_size=tensor_parallel_size,
             startup_timeout=1200,
             **lora_settings,
         ),

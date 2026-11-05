@@ -65,7 +65,15 @@ async def compiled_route(root, template, name, adapters, models, settings):
     }
 
 
-def run_probe(files: dict, prepared: dict, settings: dict, execution_limit_seconds: int):
+def run_probe(
+    files: dict,
+    prepared: dict,
+    settings: dict,
+    execution_limit_seconds: int,
+    *,
+    model_path: Path | None = None,
+    tensor_parallel_size: int = 1,
+):
     import platform
     from importlib.metadata import distributions
 
@@ -78,6 +86,7 @@ def run_probe(files: dict, prepared: dict, settings: dict, execution_limit_secon
     cases = []
     routes = []
     final = {"stage": "finished", "completed": False, "passed": False}
+    model_path = MODEL_PATH if model_path is None else model_path
 
     def reserve(seconds):
         if execution_limit_seconds - (time.monotonic() - started) < seconds:
@@ -93,7 +102,11 @@ def run_probe(files: dict, prepared: dict, settings: dict, execution_limit_secon
             adapters = discover_adapters(root, adapter_extensions=ALLOWED_ADAPTER_EXTENSIONS)
             if set(adapters.adapters) != set(ADAPTER_NAMES):
                 raise ValueError("GPU adapter discovery differs from CPU preparation")
-            server, metadata = create_approved_server(submission_directory=root)
+            server, metadata = create_approved_server(
+                submission_directory=root,
+                model_path=model_path,
+                tensor_parallel_size=tensor_parallel_size,
+            )
             if metadata["checkpoint_manifest"] != prepared["checkpoint_manifest"]:
                 raise ValueError("Checkpoint manifest changed after CPU preparation")
             yield {"stage": "package-validated", "adapter_names": sorted(adapters.adapters)}
@@ -107,7 +120,7 @@ def run_probe(files: dict, prepared: dict, settings: dict, execution_limit_secon
             listing = requests.get(server.base_url + "/models", timeout=10)
             listing.raise_for_status()
             ids = {item["id"] for item in listing.json()["data"]}
-            if not {str(MODEL_PATH), *ADAPTER_NAMES}.issubset(ids):
+            if not {str(model_path), *ADAPTER_NAMES}.issubset(ids):
                 raise ValueError("Expected base/adapter models are absent from the server")
             for index, prompt in enumerate(settings["prompts"]):
                 case = {"prompt": prompt, "distributions": {}}
@@ -118,7 +131,7 @@ def run_probe(files: dict, prepared: dict, settings: dict, execution_limit_secon
                         + 30
                     )
                     name = condition.split("_")[0]
-                    model = str(MODEL_PATH) if name == "base" else f"probe_{name}"
+                    model = str(model_path) if name == "base" else f"probe_{name}"
                     response = requests.post(
                         server.base_url + "/completions",
                         json={

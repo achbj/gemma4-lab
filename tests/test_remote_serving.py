@@ -43,6 +43,14 @@ class ServingTests(unittest.TestCase):
                 self.assertEqual(settings["tensor_parallel_size"], 1)
                 self.assertFalse(settings["enable_lora"])
                 self.assertNotIn("max_lora_rank", settings)
+                alternate = root / "kaggle-model-view"
+                alternate.mkdir()
+                (alternate / "source-manifest.json").write_bytes(manifest.read_bytes())
+                remote_serving.create_approved_server(model_path=alternate, tensor_parallel_size=4)
+                self.assertEqual(settings["model"], str(alternate))
+                self.assertEqual(settings["tensor_parallel_size"], 4)
+                with self.assertRaisesRegex(ValueError, "positive integer"):
+                    remote_serving.create_approved_server(tensor_parallel_size=0)
                 manifest.write_text(json.dumps({"model": "unexpected checkpoint"}))
                 with self.assertRaisesRegex(ValueError, "approved checkpoint"):
                     remote_serving.create_approved_server()
