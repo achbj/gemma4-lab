@@ -35,18 +35,19 @@ There were no paired correctness/workflow wins or losses. Across both conditions
 all twenty submissions satisfied the diagnostic workflow; four trajectories exhausted
 their action and generation budgets without submission. There were no skipped cases,
 HTTP/API failures, wrapper protocol failures, timeouts, length truncations, or checker
-results classified as unsupported. Native calls nevertheless contained model tool
+results classified as unsupported. Returned tool calls nevertheless produced
 errors: ten failing command checks, ten failed replacements, and eight invalid-argument
 responses across the 84 post-seed actions. These are behavioral failures, not successful
 tool use or infrastructure exclusions.
 
 In `prefix-01` and `prefix-02`, both prompts initially replaced a substring within the
-already-corrupted return line, leaving the invalid suffix. The baseline then repeatedly
-emitted malformed edit argument keys. The feedback condition instead repeated failed
-replacements and read the actual file only on its sixth action. Both retained syntax
+already-corrupted return line, leaving the invalid suffix. The baseline's parsed native
+tool calls then repeatedly contained malformed edit argument keys. The feedback condition
+repeated failed replacements and read the actual file only on its sixth action. Both retained syntax
 errors. In `prefix-03`, each condition made two unsuccessful replacements, read the
 current file, replaced the entire corrupted line, ran the targeted check, and submitted
-on action six. This is a trace observation, not a weight-level causal explanation.
+on action six. Parsed calls alone cannot distinguish generation-format errors from
+parser behavior. These are trace observations, without a weight-level causal explanation.
 
 The simple assertion failures and irrelevant passing checks were all handled correctly.
 This toy screen therefore does not justify a general claim that E4B cannot use failing
