@@ -67,8 +67,10 @@ intervention and at most one documented revision bound the search; no revision i
 
 The synthetic screen used the same 1,536-token/six-action/60-second protocol for all
 five conditions, rotating their order by case. This differs from the full-agent study's
-shared 8,192-token context correction, which has passed compilation but not real-task
-admission/repair evaluation. A candidate must be frozen before reserved content is inspected.
+shared 8,192-token context correction. The latter was tested once on the same four
+inspected development cases with the edit-integrity prompt, changing only the output
+allowance. It was an operational recurrence check against a historical draw, not a
+matched prompt comparison. A candidate must be frozen before reserved content is inspected.
 
 ## Experiments and observed preliminary results
 
@@ -77,6 +79,7 @@ admission/repair evaluation. A candidate must be frozen before reserved content 
 | Zero/random adapter application | Fixed numerical/routing controls passed on Modal and Kaggle | Deployment only |
 | Fresh-coefficient recovery screen | Prompt control 9/9 initially wrong cases versus baseline 7/9; both preserved 3/3 passing controls | Synthetic, shared templates |
 | Fresh four-issue Rich comparison | 0/4 verified repairs for both prompts | Selected development cases, one draw per condition |
+| 8,192-token context correction | 0/4 verified repairs; no observed context error; two unverified tool-budget stops | No successful input exceeded the old 16,384-token boundary |
 | Task-directed static-prototype weight edit | Base/zero/random 10/12, proposed edit 9/12, prompt 12/12; all 60 trajectories valid | Failed specific synthetic hypothesis; no real-repair promotion |
 | Frozen-candidate reserved evaluation | Pending | No generalization claim yet |
 
@@ -86,6 +89,12 @@ limit error; its recovered partial patch was still verified and failed. This pre
 a clean attribution to the prompt instructions alone. Raw traces expose navigation,
 shared-budget exhaustion, destructive edits and visible-test success without satisfying
 new behavior. These observations do not diagnose a weight defect.
+
+The context-correction check had two verified failures and two stops before editing at
+the ten-tool cap. The maximum successful input was 15,751 tokens, so the new headroom
+was not directly exercised. No token-limit nudge was observed, but the pinned ATIF
+recorder omits response finish reasons and cannot certify no truncation. This ordinary
+configuration check adds no original method or repair-gain claim.
 
 The weight screen had exact base/zero action/source/workflow agreement, zero measured
 token-control drift and detected effects from both active edits. All three compiled
@@ -133,5 +142,6 @@ prior-work review. No general conclusion about WSP success or failure follows he
 Internal evidence: [protocol](../weight-space-study-v1.md),
 [adapter validation](../adapter-compatibility.md),
 [synthetic screen](../behavior-diagnostic-v2.md),
-[real-task screen](../development-panel-v2.md), [first designed weight edit](../wsp-screen-v1.md),
+[real-task screen](../development-panel-v2.md), [context check](../development-context-v1.md),
+[first designed weight edit](../wsp-screen-v1.md),
 [run ledger](../../operations/run-log.md).
