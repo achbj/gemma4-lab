@@ -8,6 +8,12 @@ Build an E4B coding agent, switching to E2B if serving compatibility or measured
 
 Treat weight-space programming as a bounded research experiment within this project. Do not make the entire competition attempt depend on it working.
 
+## Measured status, 5 November
+
+The [controlled adapter package](adapter-compatibility.md) now works on both Modal A10 and the official Kaggle image/L4x4 setup, with unchanged weights and fixed numerical/compiled-agent controls. This clears the tested inference deployment prerequisite. The small [development panel](development-panel-v1.md) still shows no repair gain from pagination, a longer task budget, or the feedback-only prompt; it is too small and inspected to establish generalization. All 68 reserved validation issues remain untouched.
+
+Next build focused behavioral diagnostics for edit integrity and handling failed tests, retain simple controls, and obtain fresh development evidence before selecting a weight intervention. New weight analysis/design still requires the user's Ultra checkpoint. The compatibility work is expected engineering validation, with no established original paper contribution.
+
 ## Budget constraint
 
 Use the authorized `ach-bj100` Modal credit for initial remote experiments and available Kaggle quota for official-environment checks. First remote baseline allocation: at most USD 2 estimated usage. Preserve the remaining credit until throughput and compatibility are measured. Proposed additional-spending allocations, not price estimates: EUR 20 for feasibility, EUR 50 for the most useful follow-up runs, and EUR 30 reserved for final verification or a necessary rerun. Total actual additional compute/API charges must remain at or below EUR 100. Keep a spend ledger before launching jobs. Credit balance and quota availability must be verified; do not assume a new grant or reset.
