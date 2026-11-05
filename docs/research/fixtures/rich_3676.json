@@ -1,0 +1,641 @@
+{
+  "source": "gemma-4-developer-agent",
+  "task_id": "rich_3676",
+  "files": [
+    {
+      "name": "embeddings/rich_2b5d648b2c62960deb6439f4204ed8fa6eb3cf7b.npz",
+      "size_bytes": 2421189,
+      "sha256": "c30558f7db34824a3be7ab26f4613504bd805709bacd6bef839f6840495756f7"
+    },
+    {
+      "name": "graphs/rich_2b5d648b2c62960deb6439f4204ed8fa6eb3cf7b.json",
+      "size_bytes": 2287445,
+      "sha256": "8fcdbfada1e3f1407f47c92075557b33c0290d3edeca4ec46f0f2eab3727f71f"
+    },
+    {
+      "name": "snapshots/rich_3676.tgz",
+      "size_bytes": 94371134,
+      "sha256": "1b710cece4a652416e4c635872032df7bced8b351222c9f5a19ca7d89ba74641"
+    },
+    {
+      "name": "wheels/Flask-2.2.5-py3-none-any.whl",
+      "size_bytes": 101817,
+      "sha256": "58107ed83443e86067e41eff4631b058178191a355886f8e479e347fa1285fdf"
+    },
+    {
+      "name": "wheels/annotated_types-0.7.0-py3-none-any.whl",
+      "size_bytes": 13643,
+      "sha256": "1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53"
+    },
+    {
+      "name": "wheels/annotated_types-0.8.0-py3-none-any.whl",
+      "size_bytes": 13427,
+      "sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0"
+    },
+    {
+      "name": "wheels/anyio-4.14.1-py3-none-any.whl",
+      "size_bytes": 124875,
+      "sha256": "4e5533c5b8ff0a24f5d7a176cbe6877129cd183893f66b537f8f227d10527d72"
+    },
+    {
+      "name": "wheels/anyio-4.14.2-py3-none-any.whl",
+      "size_bytes": 125813,
+      "sha256": "9f505dda5ac9f0c8309b5e8bd445a8c2bf7246f3ce950121e45ea15bc41d1494"
+    },
+    {
+      "name": "wheels/certifi-2026.6.17-py3-none-any.whl",
+      "size_bytes": 133289,
+      "sha256": "2227dcbaafe0d2f59279d1762ddddc37783ed4354594f194ffc31d20f41fc3db"
+    },
+    {
+      "name": "wheels/certifi-2026.7.22-py3-none-any.whl",
+      "size_bytes": 136983,
+      "sha256": "62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775"
+    },
+    {
+      "name": "wheels/charset_normalizer-3.4.7-py3-none-any.whl",
+      "size_bytes": 61958,
+      "sha256": "3dce51d0f5e7951f8bb4900c257dad282f49190fdbebecd4ba99bcc41fef404d"
+    },
+    {
+      "name": "wheels/charset_normalizer-3.4.9-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "size_bytes": 223149,
+      "sha256": "84fd18bcc17526fc2b3c1af7d2b9217d32c9c04448c16ec693b9b4f1985c3d33"
+    },
+    {
+      "name": "wheels/charset_normalizer-3.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "size_bytes": 248801,
+      "sha256": "b9af956078716df40d985fb0dfeb2c2120c5ca92ba4ff4b388acfd01cdc14d08"
+    },
+    {
+      "name": "wheels/click-8.2.1-py3-none-any.whl",
+      "size_bytes": 102215,
+      "sha256": "61a3265b914e850b85317d0b3109c7f8cd35a670f963866005d6ef1d5175a12b"
+    },
+    {
+      "name": "wheels/click-8.4.2-py3-none-any.whl",
+      "size_bytes": 119243,
+      "sha256": "e6f9f66136c816745b9d65817da91d61d957fb16e02e4dcd0552553c5a197b76"
+    },
+    {
+      "name": "wheels/colorama-0.4.6-py2.py3-none-any.whl",
+      "size_bytes": 25335,
+      "sha256": "4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"
+    },
+    {
+      "name": "wheels/editables-0.6-py3-none-any.whl",
+      "size_bytes": 5438,
+      "sha256": "d70e4698078a1d033e7786d9c64e5be070d058a67c21417024d38a58ac20aa43"
+    },
+    {
+      "name": "wheels/fastapi-0.141.1-py3-none-any.whl",
+      "size_bytes": 131954,
+      "sha256": "bfb91aa2d334c61cb35ba9a116fc123b3d3df31640b801cf57a7a78ec3f603b3"
+    },
+    {
+      "name": "wheels/flask-2.3.3-py3-none-any.whl",
+      "size_bytes": 96112,
+      "sha256": "f69fcd559dc907ed196ab9df0e48471709175e696d6e698dd4dbe940f96ce66b"
+    },
+    {
+      "name": "wheels/flask-3.1.3-py3-none-any.whl",
+      "size_bytes": 103424,
+      "sha256": "f4bcbefc124291925f1a26446da31a5178f9483862233b23c0c96a20701f670c"
+    },
+    {
+      "name": "wheels/flit_core-3.12.0-py3-none-any.whl",
+      "size_bytes": 45594,
+      "sha256": "e7a0304069ea895172e3c7bb703292e992c5d1555dd1233ab7b5621b5b69e62c"
+    },
+    {
+      "name": "wheels/hatchling-1.30.1-py3-none-any.whl",
+      "size_bytes": 77489,
+      "sha256": "161eacafb3c6f91526e92116d21426369f2c36e98c36a864f11a96345ad4ee31"
+    },
+    {
+      "name": "wheels/httpcore-1.0.9-py3-none-any.whl",
+      "size_bytes": 78784,
+      "sha256": "2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55"
+    },
+    {
+      "name": "wheels/httpx-0.28.1-py3-none-any.whl",
+      "size_bytes": 73517,
+      "sha256": "d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"
+    },
+    {
+      "name": "wheels/idna-3.18-py3-none-any.whl",
+      "size_bytes": 65455,
+      "sha256": "7f952cbe720b688055e3f87de14f5c3e5fdaa8bc3928985c4077ca689de849a2"
+    },
+    {
+      "name": "wheels/idna-3.19-py3-none-any.whl",
+      "size_bytes": 68550,
+      "sha256": "815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4"
+    },
+    {
+      "name": "wheels/iniconfig-2.3.0-py3-none-any.whl",
+      "size_bytes": 7484,
+      "sha256": "f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12"
+    },
+    {
+      "name": "wheels/itsdangerous-2.2.0-py3-none-any.whl",
+      "size_bytes": 16234,
+      "sha256": "c6242fc49e35958c8b15141343aa660db5fc54d4f13a1db01a3f5891b98700ef"
+    },
+    {
+      "name": "wheels/jinja2-3.1.6-py3-none-any.whl",
+      "size_bytes": 134899,
+      "sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"
+    },
+    {
+      "name": "wheels/markdown_it_py-4.2.0-py3-none-any.whl",
+      "size_bytes": 91687,
+      "sha256": "9f7ebbcd14fe59494226453aed97c1070d83f8d24b6fc3a3bcf9a38092641c4a"
+    },
+    {
+      "name": "wheels/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "size_bytes": 22947,
+      "sha256": "d6dd0be5b5b189d31db7cda48b91d7e0a9795f31430b7f271219ab30f1d3ac9d"
+    },
+    {
+      "name": "wheels/markupsafe-3.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "size_bytes": 22980,
+      "sha256": "ccfcd093f13f0f0b7fdd0f198b90053bf7b2f02a3927a30e63f3ccc9df56b676"
+    },
+    {
+      "name": "wheels/mdurl-0.1.2-py3-none-any.whl",
+      "size_bytes": 9979,
+      "sha256": "84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"
+    },
+    {
+      "name": "wheels/packaging-26.2-py3-none-any.whl",
+      "size_bytes": 100195,
+      "sha256": "5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e"
+    },
+    {
+      "name": "wheels/packaging-26.3-py3-none-any.whl",
+      "size_bytes": 129956,
+      "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+    },
+    {
+      "name": "wheels/pdm_backend-2.4.9-py3-none-any.whl",
+      "size_bytes": 115770,
+      "sha256": "8d1064751dadb0c40b1026b46826a448d85c8228a564985c62fb53d4aba538a1"
+    },
+    {
+      "name": "wheels/pluggy-1.6.0-py3-none-any.whl",
+      "size_bytes": 20538,
+      "sha256": "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"
+    },
+    {
+      "name": "wheels/poetry_core-2.4.1-py3-none-any.whl",
+      "size_bytes": 374834,
+      "sha256": "acf06f9537cd2625bdaec926d95d90b557ba15353bc71d27a3a8a441042b5316"
+    },
+    {
+      "name": "wheels/pydantic-1.10.15-py3-none-any.whl",
+      "size_bytes": 159931,
+      "sha256": "28e552a060ba2740d0d2aabe35162652c1459a0b9069fe0db7f4ee0e18e74d58"
+    },
+    {
+      "name": "wheels/pydantic-2.13.4-py3-none-any.whl",
+      "size_bytes": 472262,
+      "sha256": "45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba"
+    },
+    {
+      "name": "wheels/pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "size_bytes": 2094516,
+      "sha256": "926c9541b14b12b1681dca8a0b75feb510b06c6341b70a8e500c2fdcff837cce"
+    },
+    {
+      "name": "wheels/pydantic_core-2.46.4-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "size_bytes": 2094467,
+      "sha256": "9551187363ffc0de2a00b2e47c25aeaeb1020b69b668762966df15fc5659dd5a"
+    },
+    {
+      "name": "wheels/pygments-2.20.0-py3-none-any.whl",
+      "size_bytes": 1231151,
+      "sha256": "81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176"
+    },
+    {
+      "name": "wheels/pygments-2.21.0-py3-none-any.whl",
+      "size_bytes": 1250147,
+      "sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9"
+    },
+    {
+      "name": "wheels/pytest-6.2.5-py3-none-any.whl",
+      "size_bytes": 280654,
+      "sha256": "7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"
+    },
+    {
+      "name": "wheels/pytest-8.3.4-py3-none-any.whl",
+      "size_bytes": 343083,
+      "sha256": "50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6"
+    },
+    {
+      "name": "wheels/pytest-9.1.1-py3-none-any.whl",
+      "size_bytes": 386536,
+      "sha256": "37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c"
+    },
+    {
+      "name": "wheels/requests-2.33.0-py3-none-any.whl",
+      "size_bytes": 65017,
+      "sha256": "3324635456fa185245e24865e810cecec7b4caf933d7eb133dcde67d48cee69b"
+    },
+    {
+      "name": "wheels/requests-2.34.2-py3-none-any.whl",
+      "size_bytes": 73075,
+      "sha256": "2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0"
+    },
+    {
+      "name": "wheels/rich-15.0.0-py3-none-any.whl",
+      "size_bytes": 310654,
+      "sha256": "33bd4ef74232fb73fe9279a257718407f169c09b78a87ad3d296f548e27de0bb"
+    },
+    {
+      "name": "wheels/setuptools-82.0.1-py3-none-any.whl",
+      "size_bytes": 1006223,
+      "sha256": "a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb"
+    },
+    {
+      "name": "wheels/setuptools-83.0.0-py3-none-any.whl",
+      "size_bytes": 1008090,
+      "sha256": "29b23c360f22f414dc7336bb39178cc7bcbf6021ed2733cde173f09dba19abb3"
+    },
+    {
+      "name": "wheels/sniffio-1.3.1-py3-none-any.whl",
+      "size_bytes": 10235,
+      "sha256": "2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"
+    },
+    {
+      "name": "wheels/sqlalchemy-2.0.51-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "size_bytes": 3302756,
+      "sha256": "1bed1ee8b01da6088210aa9412023326fb98a599ba502e6118308601dcbef77f"
+    },
+    {
+      "name": "wheels/sqlalchemy-2.0.51-py3-none-any.whl",
+      "size_bytes": 1944334,
+      "sha256": "bb024d8b621d0be75f4f44ecc7c950450026e76d66dc8f791bb5331d7fed59d5"
+    },
+    {
+      "name": "wheels/sqlalchemy-2.0.52-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "size_bytes": 3398577,
+      "sha256": "8738008376d22f30f411ea3efecf39b51110b6996d80bb73786f30bcfdd5fd3b"
+    },
+    {
+      "name": "wheels/sqlmodel-0.0.24-py3-none-any.whl",
+      "size_bytes": 28622,
+      "sha256": "6778852f09370908985b667d6a3ab92910d0d5ec88adcaf23dbc242715ff7193"
+    },
+    {
+      "name": "wheels/sqlmodel-0.0.25-py3-none-any.whl",
+      "size_bytes": 28893,
+      "sha256": "c98234cda701fb77e9dcbd81688c23bb251c13bb98ce1dd8d4adc467374d45b7"
+    },
+    {
+      "name": "wheels/sqlmodel-0.0.27-py3-none-any.whl",
+      "size_bytes": 29131,
+      "sha256": "667fe10aa8ff5438134668228dc7d7a08306f4c5c4c7e6ad3ad68defa0e7aa49"
+    },
+    {
+      "name": "wheels/sqlmodel-0.0.31-py3-none-any.whl",
+      "size_bytes": 27093,
+      "sha256": "6d946d56cac4c2db296ba1541357cee2e795d68174e2043cd138b916794b1513"
+    },
+    {
+      "name": "wheels/sqlmodel-0.0.39-py3-none-any.whl",
+      "size_bytes": 29680,
+      "sha256": "90ebe92ce5cc11d7fff8dc7cb594790a102333c8fe7c14865254f6fc5c939795"
+    },
+    {
+      "name": "wheels/starlette-0.19.0-py3-none-any.whl",
+      "size_bytes": 60781,
+      "sha256": "de752c8f6c2ac6ef78bfe44058fc61dc04895eba24d4e47d2ae254ba5c125c5e"
+    },
+    {
+      "name": "wheels/starlette-0.20.0-py3-none-any.whl",
+      "size_bytes": 61857,
+      "sha256": "006a726e2398dc0c88c41b1810f66669932ada3ac8539e4ad6a981fde791343b"
+    },
+    {
+      "name": "wheels/starlette-0.21.0-py3-none-any.whl",
+      "size_bytes": 64044,
+      "sha256": "0efc058261bbcddeca93cad577efd36d0c8a317e44376bcfc0e097a2b3dc24a7"
+    },
+    {
+      "name": "wheels/starlette-0.22.0-py3-none-any.whl",
+      "size_bytes": 64327,
+      "sha256": "b5eda991ad5f0ee5d8ce4c4540202a573bb6691ecd0c712262d0bc85cf8f2c50"
+    },
+    {
+      "name": "wheels/starlette-0.23.0-py3-none-any.whl",
+      "size_bytes": 64540,
+      "sha256": "a0412476cff97f7296b7257b0c1e637d94da060b28767be5d70e98d1da9c4864"
+    },
+    {
+      "name": "wheels/starlette-0.24.0-py3-none-any.whl",
+      "size_bytes": 65780,
+      "sha256": "75e2b24d71ff4f7cb9a3338f83d234c2d4135bf80f52aeb105c02a01d72a5df1"
+    },
+    {
+      "name": "wheels/starlette-0.25.0-py3-none-any.whl",
+      "size_bytes": 66410,
+      "sha256": "774f1df1983fd594b9b6fb3ded39c2aa1979d10ac45caac0f4255cbe2acb8628"
+    },
+    {
+      "name": "wheels/starlette-0.26.0-py3-none-any.whl",
+      "size_bytes": 66843,
+      "sha256": "71595d3a19e9fdb359542538a89224b6bc11087170ad4473bc9051df5f5c7459"
+    },
+    {
+      "name": "wheels/starlette-0.27.0-py3-none-any.whl",
+      "size_bytes": 66978,
+      "sha256": "918416370e846586541235ccd38a474c08b80443ed31c578a418e2209b3eef91"
+    },
+    {
+      "name": "wheels/starlette-0.28.0-py3-none-any.whl",
+      "size_bytes": 68948,
+      "sha256": "e58b9fc402c579950260fbb6d57173395c4e62804c40d3ede7e9ef1074f0c579"
+    },
+    {
+      "name": "wheels/starlette-0.30.0-py3-none-any.whl",
+      "size_bytes": 68824,
+      "sha256": "cb15a5dfbd8de70c999bd1ae4b7e1ba625d74520bc57b28cc4086c7969431f2d"
+    },
+    {
+      "name": "wheels/starlette-0.31.0-py3-none-any.whl",
+      "size_bytes": 69834,
+      "sha256": "1aab7e04bcbafbb1867c1ce62f6b21c60a6e3cecb5a08dcee8abac7457fbcfbf"
+    },
+    {
+      "name": "wheels/starlette-0.32.0-py3-none-any.whl",
+      "size_bytes": 69953,
+      "sha256": "bbc0973cfeba8cc767ee9b53f28d0b85fa77ab5045083e13fb99e6e7bcf0b748"
+    },
+    {
+      "name": "wheels/starlette-0.35.0-py3-none-any.whl",
+      "size_bytes": 71012,
+      "sha256": "521234a99a5b5a11de1d0e2e8cea775cf2eeb081ad9dec3d9cecc8aed5ea11a7"
+    },
+    {
+      "name": "wheels/starlette-0.36.0-py3-none-any.whl",
+      "size_bytes": 71421,
+      "sha256": "84edbd1d9e7a315390acd5789f1e4f93e834eb90f6a7d98450ef35e001ac3877"
+    },
+    {
+      "name": "wheels/starlette-0.37.0-py3-none-any.whl",
+      "size_bytes": 71969,
+      "sha256": "53a95037cf6a563fca942ea16ba0260edce10258c213cbd554adc263fad22dfc"
+    },
+    {
+      "name": "wheels/starlette-0.38.0-py3-none-any.whl",
+      "size_bytes": 72053,
+      "sha256": "dd58f5854ca4fc476710e48d61b29fa4ff3639d42604a786f9d2091e64b95c7e"
+    },
+    {
+      "name": "wheels/starlette-0.38.1-py3-none-any.whl",
+      "size_bytes": 72004,
+      "sha256": "42688a287165bd6acc53068457b5cbf28a3204110b704930411728a633f0f7b8"
+    },
+    {
+      "name": "wheels/starlette-0.38.2-py3-none-any.whl",
+      "size_bytes": 72020,
+      "sha256": "4ec6a59df6bbafdab5f567754481657f7ed90dc9d69b0c9ff017907dd54faeff"
+    },
+    {
+      "name": "wheels/starlette-0.38.3-py3-none-any.whl",
+      "size_bytes": 72130,
+      "sha256": "0e4af343a4e59324b96fbe0f3c6ad8c3a908d73f12f5c80a797803a6c3ad4687"
+    },
+    {
+      "name": "wheels/starlette-0.38.4-py3-none-any.whl",
+      "size_bytes": 71427,
+      "sha256": "526f53a77f0e43b85f583438aee1a940fd84f8fd610353e8b0c1a77ad8a87e76"
+    },
+    {
+      "name": "wheels/starlette-0.38.5-py3-none-any.whl",
+      "size_bytes": 71447,
+      "sha256": "632f420a9d13e3ee2a6f18f437b0a9f1faecb0bc42e1942aa2ea0e379a4c4206"
+    },
+    {
+      "name": "wheels/starlette-0.38.6-py3-none-any.whl",
+      "size_bytes": 71451,
+      "sha256": "4517a1409e2e73ee4951214ba012052b9e16f60e90d73cfb06192c19203bbb05"
+    },
+    {
+      "name": "wheels/starlette-0.39.0-py3-none-any.whl",
+      "size_bytes": 73034,
+      "sha256": "57164a38948018134537d31367fb46ef9be6050a8e955fb4990235960ed03f92"
+    },
+    {
+      "name": "wheels/starlette-0.39.1-py3-none-any.whl",
+      "size_bytes": 73125,
+      "sha256": "0d31c90dacae588734e91b98cb4469fd37848ef23d2dd34355c5542bc827c02a"
+    },
+    {
+      "name": "wheels/starlette-0.39.2-py3-none-any.whl",
+      "size_bytes": 73219,
+      "sha256": "134dd6deb655a9775991d352312d53f1879775e5cc8a481f966e83416a2c3f71"
+    },
+    {
+      "name": "wheels/starlette-0.40.0-py3-none-any.whl",
+      "size_bytes": 73303,
+      "sha256": "c494a22fae73805376ea6bf88439783ecfba9aac88a43911b48c653437e784c4"
+    },
+    {
+      "name": "wheels/starlette-0.41.0-py3-none-any.whl",
+      "size_bytes": 73216,
+      "sha256": "a0193a3c413ebc9c78bff1c3546a45bb8c8bcb4a84cae8747d650a65bd37210a"
+    },
+    {
+      "name": "wheels/starlette-0.41.1-py3-none-any.whl",
+      "size_bytes": 73229,
+      "sha256": "eea797e3cd183a9fb10ac57c3d90610319aee7c34d2998fc0a8d71d27b59aae6"
+    },
+    {
+      "name": "wheels/starlette-0.41.2-py3-none-any.whl",
+      "size_bytes": 73259,
+      "sha256": "fbc189474b4731cf30fcef52f18a8d070e3f3b46c6a04c97579e85e6ffca942d"
+    },
+    {
+      "name": "wheels/starlette-0.41.3-py3-none-any.whl",
+      "size_bytes": 73225,
+      "sha256": "44cedb2b7c77a9de33a8b74b2b90e9f50d11fcf25d8270ea525ad71a25374ff7"
+    },
+    {
+      "name": "wheels/starlette-0.42.0-py3-none-any.whl",
+      "size_bytes": 73356,
+      "sha256": "02f877201a3d6d301714b5c72f15cac305ea5cc9e213c4b46a5af7eecad0d625"
+    },
+    {
+      "name": "wheels/starlette-0.43.0-py3-none-any.whl",
+      "size_bytes": 73291,
+      "sha256": "0e0a91f33c57b30820cbe0828f993df67f890f1e4ae48ed8080f24793446450c"
+    },
+    {
+      "name": "wheels/starlette-0.44.0-py3-none-any.whl",
+      "size_bytes": 73412,
+      "sha256": "19edeb75844c16dcd4f9dd72f22f9108c1539f3fc9c4c88885654fef64f85aea"
+    },
+    {
+      "name": "wheels/starlette-0.45.0-py3-none-any.whl",
+      "size_bytes": 71795,
+      "sha256": "c911ba0e86eed5b336931623f45e56a8c6d76c618f2749d9f5ed9ee55a5bf1bb"
+    },
+    {
+      "name": "wheels/starlette-0.45.1-py3-none-any.whl",
+      "size_bytes": 71488,
+      "sha256": "5656c0524f586e9148d9a3c1dd5257fb42a99892fb0dc6877dd76ef4d184aac3"
+    },
+    {
+      "name": "wheels/starlette-0.45.2-py3-none-any.whl",
+      "size_bytes": 71505,
+      "sha256": "4daec3356fb0cb1e723a5235e5beaf375d2259af27532958e2d79df549dad9da"
+    },
+    {
+      "name": "wheels/starlette-0.45.3-py3-none-any.whl",
+      "size_bytes": 71507,
+      "sha256": "dfb6d332576f136ec740296c7e8bb8c8a7125044e7c6da30744718880cdd059d"
+    },
+    {
+      "name": "wheels/starlette-0.46.0-py3-none-any.whl",
+      "size_bytes": 71991,
+      "sha256": "913f0798bd90ba90a9156383bcf1350a17d6259451d0d8ee27fc0cf2db609038"
+    },
+    {
+      "name": "wheels/starlette-0.46.1-py3-none-any.whl",
+      "size_bytes": 71995,
+      "sha256": "77c74ed9d2720138b25875133f3a2dae6d854af2ec37dceb56aef370c1d8a227"
+    },
+    {
+      "name": "wheels/starlette-0.46.2-py3-none-any.whl",
+      "size_bytes": 72037,
+      "sha256": "595633ce89f8ffa71a015caed34a5b2dc1c0cdb3f0f1fbd1e69339cf2abeec35"
+    },
+    {
+      "name": "wheels/starlette-0.47.0-py3-none-any.whl",
+      "size_bytes": 72796,
+      "sha256": "9d052d4933683af40ffd47c7465433570b4949dc937e20ad1d73b34e72f10c37"
+    },
+    {
+      "name": "wheels/starlette-0.47.1-py3-none-any.whl",
+      "size_bytes": 72747,
+      "sha256": "5e11c9f5c7c3f24959edbf2dffdc01bba860228acf657129467d8a7468591527"
+    },
+    {
+      "name": "wheels/starlette-0.47.2-py3-none-any.whl",
+      "size_bytes": 72984,
+      "sha256": "c5847e96134e5c5371ee9fac6fdf1a67336d5815e09eb2a01fdb57a351ef915b"
+    },
+    {
+      "name": "wheels/starlette-0.47.3-py3-none-any.whl",
+      "size_bytes": 72991,
+      "sha256": "89c0778ca62a76b826101e7c709e70680a1699ca7da6b44d38eb0a7e61fe4b51"
+    },
+    {
+      "name": "wheels/starlette-0.48.0-py3-none-any.whl",
+      "size_bytes": 73736,
+      "sha256": "0764ca97b097582558ecb498132ed0c7d942f233f365b86ba37770e026510659"
+    },
+    {
+      "name": "wheels/starlette-0.49.0-py3-none-any.whl",
+      "size_bytes": 74057,
+      "sha256": "6f3988f55dda3fd36e5640aeaceee5b691063e0ebc4d7851e1c3a6695fbdc8ba"
+    },
+    {
+      "name": "wheels/starlette-0.49.1-py3-none-any.whl",
+      "size_bytes": 74175,
+      "sha256": "d92ce9f07e4a3caa3ac13a79523bd18e3bc0042bb8ff2d759a8e7dd0e1859875"
+    },
+    {
+      "name": "wheels/starlette-0.49.2-py3-none-any.whl",
+      "size_bytes": 74208,
+      "sha256": "0d40c638fe75eaf16e3160103f6962918e0e17cf16cc09351e4c54b899a46291"
+    },
+    {
+      "name": "wheels/starlette-0.49.3-py3-none-any.whl",
+      "size_bytes": 74340,
+      "sha256": "b579b99715fdc2980cf88c8ec96d3bf1ce16f5a8051a7c2b84ef9b1cdecaea2f"
+    },
+    {
+      "name": "wheels/starlette-0.50.0-py3-none-any.whl",
+      "size_bytes": 74033,
+      "sha256": "9e5391843ec9b6e472eed1365a78c8098cfceb7a74bfd4d6b1c0c0095efb3bca"
+    },
+    {
+      "name": "wheels/starlette-0.51.0-py3-none-any.whl",
+      "size_bytes": 74133,
+      "sha256": "fb460a3d6fd3c958d729fdd96aee297f89a51b0181f16401fe8fd4cb6129165d"
+    },
+    {
+      "name": "wheels/starlette-0.52.0-py3-none-any.whl",
+      "size_bytes": 74238,
+      "sha256": "ae047dccdfedb2dd9f86efe182e259eb72bcf50e7cd49309a46c906160df2545"
+    },
+    {
+      "name": "wheels/starlette-0.52.1-py3-none-any.whl",
+      "size_bytes": 74272,
+      "sha256": "0029d43eb3d273bc4f83a08720b4912ea4b071087a3b48db01b7c839f7954d74"
+    },
+    {
+      "name": "wheels/starlette-1.3.1-py3-none-any.whl",
+      "size_bytes": 73632,
+      "sha256": "c7372aae11c3c3f26a42df7bd626cec2f47d03483d261d369516a615a53714c6"
+    },
+    {
+      "name": "wheels/starlette-1.6.0-py3-none-any.whl",
+      "size_bytes": 75969,
+      "sha256": "a86dd39d14bb45f85a3d18525215a9ef0cfd1f192ac793220e72598c90335f0c"
+    },
+    {
+      "name": "wheels/tqdm-4.70.0-py3-none-any.whl",
+      "size_bytes": 80184,
+      "sha256": "7f585706bfddbdebf89daac705b2dfcc16890130727d3197ca62c732b4310953"
+    },
+    {
+      "name": "wheels/typer-0.16.0-py3-none-any.whl",
+      "size_bytes": 46317,
+      "sha256": "1f79bed11d4d02d4310e3c1b7ba594183bcedb0ac73b27a9e5f28f6fb5b98855"
+    },
+    {
+      "name": "wheels/typer-0.21.1-py3-none-any.whl",
+      "size_bytes": 47381,
+      "sha256": "7985e89081c636b88d172c2ee0cfe33c253160994d47bdfdc302defd7d1f1d01"
+    },
+    {
+      "name": "wheels/typer-0.26.7-py3-none-any.whl",
+      "size_bytes": 122456,
+      "sha256": "5c87cfbc5d34491c5346ebf49c23e18d56ccb863268d3a8d592b26087c2f5e58"
+    },
+    {
+      "name": "wheels/typing_extensions-4.15.0-py3-none-any.whl",
+      "size_bytes": 44614,
+      "sha256": "f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"
+    },
+    {
+      "name": "wheels/typing_extensions-4.16.0-py3-none-any.whl",
+      "size_bytes": 45571,
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
+    },
+    {
+      "name": "wheels/urllib3-2.7.0-py3-none-any.whl",
+      "size_bytes": 131087,
+      "sha256": "9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897"
+    },
+    {
+      "name": "wheels/werkzeug-2.3.8-py3-none-any.whl",
+      "size_bytes": 242332,
+      "sha256": "bba1f19f8ec89d4d607a3bd62f1904bd2e609472d93cd85e9d4e178f472c3748"
+    },
+    {
+      "name": "wheels/werkzeug-3.1.8-py3-none-any.whl",
+      "size_bytes": 226459,
+      "sha256": "63a77fb8892bf28ebc3178683445222aa500e48ebad5ec77b0ad80f8726b1f50"
+    },
+    {
+      "name": "wheels/wheel-0.47.0-py3-none-any.whl",
+      "size_bytes": 32218,
+      "sha256": "212281cab4dff978f6cedd499cd893e1f620791ca6ff7107cf270781e587eced"
+    }
+  ]
+}
