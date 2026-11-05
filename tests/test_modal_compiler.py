@@ -70,4 +70,5 @@ class ContainerImportTests(unittest.TestCase):
                     self.assertEqual(resources[0]["max_containers"], 1)
                     self.assertEqual(resources[0]["retries"], 0)
                     self.assertEqual(resources[0]["cpu"], 2)
+                    self.assertEqual(resources[0]["memory"], 2048)
                     self.assertEqual(resources[0]["timeout"], 900)

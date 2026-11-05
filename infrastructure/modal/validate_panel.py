@@ -12,6 +12,7 @@ image = None
 if modal.is_local():
     if os.environ.get("MODAL_PROFILE") != "ach-bj100":
         raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
+    from gemma4_lab.config import candidate_directory
     from gemma4_lab.modal_runtime import build_runtime_image
     from gemma4_lab.remote_evaluation import fixture_identity
 
@@ -25,6 +26,7 @@ if modal.is_local():
         build_runtime_image(ROOT)
         .add_local_python_source("gemma4_lab")
         .add_local_dir(fixtures, "/fixtures")
+        .add_local_dir(candidate_directory(ROOT, "baseline-3m"), "/submission")
     )
 
 app = modal.App("gemma4-panel-cpu-controls")
