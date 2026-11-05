@@ -28,8 +28,8 @@ TOOL_DEFINITIONS = [
         "Read a file, optionally selecting inclusive one-based line numbers.",
         {
             "filepath": {"type": "string"},
-            "start_line": {"type": ["integer", "null"]},
-            "end_line": {"type": ["integer", "null"]},
+            "start_line": {"type": "integer", "nullable": True},
+            "end_line": {"type": "integer", "nullable": True},
         },
         ["filepath"],
     ),
