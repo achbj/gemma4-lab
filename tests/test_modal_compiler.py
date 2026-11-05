@@ -19,6 +19,7 @@ class ContainerImportTests(unittest.TestCase):
             "adapter_probe.py",
             "behavior_diagnostic.py",
             "validate_panel.py",
+            "inventory_checkpoint.py",
         ):
             with self.subTest(module=filename):
                 path = PROJECT_ROOT / "infrastructure/modal" / filename
@@ -55,6 +56,7 @@ class ContainerImportTests(unittest.TestCase):
             "adapter_probe.py",
             "behavior_diagnostic.py",
             "validate_panel.py",
+            "inventory_checkpoint.py",
         ):
             with self.subTest(module=name):
                 source = (PROJECT_ROOT / "infrastructure/modal" / name).read_text()
@@ -63,12 +65,16 @@ class ContainerImportTests(unittest.TestCase):
                     exec(compile(source, namespace["__file__"], "exec"), namespace)
                 self.assertEqual(namespace["ROOT"], Path("/"))
                 self.assertIsNone(namespace["image"])
-                if name == "validate_panel.py":
+                if name in {"validate_panel.py", "inventory_checkpoint.py"}:
                     resources = namespace["app"].resources
                     self.assertEqual(len(resources), 1)
                     self.assertNotIn("gpu", resources[0])
                     self.assertEqual(resources[0]["max_containers"], 1)
                     self.assertEqual(resources[0]["retries"], 0)
                     self.assertEqual(resources[0]["cpu"], 2)
-                    self.assertEqual(resources[0]["memory"], 2048)
-                    self.assertEqual(resources[0]["timeout"], 900)
+                    self.assertEqual(
+                        resources[0]["memory"], 2048 if name == "validate_panel.py" else 4096
+                    )
+                    self.assertEqual(
+                        resources[0]["timeout"], 900 if name == "validate_panel.py" else 120
+                    )
