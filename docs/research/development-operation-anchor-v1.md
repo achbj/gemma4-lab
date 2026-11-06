@@ -100,3 +100,58 @@ was preserved. The saved report is
 `artifacts/panels/development-operation-anchor-v1/20261106T075107Z-operation-anchor-root-only-v1-8k.json`.
 `artifacts/runtime-validation/root-only-v1-audit.json` records paired identities,
 trace scores and the replay digest. [Run ledger](../operations/run-log.md)
+
+## Line-anchored root navigation correction
+
+`line-anchored-root-v1-8k` isolates a single-factor correction to Section 1 of
+`prompts/system.md` against the saved `operation-anchor-root-only-v1-8k` control;
+all five companion files are byte-identical. The updated instructions require a
+line-numbered `grep -rnF` or `grep -rnE` search on the first navigation call (covering
+both named definitions and setting/attribute anchors), explain that `read_file`
+enforces a 150-line window starting at `start_line` so raising `end_line` with
+`start_line=1` still returns lines 1–150, specify `start_line=L, end_line=L+120`
+for definitions and `start_line=L-15, end_line=L+105` for in-body matches, and
+require tracing every branch in the target block before editing.
+
+The candidate reached **3/3 exact source targets** (versus **1/3** in the root-only
+control), **3/3 early targets** by navigation attempt 3 before the first mutation
+attempt (versus **0/3** in the control and all prior arms), and **1/3 verified
+repairs** (`rich_3905`, verifier exit 0) with zero paired repair losses and zero
+context or infrastructure terminations. Because the verified repair on `rich_3905`
+now follows early target exposure on navigation attempt 3 (completing in 6 tool
+calls and passing `pytest tests/test_progress.py` before submission), the candidate
+passes the prespecified early-localization gate on this inspected panel.
+
+| Case | Saved root-only control | Line-anchored root (`line-anchored-root-v1-8k`) |
+| --- | --- | --- |
+| `rich_3905` | Exact body on attempt 8 (`10` tool calls), verified fix | Exact body on attempt 3 (`6` tool calls, lines `1061–1180`), verified fix |
+| `rich_3777` | Partial source (`Live`), verifier exit 1 | Exact body on attempt 3 (`7` tool calls, lines `700–800`), edited `Console.is_interactive`, verifier exit 1 |
+| `rich_4006` | Read lines `150–190`, edited `_cell_len`, verifier exit 124 | Exact body on attempt 3 (`6` tool calls, lines `161–250`), edited `split_graphemes`, verifier exit 124 |
+
+In `rich_3905`, the agent ran `grep -rn "class Progress" rich/progress.py` on call 2,
+read lines `1061–1180` on call 3, guarded `Progress.stop` with `not self.disable`,
+ran `pytest tests/test_progress.py` (39 passed), and submitted its patch in 6 tool
+calls. The local replay `artifacts/runtime-validation/line-anchored-root-v1-public-progress-replay.json`
+confirms the exact original (`421e14119d96c277759b956e1f2680ca09290863`) and submitted
+(`756b749d265646d2c214fd8b575145f52ed9b404`) git blobs and expected disabled/enabled
+outputs. In `rich_3777`, `grep -rnE 'TTY|interactive' rich/` on call 1 located line 734
+of `rich/console.py`, and call 3 read lines `700–800`; the edit modified
+`Console.is_interactive` directly, but read `os.environ.get("TTY_INTERACTIVE", "1")`
+and only handled `"0"`, failing `test_tty_interactive` when `_environ={"TTY_INTERACTIVE": "1"}`
+was passed on a non-TTY `BytesIO`. In `rich_4006`, `grep -rnF 'def split_graphemes' rich/`
+on call 1 and `read_file` (`161–250`) on call 3 exposed the full `split_graphemes`
+loop; the agent patched `split_graphemes` rather than `_cell_len`, adding an `else: index += 1`
+fallback to the width check (`tests/test_cells.py` passed), while the early `continue`
+inside `if (character := text[index]) in SPECIAL:` for a leading `\ufe0f` remained
+unpatched and timed out in verification (exit 124).
+
+Charged tool calls fell from 22 to 19 (`6 + 7 + 6`, with zero tool-cap stops) and
+LLM calls from 29 to 25 (`8 + 9 + 8`), with 200,586 input and 8,907 output tokens
+(versus 247,462 and 9,416 in the root-only control) and zero delegated analyzer
+actions. The saved report is
+`artifacts/panels/development-operation-anchor-v1/20261106T122330Z-line-anchored-root-v1-8k.json`
+(reported GPU label `NVIDIA A10` versus `NVIDIA A10G` in the control), and the paired
+audit is `artifacts/runtime-validation/line-anchored-root-v1-audit.json`. Because this
+correction was designed from inspected traces on this three-case panel, fresh
+uninspected development transfer is required before any broad generalization claim.
+[Run ledger](../operations/run-log.md)
