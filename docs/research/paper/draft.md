@@ -81,6 +81,7 @@ matched prompt comparison. A candidate must be frozen before reserved content is
 | Fresh four-issue Rich comparison | 0/4 verified repairs for both prompts | Selected development cases, one draw per condition |
 | 8,192-token context correction | 0/4 verified repairs; no observed context error; two unverified tool-budget stops | No successful input exceeded the old 16,384-token boundary |
 | Tool cap 10 → 30 at fixed time and sampling | 0/4 verified repairs in both draws; four verified failures at cap 30 | All new attempts used at most nine charged calls; extra allowance unexercised |
+| Requested-behavior check prompt | One verified repair versus zero in the preserved ten-call control | Both arms scored zero on issue-specific checks. The candidate missed the promotion gate. |
 | Task-directed static-prototype weight edit | Base/zero/random 10/12, proposed edit 9/12, prompt 12/12; all 60 trajectories valid | Failed specific synthetic hypothesis; no real-repair promotion |
 | Frozen-candidate reserved evaluation | Pending | No generalization claim yet |
 
@@ -102,6 +103,14 @@ It reached verification on all four cases and failed all four. The two previousl
 unverified cases each used seven calls in the new draw, within the original cap. Thus
 their progress cannot establish that additional calls helped; the cap control failed
 its repair gate. This conventional comparison does not support a novelty claim.
+
+The requested-behavior prompt produced a verified one-line hash-cache fix in
+`rich_2943`. A separate public-issue replay failed on the original source and passed
+on the exact submitted patch. The agent had run 26 stock style tests without checking
+the stale hash after metadata removal. Both arms scored zero on issue-specific
+checks. One historical draw per arm and different observed GPU device labels limit
+attribution. This result establishes a development repair and leaves the proposed
+workflow mechanism unconfirmed. [Behavior-check report](../development-behavior-check-v1.md)
 
 The weight screen had exact base/zero action/source/workflow agreement, zero measured
 token-control drift and detected effects from both active edits. All three compiled
