@@ -82,6 +82,7 @@ matched prompt comparison. A candidate must be frozen before reserved content is
 | 8,192-token context correction | 0/4 verified repairs; no observed context error; two unverified tool-budget stops | No successful input exceeded the old 16,384-token boundary |
 | Tool cap 10 → 30 at fixed time and sampling | 0/4 verified repairs in both draws; four verified failures at cap 30 | All new attempts used at most nine charged calls; extra allowance unexercised |
 | Requested-behavior check prompt | One verified repair versus zero in the preserved ten-call control | Both arms scored zero on issue-specific checks. The candidate missed the promotion gate. |
+| Symbol-first and direct source localization | Each reproduced the same verified `rich_2943` patch, with two exact targets and one early target | The early-localization gate required two of three specified issues. Both candidates missed it. |
 | Task-directed static-prototype weight edit | Base/zero/random 10/12, proposed edit 9/12, prompt 12/12; all 60 trajectories valid | Failed specific synthetic hypothesis; no real-repair promotion |
 | Frozen-candidate reserved evaluation | Pending | No generalization claim yet |
 
@@ -111,6 +112,14 @@ the stale hash after metadata removal. Both arms scored zero on issue-specific
 checks. One historical draw per arm and different observed GPU device labels limit
 attribution. This result establishes a development repair and leaves the proposed
 workflow mechanism unconfirmed. [Behavior-check report](../development-behavior-check-v1.md)
+
+Two localization prompts reproduced the same one-line repair on the inspected panel.
+The first trial exposed a tool mismatch. An exact similarity query returns neighboring
+nodes after excluding the query itself. A bounded source lookup corrected the tool
+choice, while the agent still pursued `add_column` on the issue naming `add_row`.
+Both sampled candidates reached one of three early source targets. These traces
+separate lookup feasibility, selection of the requested operation and verified repair.
+[Localization report](../development-localization-v1.md)
 
 The weight screen had exact base/zero action/source/workflow agreement, zero measured
 token-control drift and detected effects from both active edits. All three compiled
