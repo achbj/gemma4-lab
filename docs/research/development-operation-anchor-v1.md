@@ -70,3 +70,33 @@ The control and candidate reports are under
 `20261106T072156Z-direct-localization-v1-8k.json` and
 `20261106T073015Z-operation-anchor-v1-8k.json`. The paired identity and trace audit is
 `artifacts/runtime-validation/operation-anchor-v1-audit.json`. [Run ledger](../operations/run-log.md)
+
+## Analyzer availability ablation
+
+Removing the analyzer registration gave **1/3 verified repairs** against **0/3** in
+the saved operation-anchor run. Exact source coverage fell from 2/3 to 1/3. Early
+coverage stayed at 0/3, so the repair came too late to pass the frozen advancement
+gate. Only `agent.yaml` differed. The historical control and candidate used the
+same three qualified issues, image, checkpoint, settings and reported A10G device
+label. The single sample per arm limits attribution.
+
+| Case | Saved control | Root agent |
+| --- | --- | --- |
+| `rich_3905` | Exact body on attempt 10, empty patch | Exact body on attempt 8, verified fix |
+| `rich_3777` | Partial source, exit 1 | Partial source, edit in `Live`, exit 1 |
+| `rich_4006` | Exact body on attempt 4, exit 124 | Read through line 190, partial source and exit 124 |
+
+The root agent guarded `Progress.stop` with `self.disable` and submitted its patch.
+Its pytest request hit the ten-call cap. The independent verifier passed the patch.
+A local replay of the exact original and submitted blobs shows the disabled output
+changes from a newline to empty output, with identical enabled output. The probe is
+`artifacts/runtime-validation/root-only-v1-public-progress-replay.json`.
+
+The candidate trace contains zero analyzer calls. The control delegated once and
+the analyzer made eight tool attempts. Charged tools fell from 27 to 22 and model
+calls from 38 to 29. Candidate input and output totals were 247,462 and 9,416 tokens.
+All three cases reached a recorded outcome and the Markdown qualification exclusion
+was preserved. The saved report is
+`artifacts/panels/development-operation-anchor-v1/20261106T075107Z-operation-anchor-root-only-v1-8k.json`.
+`artifacts/runtime-validation/root-only-v1-audit.json` records paired identities,
+trace scores and the replay digest. [Run ledger](../operations/run-log.md)
