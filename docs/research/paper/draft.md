@@ -84,6 +84,7 @@ matched prompt comparison. A candidate must be frozen before reserved content is
 | Requested-behavior check prompt | One verified repair versus zero in the preserved ten-call control | Both arms scored zero on issue-specific checks. The candidate missed the promotion gate. |
 | Symbol-first and direct source localization | Each reproduced the same verified `rich_2943` patch, with two exact targets and one early target | The early-localization gate required two of three specified issues. Both candidates missed it. |
 | Fresh operation anchoring pair | 0/3 verified repairs in both arms, exact bodies 1/3 → 2/3, early bodies 0/3 in both | One pre-run reference exclusion. Both arms missed the repair and early-target gate. |
+| Analyzer availability ablation | Root agent repaired 1/3 versus 0/3 in the saved control. Early bodies remained 0/3. | The verified progress repair followed the eighth navigation attempt. The candidate missed the early-target gate. |
 | Task-directed static-prototype weight edit | Base/zero/random 10/12, proposed edit 9/12, prompt 12/12; all 60 trajectories valid | Failed specific synthetic hypothesis; no real-repair promotion |
 | Frozen-candidate reserved evaluation | Pending | No generalization claim yet |
 
@@ -128,6 +129,14 @@ made a partial grapheme loop fix. A replay of the submitted blob showed terminat
 for a leading combining mark and a remaining timeout for a leading variation selector.
 The matched control and candidate each resolved zero of three qualified issues.
 [Fresh paired report](../development-operation-anchor-v1.md)
+
+Removing the analyzer tool registration yielded a verified disabled-progress fix
+on the same three cases. The source arrived on attempt eight and the visible test
+request was rejected at the tool cap. The independent verifier and a replay of the
+exact patch both passed. Source coverage fell from two exact bodies to one while
+the repair count rose from zero to one. This historical comparison supplies a
+verified example and a measure of tool use for the two sampled configurations.
+[Analyzer ablation](../development-operation-anchor-v1.md#analyzer-availability-ablation)
 
 The weight screen had exact base/zero action/source/workflow agreement, zero measured
 token-control drift and detected effects from both active edits. All three compiled
