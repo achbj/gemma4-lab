@@ -86,6 +86,7 @@ matched prompt comparison. A candidate must be frozen before reserved content is
 | Fresh operation anchoring pair | 0/3 verified repairs in both arms, exact bodies 1/3 → 2/3, early bodies 0/3 in both | One pre-run reference exclusion. Both arms missed the repair and early-target gate. |
 | Analyzer availability ablation | Root agent repaired 1/3 versus 0/3 in the saved control. Early bodies remained 0/3. | The verified progress repair followed the eighth navigation attempt. The candidate missed the early-target gate. |
 | Line-anchored root navigation | Root agent reached 3/3 exact bodies, 3/3 early bodies (by attempt 3) and 1/3 verified repairs (`rich_3905` in 6 calls). | Passed the early-localization gate on the inspected panel; requires fresh development transfer. |
+| Fresh line-anchored transfer vs starter @ 8k | Starter `wsp-base-v1` resolved 1/3 (`rich_4077`) vs 0/3 (`line-anchored-root-v1-8k`); exact bodies 1/3 each; early bodies 1/3 vs 0/3. | One pre-run reference exclusion (`rich_3486`). Mandatory `grep`-first missed missing-method owner `file_proxy.py` while fixing `start_line=1` clipping on `segment.py`. Candidate rejected. |
 | Task-directed static-prototype weight edit | Base/zero/random 10/12, proposed edit 9/12, prompt 12/12; all 60 trajectories valid | Failed specific synthetic hypothesis; no real-repair promotion |
 | Frozen-candidate reserved evaluation | Pending | No generalization claim yet |
 
@@ -149,6 +150,20 @@ attempt three before the first edit), while preserving 1/3 verified repairs
 submission). This passed the early-localization gate on the inspected panel; fresh
 uninspected transfer remains required.
 [Line-anchored navigation](../development-operation-anchor-v1.md#line-anchored-root-navigation-correction)
+
+Evaluating `line-anchored-root-v1-8k` on a fresh four-issue Rich panel against the
+context-corrected starter (`wsp-base-v1`) rejected promotion: after excluding one
+Python-3.12-unresolvable reference control (`rich_3486`), `wsp-base-v1` resolved 1/3
+(`rich_4077`: `proxy isatty`) versus 0/3 for `line-anchored-root-v1-8k`. The paired
+traces isolate an opposition between two task structures: the starter matched `proxy`
+to `./rich/file_proxy.py` in `## Workspace Layout` and added `FileProxy.isatty` in
+six calls, whereas mandatory `grep`-first searched `isatty` across existing
+definitions (`console.py`) and missed the target file; conversely, on >150-line
+existing-symbol tasks (`rich_3521`, `rich_3772`), `wsp-base-v1` clipped or repeated
+`start_line=1` reads (`1–150` four times on `traceback.py`), while
+`line-anchored-root-v1-8k` paginated cleanly and exposed the full `segment.py`
+target body on attempt four.
+[Fresh transfer report](../development-line-anchored-v1.md#paired-result)
 
 The weight screen had exact base/zero action/source/workflow agreement, zero measured
 token-control drift and detected effects from both active edits. All three compiled
