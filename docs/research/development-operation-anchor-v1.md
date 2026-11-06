@@ -31,3 +31,42 @@ Advance only with complete paired coverage, at least one verified repair win on 
 early-target gain, zero paired repair losses, and zero new context or infrastructure
 terminations. The frozen panel retains every qualification exclusion. Results use
 one sampled trajectory per arm per qualified issue. [Run ledger](../operations/run-log.md)
+
+## Paired result
+
+Both arms resolved **0/3** qualified cases. Exact source coverage rose from **1/3**
+to **2/3**, with **0/3 early targets** in each arm. The candidate missed the
+advancement gate. `rich_3130` was excluded from both arms because its CPU reference
+failed verification. The remaining unchanged/reference exits were 1/0, 1/0 and 124/0.
+
+| Qualified case | Direct lookup | Operation anchor | Verified repairs |
+| --- | --- | --- | --- |
+| `rich_3905` | Exact body on attempt 10 | Exact body returned by analyzer after attempt 10 | 0 → 0 |
+| `rich_3777` | Partial source, edit in console options | Partial source, edit in progress consumer | 0 → 0 |
+| `rich_4006` | Partial source, stopped at tool cap | Exact body on attempt 4, partial loop fix | 0 → 0 |
+
+The progress case exhausted both tool budgets before a successful edit. In the
+candidate trace the analyzer returned the exact `Progress.stop` body at step 15,
+after the ten navigation attempts. Both submitted empty patches. The interactivity
+traces show relevant files, but neither exposes the frozen assignment before editing.
+
+The candidate found the grapheme loop and patched the ordinary zero-width branch.
+All 56 visible `test_cells.py` tests passed. The independent verifier timed out with
+exit 124. A bounded local replay of the exact stock and submitted Git blobs shows why.
+The patch makes a leading combining mark (`U+0301`) terminate and leaves a leading
+variation selector (`U+FE0F`) in the stall path. Printable input returns the same span
+in both versions. The two-second subprocess limits and complete replay are recorded
+in `artifacts/runtime-validation/operation-anchor-v1-public-loop-replay.json`.
+
+The control used 30 charged tools and 39 model calls, with 328,899 input and 12,191
+output tokens. The candidate used 27 charged tools and 38 model calls, with 316,346
+input and 12,510 output tokens. Both arms used the same checkpoint, serving command,
+image, settings and ordered cases. The reported GPU labels were NVIDIA A10 and A10G
+respectively. The device labels, fixed arm order and single sample limit inference
+about timing and causal effects.
+
+The control and candidate reports are under
+`artifacts/panels/development-operation-anchor-v1/` with names
+`20261106T072156Z-direct-localization-v1-8k.json` and
+`20261106T073015Z-operation-anchor-v1-8k.json`. The paired identity and trace audit is
+`artifacts/runtime-validation/operation-anchor-v1-audit.json`. [Run ledger](../operations/run-log.md)
