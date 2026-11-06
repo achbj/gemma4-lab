@@ -85,6 +85,7 @@ matched prompt comparison. A candidate must be frozen before reserved content is
 | Symbol-first and direct source localization | Each reproduced the same verified `rich_2943` patch, with two exact targets and one early target | The early-localization gate required two of three specified issues. Both candidates missed it. |
 | Fresh operation anchoring pair | 0/3 verified repairs in both arms, exact bodies 1/3 → 2/3, early bodies 0/3 in both | One pre-run reference exclusion. Both arms missed the repair and early-target gate. |
 | Analyzer availability ablation | Root agent repaired 1/3 versus 0/3 in the saved control. Early bodies remained 0/3. | The verified progress repair followed the eighth navigation attempt. The candidate missed the early-target gate. |
+| Line-anchored root navigation | Root agent reached 3/3 exact bodies, 3/3 early bodies (by attempt 3) and 1/3 verified repairs (`rich_3905` in 6 calls). | Passed the early-localization gate on the inspected panel; requires fresh development transfer. |
 | Task-directed static-prototype weight edit | Base/zero/random 10/12, proposed edit 9/12, prompt 12/12; all 60 trajectories valid | Failed specific synthetic hypothesis; no real-repair promotion |
 | Frozen-candidate reserved evaluation | Pending | No generalization claim yet |
 
@@ -137,6 +138,17 @@ exact patch both passed. Source coverage fell from two exact bodies to one while
 the repair count rose from zero to one. This historical comparison supplies a
 verified example and a measure of tool use for the two sampled configurations.
 [Analyzer ablation](../development-operation-anchor-v1.md#analyzer-availability-ablation)
+
+A single-factor update to the root localization section (`line-anchored-root-v1-8k`)
+required a line-numbered `grep -rnF` or `grep -rnE` search on the first navigation
+call and explicit `start_line` windows matching the 150-line `read_file` cap. On the
+same three qualified cases, exact source coverage rose from 1/3 to 3/3 and early
+target coverage from 0/3 to 3/3 (all three target bodies visible by navigation
+attempt three before the first edit), while preserving 1/3 verified repairs
+(`rich_3905` in six tool calls, including a passing visible test run before
+submission). This passed the early-localization gate on the inspected panel; fresh
+uninspected transfer remains required.
+[Line-anchored navigation](../development-operation-anchor-v1.md#line-anchored-root-navigation-correction)
 
 The weight screen had exact base/zero action/source/workflow agreement, zero measured
 token-control drift and detected effects from both active edits. All three compiled
