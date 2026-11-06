@@ -22,6 +22,8 @@ The [context check](development-context-v1.md) and [30-call control](development
 
 The requested-behavior candidate resolved `rich_2943` with a one-line fix after correctly locating the affected method. An exact public regression replay confirmed the fix. Both arms scored zero on issue-specific checks, and the candidate missed the promotion gate. Preserve the repair and consider localization to the named operation as a separate measurable workflow outcome. One historical draw per arm and different reported GPU devices limit attribution. [Behavior-check report](development-behavior-check-v1.md)
 
+The two localization candidates reproduced the exact `rich_2943` patch and each reached one of three early targets. Both missed the early-coverage gate. The similarity tool excludes the queried node. Direct source lookup fixes that mismatch, while the agent still selected `add_column` on the `add_row` issue. The next distinct workflow hypothesis is to carry the issue's named operation into the source lookup and preserve it through edit selection. Evaluate that on a fresh development panel with fixed public-source targets. [Localization comparisons](development-localization-v1.md)
+
 A single weight revision requires a stronger falsifiable account of actual model states and frozen controls by 7 November. Close that branch if this evidence is unavailable by the checkpoint. Freeze evidence and claims on 10 November and target a submitted Writeup on 11 November, ahead of the 12 November 23:59 UTC deadline. Preserve failures, restrict the study to one primary intervention plus at most one revision, and require frozen-candidate reserved evaluation for transfer claims. Any later weight stage requires Ultra confirmation.
 
 ## Budget constraint
