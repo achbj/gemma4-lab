@@ -83,6 +83,7 @@ matched prompt comparison. A candidate must be frozen before reserved content is
 | Tool cap 10 → 30 at fixed time and sampling | 0/4 verified repairs in both draws; four verified failures at cap 30 | All new attempts used at most nine charged calls; extra allowance unexercised |
 | Requested-behavior check prompt | One verified repair versus zero in the preserved ten-call control | Both arms scored zero on issue-specific checks. The candidate missed the promotion gate. |
 | Symbol-first and direct source localization | Each reproduced the same verified `rich_2943` patch, with two exact targets and one early target | The early-localization gate required two of three specified issues. Both candidates missed it. |
+| Fresh operation anchoring pair | 0/3 verified repairs in both arms, exact bodies 1/3 → 2/3, early bodies 0/3 in both | One pre-run reference exclusion. Both arms missed the repair and early-target gate. |
 | Task-directed static-prototype weight edit | Base/zero/random 10/12, proposed edit 9/12, prompt 12/12; all 60 trajectories valid | Failed specific synthetic hypothesis; no real-repair promotion |
 | Frozen-candidate reserved evaluation | Pending | No generalization claim yet |
 
@@ -120,6 +121,13 @@ choice, while the agent still pursued `add_column` on the issue naming `add_row`
 Both sampled candidates reached one of three early source targets. These traces
 separate lookup feasibility, selection of the requested operation and verified repair.
 [Localization report](../development-localization-v1.md)
+
+The fresh paired screen carried the issue operation through source lookup and edit
+selection. The agent saw one additional exact body after the early threshold and
+made a partial grapheme loop fix. A replay of the submitted blob showed termination
+for a leading combining mark and a remaining timeout for a leading variation selector.
+The matched control and candidate each resolved zero of three qualified issues.
+[Fresh paired report](../development-operation-anchor-v1.md)
 
 The weight screen had exact base/zero action/source/workflow agreement, zero measured
 token-control drift and detected effects from both active edits. All three compiled
