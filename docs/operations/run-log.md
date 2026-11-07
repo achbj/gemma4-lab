@@ -543,3 +543,9 @@
 ## 8 November 2026 — v3 CPU packaging allocation (α = 4)
 
 - Same builder and bounds as the 8 November v2 packaging (one CPU container, 2 cores/8 GiB, 600-second execution, 900-second startup, network blocked, zero retries; bound USD 0.066, reserve USD 0.10). Inputs: the preserved v2 capture and the preserved v1 `wsp_read` adapter; α = 4.0; realized shift must reproduce α·d within 5%.
+- Packaging passed (app `ap-EH2lsOBYTe4FPgZbJBFUTT`, stopped; `artifacts/wsp-v2-prepare/20261107T234544Z-alpha4p0/prepare.json`, SHA-256 `aa09a9892ef1c58fa47268fdf8607c59cfd3b84f55be5a7631e12b78944e145a`): α = 4, realized shift error 0.17%, cosine 0.9999987 with `d`, delta Frobenius norm 7.149 for the edit and the sign-flipped copy and 7.148 for the random control, zero control zero B; all five aliases pass official discovery and compilation.
+
+## 8 November 2026 — v3 primary panel allocation
+
+- Frozen protocol [weight-space-study-v3.md](../research/weight-space-study-v3.md) (SHA-256 `5f4e9cc976b504bfea398bbf1a01545451ff63524cd72deb5874989a11ce1668`), fresh cases `configs/wsp-v3-cases.json`, panel `configs/wsp-v3-panel.json`. Six arms (base, zero, random, a, neg, prompt) × 36 fresh evaluation cases = 216 trajectories, same protocol as v2 (six actions, 60 seconds, 1,536 tokens, temperature 0, seed 20261105; arm order rotates by case index). Gates: `assess_v2` with the six-arm list, unit-tested. The terminal event no longer carries per-case rows or a large server log (v2's was lost to the inline-result limit); rows still stream into the report. Reserved issues untouched.
+- Bounds: one A10G batch on `onepiecification`, 2 cores/16 GiB, 1,800-second execution, 900-second startup, one container, network blocked, scale-down 2 seconds. Bound USD 0.9927 at A10G USD 1.10/hour, CPU USD 0.0473/core-hour, RAM USD 0.008/GiB-hour; reserve USD 1.20. Cancel if unscheduled after 15 minutes. Cumulative v3 spend estimate after this job: about USD 1.7.
