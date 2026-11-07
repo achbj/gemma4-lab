@@ -1,0 +1,259 @@
+{
+ "version": 1,
+ "name": "wsp-v3-cases",
+ "label": "wsp-v3-cases",
+ "cases": [
+  {
+   "id": "v3-eval-prefix-01",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 6,
+   "offset": -4
+  },
+  {
+   "id": "v3-eval-prefix-02",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 3,
+   "offset": 9
+  },
+  {
+   "id": "v3-eval-prefix-03",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -3,
+   "offset": 9
+  },
+  {
+   "id": "v3-eval-prefix-04",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -3,
+   "offset": 7
+  },
+  {
+   "id": "v3-eval-prefix-05",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 3,
+   "offset": -1
+  },
+  {
+   "id": "v3-eval-prefix-06",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 2,
+   "offset": 6
+  },
+  {
+   "id": "v3-eval-prefix-07",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 5,
+   "offset": 9
+  },
+  {
+   "id": "v3-eval-prefix-08",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 3,
+   "offset": 7
+  },
+  {
+   "id": "v3-eval-prefix-09",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -5,
+   "offset": -7
+  },
+  {
+   "id": "v3-eval-prefix-10",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -5,
+   "offset": 5
+  },
+  {
+   "id": "v3-eval-prefix-11",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -7,
+   "offset": 4
+  },
+  {
+   "id": "v3-eval-prefix-12",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 2,
+   "offset": -2
+  },
+  {
+   "id": "v3-eval-prefix-13",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -2,
+   "offset": -8
+  },
+  {
+   "id": "v3-eval-prefix-14",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -6,
+   "offset": 1
+  },
+  {
+   "id": "v3-eval-prefix-15",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -5,
+   "offset": -2
+  },
+  {
+   "id": "v3-eval-prefix-16",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -5,
+   "offset": 4
+  },
+  {
+   "id": "v3-eval-prefix-17",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -5,
+   "offset": -8
+  },
+  {
+   "id": "v3-eval-prefix-18",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 7,
+   "offset": 3
+  },
+  {
+   "id": "v3-eval-prefix-19",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 5,
+   "offset": 4
+  },
+  {
+   "id": "v3-eval-prefix-20",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -2,
+   "offset": -1
+  },
+  {
+   "id": "v3-eval-prefix-21",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": 7,
+   "offset": 5
+  },
+  {
+   "id": "v3-eval-prefix-22",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -2,
+   "offset": 8
+  },
+  {
+   "id": "v3-eval-prefix-23",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -4,
+   "offset": -4
+  },
+  {
+   "id": "v3-eval-prefix-24",
+   "role": "eval",
+   "family": "prefix_corruption",
+   "factor": -6,
+   "offset": 7
+  },
+  {
+   "id": "v3-eval-failing-01",
+   "role": "eval",
+   "family": "failing_assertion",
+   "factor": -3,
+   "offset": -1
+  },
+  {
+   "id": "v3-eval-failing-02",
+   "role": "eval",
+   "family": "failing_assertion",
+   "factor": -5,
+   "offset": 7
+  },
+  {
+   "id": "v3-eval-failing-03",
+   "role": "eval",
+   "family": "failing_assertion",
+   "factor": -3,
+   "offset": -4
+  },
+  {
+   "id": "v3-eval-failing-04",
+   "role": "eval",
+   "family": "failing_assertion",
+   "factor": -5,
+   "offset": -9
+  },
+  {
+   "id": "v3-eval-failing-05",
+   "role": "eval",
+   "family": "failing_assertion",
+   "factor": 6,
+   "offset": -9
+  },
+  {
+   "id": "v3-eval-failing-06",
+   "role": "eval",
+   "family": "failing_assertion",
+   "factor": -7,
+   "offset": 8
+  },
+  {
+   "id": "v3-eval-passing-01",
+   "role": "eval",
+   "family": "passing_control",
+   "factor": -6,
+   "offset": 9
+  },
+  {
+   "id": "v3-eval-passing-02",
+   "role": "eval",
+   "family": "passing_control",
+   "factor": -4,
+   "offset": -9
+  },
+  {
+   "id": "v3-eval-passing-03",
+   "role": "eval",
+   "family": "passing_control",
+   "factor": 5,
+   "offset": -1
+  },
+  {
+   "id": "v3-eval-passing-04",
+   "role": "eval",
+   "family": "passing_control",
+   "factor": -4,
+   "offset": 4
+  },
+  {
+   "id": "v3-eval-passing-05",
+   "role": "eval",
+   "family": "passing_control",
+   "factor": -4,
+   "offset": -8
+  },
+  {
+   "id": "v3-eval-passing-06",
+   "role": "eval",
+   "family": "passing_control",
+   "factor": 3,
+   "offset": 1
+  }
+ ]
+}
