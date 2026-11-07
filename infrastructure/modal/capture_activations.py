@@ -120,7 +120,12 @@ def _capture(prompts: list[str]) -> dict:
 
     results = []
     for prompt in prompts:
-        ids = tokenizer(prompt, return_tensors="pt").to("cuda")
+        ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False)
+        if tokenizer.bos_token_id is not None:
+            bos = torch.tensor([[tokenizer.bos_token_id]])
+            ids["input_ids"] = torch.cat([bos, ids["input_ids"]], dim=1)
+            ids["attention_mask"] = torch.ones_like(ids["input_ids"])
+        ids = ids.to("cuda")
         captured.clear()
         with torch.no_grad():
             out = model(**ids, output_hidden_states=True)
@@ -145,6 +150,23 @@ def _capture(prompts: list[str]) -> dict:
         )
     for handle in handles:
         handle.remove()
+    first = o_proj[names[0]]
+    report["o_proj_parameters"] = {k: list(v.shape) for k, v in first.named_parameters()}
+    report["o_proj_buffers"] = {k: list(v.shape) for k, v in first.named_buffers()}
+    report["bos_token_id"] = tokenizer.bos_token_id
+    # Semantic control: the chat-templated model should answer a trivial question.
+    chat = tokenizer.apply_chat_template(
+        [{"role": "user", "content": "What is the capital of France? Answer in one word."}],
+        add_generation_prompt=True,
+        return_tensors="pt",
+        return_dict=True,
+    ).to("cuda")
+    with torch.no_grad():
+        generated = model.generate(**chat, max_new_tokens=16, do_sample=False)
+    report["chat_control"] = {
+        "prompt_tokens": int(chat["input_ids"].shape[1]),
+        "reply": tokenizer.decode(generated[0, chat["input_ids"].shape[1] :]),
+    }
     report["results"] = results
     report["peak_gpu_memory_gib"] = torch.cuda.max_memory_allocated() / 1024**3
     report["total_seconds"] = time.monotonic() - started
