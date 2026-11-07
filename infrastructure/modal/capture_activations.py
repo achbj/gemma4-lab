@@ -47,15 +47,25 @@ volume = modal.Volume.from_name("gemma4-competition-model-cache")
     block_network=True,
     volumes={"/cache": volume},
 )
-def capture(prompts: list[str]) -> dict:
+def capture(prompts: list[str]) -> str:
+    """Return plain JSON text: torch's version type cannot be unpickled locally."""
+    import traceback
+
+    try:
+        return json.dumps(_capture(prompts))
+    except Exception:
+        return json.dumps({"failed": traceback.format_exc()[-3000:]})
+
+
+def _capture(prompts: list[str]) -> dict:
     import time
 
     import torch
     import transformers
 
     report = {
-        "torch": torch.__version__,
-        "transformers": transformers.__version__,
+        "torch": str(torch.__version__),
+        "transformers": str(transformers.__version__),
         "gpu": torch.cuda.get_device_name(0),
         "load_attempts": [],
     }
@@ -143,7 +153,7 @@ def capture(prompts: list[str]) -> dict:
 
 @app.local_entrypoint()
 def main():
-    result = capture.remote(PROMPTS)
+    result = json.loads(capture.remote(PROMPTS))
     result["profile"] = "onepiecification"
     result["input_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     destination = (
