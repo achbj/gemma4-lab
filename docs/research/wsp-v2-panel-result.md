@@ -50,3 +50,25 @@ headroom was real and the failure is the edit's, not the panel's.
   holds the console only.
 - Differences from `ach-bj100` runs: new workspace and rebuilt image, so cross-run comparisons
   with earlier screens are indicative only; base, zero and repeat agree exactly within this run.
+
+## Post-hoc diagnostic (exploratory, not a gate)
+
+Run after the gate failed, on the 24 evaluation target prompts, in Transformers with a dense
+simulation of the same construction (`artifacts/wsp-v2-diagnose/20261107T233604Z.json`, SHA-256 `64c22178bbd3cb4f75e8f50081a678275a7726eb3521ccccbd33b6c7da0c3951`). It cannot rescue the v2
+outcome; it motivates, at most, a new pre-registered experiment.
+
+- **The trigger fires and the shift generalizes.** The edit's key dot product on evaluation
+  decision points averages 0.99 (design value 1.0, range 0.87–1.02); key cosine with the design
+  key 0.9995; the evaluation-set teacher-minus-base shift has cosine 0.9992 with the design `d`.
+  The cases differ only in coefficients, so this is expected, not evidence of broad transfer.
+- **Direction and sign are right; magnitude is far too small.** Teacher-forced
+  `log P(read_file) − log P(edit_file)` for the first tool call, base prompt: −0.67 nats at α=0,
+  −0.47 at α=1, −0.29 at α=2, +0.15 at α=4, +0.91 at α=8, and −0.85 at α=−1 (monotone in α).
+  The edit-integrity prompt reaches +2.65 nats. The fraction of cases preferring the reread is
+  0/24 at α=0 and α=1, 1/24 at α=2, 22/24 at α=4 and 24/24 at α=8.
+- **So the α=1 rank-one shift of one layer's mean prompt effect recovers about 6% of the
+  prompt's margin;** the prompt's effect is spread over many layers and positions. The frozen α=2
+  revision would also have failed (margin still negative), consistent with it not being authorized.
+- **Not shown:** whether α ≥ 4 yields complete, correct workflows when sampled, or leaves
+  non-target behaviour intact. The α values were read off evaluation-case prompts, so any follow-up
+  must choose α from design cases only and test on fresh cases.
