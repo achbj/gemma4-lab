@@ -66,7 +66,6 @@ volume = modal.Volume.from_name("gemma4-competition-model-cache")
     max_containers=1,
     min_containers=0,
     scaledown_window=2,
-    retries=0,
     block_network=True,
     volumes={"/cache": volume},
     is_generator=True,
