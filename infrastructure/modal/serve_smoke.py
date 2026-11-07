@@ -29,8 +29,8 @@ image = None
 CONFIG = {}
 CANDIDATE = "baseline"
 if modal.is_local():
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100":
-        raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification":
+        raise ValueError("Run explicitly with MODAL_PROFILE=onepiecification")
     from gemma4_lab.config import candidate_directory, estimate_run, load_config
 
     config_path = (ROOT / os.environ.get("GEMMA4_RUN_CONFIG", "configs/baseline.toml")).resolve()

@@ -108,8 +108,8 @@ def stage_model(download_url: str, expected_files: dict[str, int]) -> dict:
 
 @app.local_entrypoint()
 def main():
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100":
-        raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification":
+        raise ValueError("Run explicitly with MODAL_PROFILE=onepiecification")
     from datetime import UTC, datetime
 
     from kaggle.api.kaggle_api_extended import (

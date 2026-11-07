@@ -27,8 +27,8 @@ RESOURCES = {
     "scaledown_seconds": 2,
 }
 if modal.is_local():
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100":
-        raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification":
+        raise ValueError("Run explicitly with MODAL_PROFILE=onepiecification")
     from gemma4_lab.config import estimate_run, load_config
     from gemma4_lab.modal_runtime import build_runtime_image
 
@@ -135,8 +135,8 @@ def _prepared_inputs(prepared: str):
 
 @app.local_entrypoint()
 def main(prepared: str):
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100" or image is None:
-        raise ValueError("Use the local entrypoint with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification" or image is None:
+        raise ValueError("Use the local entrypoint with MODAL_PROFILE=onepiecification")
     if image.object_id != EXPECTED_IMAGE:
         raise ValueError("GPU screen runtime differs from the pinned image")
     source, payload, files = _prepared_inputs(prepared)

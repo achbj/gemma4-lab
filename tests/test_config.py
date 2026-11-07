@@ -42,7 +42,7 @@ class RunPlanTests(unittest.TestCase):
         self.config["modal"]["profile"] = "other-account"
         with self.assertRaisesRegex(ValueError, "authorized"):
             estimate_run(self.config)
-        self.config["modal"]["profile"] = "ach-bj100"
+        self.config["modal"]["profile"] = "onepiecification"
         self.config["modal"]["gpu_count"] = 4
         with self.assertRaisesRegex(ValueError, "one GPU"):
             estimate_run(self.config)

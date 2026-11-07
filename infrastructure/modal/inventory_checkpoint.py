@@ -24,14 +24,14 @@ RESOURCES = {
     "scaledown_seconds": 2,
 }
 if modal.is_local():
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100":
-        raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification":
+        raise ValueError("Run explicitly with MODAL_PROFILE=onepiecification")
     from gemma4_lab.modal_runtime import build_runtime_image
 
     SETTINGS = tomllib.loads((ROOT / "configs/wsp-inspection-v1.toml").read_text())
     RESOURCES = SETTINGS["modal"]
     if (
-        RESOURCES["profile"] != "ach-bj100"
+        RESOURCES["profile"] != "onepiecification"
         or RESOURCES["max_containers"] != 1
         or SETTINGS["model"] != MODEL_SOURCE
         or SETTINGS["stage"] != "metadata-only"
@@ -74,8 +74,8 @@ def inventory() -> dict:
 
 @app.local_entrypoint()
 def main():
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100" or image is None:
-        raise ValueError("Use the local entrypoint with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification" or image is None:
+        raise ValueError("Use the local entrypoint with MODAL_PROFILE=onepiecification")
     destination = (
         ROOT
         / "artifacts/wsp-inspection-v1"

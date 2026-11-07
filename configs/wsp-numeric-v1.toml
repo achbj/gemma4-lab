@@ -12,7 +12,7 @@ rank = 8
 seed = 20261105
 
 [modal]
-profile = "ach-bj100"
+profile = "onepiecification"
 cpu_cores = 2
 memory_gib = 6
 timeout_seconds = 600

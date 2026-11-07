@@ -41,8 +41,8 @@ def estimate_run(config: dict[str, Any]) -> dict[str, Any]:
     and idle time are included; builds, staging, storage, and egress are excluded.
     """
     modal = config["modal"]
-    if modal["profile"] != "ach-bj100":
-        raise ValueError("Only Modal profile ach-bj100 is authorized for this project")
+    if modal["profile"] != "onepiecification":
+        raise ValueError("Only Modal profile onepiecification is authorized for this project")
     checked_hourly_rates = {"L4": Decimal("0.80"), "A10G": Decimal("1.10")}
     if modal["gpu"] not in checked_hourly_rates:
         raise ValueError("Only documented L4/A10G baseline plans are supported")

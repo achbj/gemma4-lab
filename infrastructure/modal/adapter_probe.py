@@ -28,8 +28,8 @@ RESOURCES = {
     "scaledown_seconds": 2,
 }
 if modal.is_local():
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100":
-        raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification":
+        raise ValueError("Run explicitly with MODAL_PROFILE=onepiecification")
     from gemma4_lab.config import estimate_run, load_config
     from gemma4_lab.modal_runtime import build_runtime_image
 
@@ -187,8 +187,8 @@ def run_gpu(preflight: str) -> None:
 
 @app.local_entrypoint()
 def main(prepare_only: bool = False, preflight: str = ""):
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100" or image is None:
-        raise ValueError("Start from the local entrypoint with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification" or image is None:
+        raise ValueError("Start from the local entrypoint with MODAL_PROFILE=onepiecification")
     if prepare_only == bool(preflight):
         raise ValueError("Select exactly one of --prepare-only or --preflight REPORT")
     if preflight:

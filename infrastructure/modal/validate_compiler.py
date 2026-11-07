@@ -1,6 +1,6 @@
 """CPU-only compilation of the reference YAML using official compiler wheels.
 
-Run with MODAL_PROFILE=ach-bj100. No model is loaded or called. Model and tool
+Run with MODAL_PROFILE=onepiecification. No model is loaded or called. Model and tool
 registries are deliberately inert; passing this check is not scorer validation.
 """
 
@@ -129,13 +129,13 @@ def validate_compiler() -> dict:
 
 @app.local_entrypoint()
 def main():
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100":
-        raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification":
+        raise ValueError("Run explicitly with MODAL_PROFILE=onepiecification")
     if image is None:
         raise RuntimeError("Compiler validation must start from the local entry point")
     result = validate_compiler.remote()
     result["candidate"] = CANDIDATE
-    result["profile"] = "ach-bj100"
+    result["profile"] = "onepiecification"
     result["git_commit"] = subprocess.check_output(
         ["git", "rev-parse", "HEAD"],
         cwd=ROOT,

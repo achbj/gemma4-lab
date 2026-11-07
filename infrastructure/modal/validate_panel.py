@@ -11,8 +11,8 @@ ROOT = Path(__file__).resolve().parents[2] if modal.is_local() else Path("/")
 image = None
 CANDIDATE = "baseline-3m"
 if modal.is_local():
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100":
-        raise ValueError("Run explicitly with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification":
+        raise ValueError("Run explicitly with MODAL_PROFILE=onepiecification")
     from gemma4_lab.config import candidate_directory
     from gemma4_lab.modal_runtime import build_runtime_image
     from gemma4_lab.remote_evaluation import fixture_identity
@@ -72,8 +72,8 @@ def validate_fixture(task_payload: dict) -> dict:
 
 @app.local_entrypoint()
 def main(panel: str):
-    if os.environ.get("MODAL_PROFILE") != "ach-bj100" or image is None:
-        raise ValueError("Use the local entrypoint with MODAL_PROFILE=ach-bj100")
+    if os.environ.get("MODAL_PROFILE") != "onepiecification" or image is None:
+        raise ValueError("Use the local entrypoint with MODAL_PROFILE=onepiecification")
     from gemma4_lab.panels import load_development_panel, run_control_panel
 
     settings = load_development_panel(ROOT, ROOT / panel)
