@@ -21,7 +21,10 @@ if modal.is_local():
     from gemma4_lab.config import estimate_run, load_config
     from gemma4_lab.modal_runtime import build_runtime_image
 
-    SETTINGS = json.loads((ROOT / "configs/wsp-v2-panel.json").read_text())
+    PANEL = os.environ.get("GEMMA4_PANEL", "configs/wsp-v2-panel.json")
+    if PANEL not in ("configs/wsp-v2-panel.json", "configs/wsp-v3-panel.json"):
+        raise ValueError("Unknown frozen panel file")
+    SETTINGS = json.loads((ROOT / PANEL).read_text())
     CONFIG = load_config(ROOT / SETTINGS["runtime_config"])
     ESTIMATE, RESOURCES = estimate_run(CONFIG), CONFIG["modal"]
     CASES = [
@@ -35,13 +38,13 @@ if modal.is_local():
     }
     CONTEXT = (ROOT / SETTINGS["context_prompt"]).read_text()
     names = [
-        "configs/wsp-v2-panel.json",
+        PANEL,
         SETTINGS["runtime_config"],
         SETTINGS["cases"],
         SETTINGS["base_prompt"],
         SETTINGS["prompt_control"],
         SETTINGS["context_prompt"],
-        "docs/research/weight-space-study-v2.md",
+        SETTINGS["protocol"],
         "src/gemma4_lab/wsp_v2_panel.py",
         "src/gemma4_lab/wsp_v2_adapter.py",
         "src/gemma4_lab/behavior_inference.py",
@@ -97,7 +100,10 @@ def main(prepared: str):
     if len(CASES) != 36:
         raise ValueError("The frozen evaluation panel has 36 cases")
     destination = (
-        ROOT / "artifacts/wsp-v2-panel" / datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") / "run.json"
+        ROOT
+        / SETTINGS.get("artifact_dir", "artifacts/wsp-v2-panel")
+        / datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+        / "run.json"
     )
     report = {
         "stage": "wsp-v2-panel",

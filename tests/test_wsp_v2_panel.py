@@ -95,3 +95,31 @@ class GateTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SixArmTest(unittest.TestCase):
+    def test_six_arm_gate_without_repeat_or_read(self):
+        v3 = ("base", "zero", "random", "a", "neg", "prompt")
+        target = [c["id"] for c in EVAL if c["family"] == "prefix_corruption"]
+        winners = set(target[:12])
+        rows = [
+            {
+                "case_id": c["id"],
+                "condition": arm,
+                "family": c["family"],
+                "started": True,
+                "completed": True,
+                "valid_for_comparison": True,
+                "workflow_complete": (
+                    True
+                    if c["family"] != "prefix_corruption"
+                    else (c["id"] in winners if arm in ("a", "prompt") else False)
+                ),
+                "actions": [{"name": "read_file"}],
+            }
+            for c in EVAL
+            for arm in v3
+        ]
+        result = assess_v2(rows, EVAL, PASS_APP, v3)
+        self.assertTrue(result["primary_passed"], result)
+        self.assertNotIn("base_repeat", result["target_comparisons_a_vs"])

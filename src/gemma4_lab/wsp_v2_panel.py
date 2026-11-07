@@ -44,10 +44,12 @@ def paired(rows, case_ids, left, right) -> dict:
     }
 
 
-def assess_v2(rows: list[dict], cases: list[dict], application: dict | None = None) -> dict:
+def assess_v2(
+    rows: list[dict], cases: list[dict], application: dict | None = None, arms=ARMS
+) -> dict:
     """Apply the frozen gates in docs/research/weight-space-study-v2.md verbatim."""
     indexed = {(r["case_id"], r["condition"]): r for r in rows}
-    expected = {(c["id"], arm) for c in cases for arm in ARMS}
+    expected = {(c["id"], arm) for c in cases for arm in arms}
     valid = (
         len(rows) == len(expected) == len(indexed)
         and set(indexed) == expected
@@ -58,16 +60,21 @@ def assess_v2(rows: list[dict], cases: list[dict], application: dict | None = No
     target = [c["id"] for c in cases if c["family"] == "prefix_corruption"]
     other = [c["id"] for c in cases if c["family"] != "prefix_corruption"]
     controls = [c["id"] for c in cases if c["family"] == "passing_control"]
-    comparisons = {arm: paired(indexed, target, "a", arm) for arm in ARMS if arm != "a"}
+    comparisons = {arm: paired(indexed, target, "a", arm) for arm in arms if arm != "a"}
     gate2 = {
         arm: comparisons[arm]["net"] >= 6 and comparisons[arm]["p_one_sided"] < 0.05
         for arm in ("base", "base_repeat", "zero", "random")
+        if arm in arms
     }
     gate3 = comparisons["neg"]["net"] >= 4
     nontarget_vs_base = paired(indexed, other, "a", "base")
     gate4 = nontarget_vs_base["losses"] <= 1
     gate1 = valid and all(_done(indexed.get((c, "a"))) for c in controls)
-    noise = paired(indexed, target, "base", "base_repeat")
+    noise = (
+        paired(indexed, target, "base", "base_repeat")
+        if "base_repeat" in arms
+        else {"wins": 0, "losses": 0}
+    )
     noise_flag = noise["wins"] + noise["losses"] > 3
     application_ok = bool(application and application.get("passed"))
     return {
@@ -85,10 +92,10 @@ def assess_v2(rows: list[dict], cases: list[dict], application: dict | None = No
         "target_comparisons_a_vs": comparisons,
         "nontarget_a_vs_base": nontarget_vs_base,
         "target_completed": {
-            arm: sum(_done(indexed.get((c, arm))) for c in target) for arm in ARMS
+            arm: sum(_done(indexed.get((c, arm))) for c in target) for arm in arms
         },
         "nontarget_completed": {
-            arm: sum(_done(indexed.get((c, arm))) for c in other) for arm in ARMS
+            arm: sum(_done(indexed.get((c, arm))) for c in other) for arm in arms
         },
         "first_reread_on_target": {
             arm: sum(
@@ -98,7 +105,7 @@ def assess_v2(rows: list[dict], cases: list[dict], application: dict | None = No
                 )
                 for c in target
             )
-            for arm in ARMS
+            for arm in arms
         },
     }
 
@@ -106,14 +113,14 @@ def assess_v2(rows: list[dict], cases: list[dict], application: dict | None = No
 def assess_application(token_cases, settings):
     from gemma4_lab.adapter_probe import logprob_distance
 
-    names = ("base", "zero", "a", "neg", "random", "read")
+    names = tuple(settings["app_names"])
     if [c.get("prompt") for c in token_cases] != settings["application_prefixes"] or any(
         set(c.get("distributions", {})) != set(names)
         or any(len(v) != 2 for v in c["distributions"].values())
         for c in token_cases
     ):
         return {"passed": False, "reason": "Incomplete application controls"}
-    drift, effects = 0.0, {n: [] for n in ("a", "neg", "random", "read")}
+    drift, effects = 0.0, {n: [] for n in names if n not in ("base", "zero")}
     for case in token_cases:
         d = case["distributions"]
         for name in names:
@@ -150,8 +157,10 @@ def run_panel(files, prepared, settings, prompts, context, cases, execution_limi
         for condition in (arms[i % len(arms) :] + arms[: i % len(arms)])
     ]
     try:
-        if len(cases) != 36 or [a["name"] for a in arms] != list(ARMS):
-            raise ValueError("Require 36 frozen cases and the eight frozen arms")
+        if len(cases) != 36 or [a["name"] for a in arms] != settings.get(
+            "expected_arms", list(ARMS)
+        ):
+            raise ValueError("Require 36 frozen cases and the frozen arm list")
         yield _seed_preflight({**settings, "cases": cases}, context)
         with tempfile.TemporaryDirectory(prefix="wsp-v2-") as directory:
             root = Path(directory)
@@ -219,7 +228,7 @@ def run_panel(files, prepared, settings, prompts, context, cases, execution_limi
             final.update(
                 completed=all(r["started"] and r["completed"] for r in rows),
                 application=application,
-                assessment=assess_v2(rows, cases, application),
+                assessment=assess_v2(rows, cases, application, tuple(a["name"] for a in arms)),
             )
     except Exception as exc:
         final.update(
@@ -234,7 +243,7 @@ def run_panel(files, prepared, settings, prompts, context, cases, execution_limi
             try:
                 log = Path(server.log_path)
                 if log.is_file():
-                    final["server_log"] = log.read_text(errors="replace")[-150000:]
+                    final["server_log"] = log.read_text(errors="replace")[-20000:]
             except Exception as exc:
                 final["log_capture_error"] = str(exc)
             finally:
@@ -242,7 +251,8 @@ def run_panel(files, prepared, settings, prompts, context, cases, execution_limi
                     server.stop()
                 except Exception as exc:
                     final["shutdown_error"] = str(exc)
-    final.update(results=rows, token_cases=token_cases, elapsed_seconds=time.monotonic() - start)
+    # Per-case rows already streamed; keep the terminal event small enough to return inline.
+    final.update(case_count=len(rows), elapsed_seconds=time.monotonic() - start)
     yield final
 
 

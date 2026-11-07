@@ -533,3 +533,8 @@
 ## 8 November 2026 — weight-space study v3 frozen
 
 - The user approved a v3 pre-registration ("Yes, pre-register v3") after the failed v2 gate and the post-hoc diagnostic. Frozen document: [weight-space-study-v3.md](../research/weight-space-study-v3.md), SHA-256 `5f4e9cc976b504bfea398bbf1a01545451ff63524cd72deb5874989a11ce1668`. Only α changes, chosen from design cases by a frozen rule; fresh 36-case panel; six arms; same gates as v2 minus the repeat comparator; abort if no α qualifies. v3 cap USD 3.50 (USD 6.50 with an optional real-task check); each job needs its own estimate. Any later change is a dated amendment.
+
+## 8 November 2026 — v3 α selection allocation (design cases only)
+
+- Protocol: [weight-space-study-v3.md](../research/weight-space-study-v3.md) (frozen above). Fresh panel cases frozen in `configs/wsp-v3-cases.json` (SHA-256 `5f4e9cc976b504bfea398bbf1a01545451ff63524cd72deb5874989a11ce1668`) and not loaded here. This job runs the frozen selection rule on the 24 v2 *design* cases only: dense Transformers simulation of the unchanged v2 construction, α ∈ {0, 2, 3, 4, 6, 8}, greedy 48-token continuations. No adapter, no vLLM, no evaluation-case prompt.
+- Bounds: one A10G container, 2 cores/16 GiB, 900-second execution, 600-second startup, zero retries, network blocked. Bound USD 0.551 at A10G USD 1.10/hour, CPU USD 0.0473/core-hour, RAM USD 0.008/GiB-hour; expected under USD 0.25. Within the v3 cap.

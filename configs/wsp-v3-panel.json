@@ -1,0 +1,38 @@
+{
+  "name": "wsp-v3-panel",
+  "protocol": "docs/research/weight-space-study-v3.md",
+  "artifact_dir": "artifacts/wsp-v3-panel",
+  "runtime_config": "configs/baseline-a10g.toml",
+  "cases": "configs/wsp-v3-cases.json",
+  "case_role": "eval",
+  "base_prompt": "submissions/wsp-base-v1/prompts/system.md",
+  "prompt_control": "submissions/edit-integrity-v1-3m/prompts/system.md",
+  "context_prompt": "submissions/behavior-diagnostic-v1/prompts/context.md",
+  "conditions": [
+    {"name": "base", "prompt": "base"},
+    {"name": "zero", "prompt": "base"},
+    {"name": "random", "prompt": "base"},
+    {"name": "a", "prompt": "base"},
+    {"name": "neg", "prompt": "base"},
+    {"name": "prompt", "prompt": "prompt"}
+  ],
+  "expected_arms": ["base", "zero", "random", "a", "neg", "prompt"],
+  "order": "Rotate the six arms left by the case index modulo six; 36 cases, 216 trajectories.",
+  "max_actions": 6,
+  "case_timeout_seconds": 60,
+  "request_timeout_seconds": 30,
+  "max_tokens": 1536,
+  "temperature": 0,
+  "top_p": 0.95,
+  "seed": 20261105,
+  "minimum_application_effect_nats": 0.001,
+  "control_tolerance_nats": 0.05,
+  "application_effect_to_noise_ratio": 10,
+  "app_names": ["base", "zero", "a", "neg", "random"],
+  "application_prefixes": [
+    "The capital of France is",
+    "def add(a, b):\n    return",
+    "To list files in a directory, run"
+  ],
+  "application_order": ["base", "zero", "a", "neg", "random", "random", "neg", "a", "zero", "base"]
+}
