@@ -538,3 +538,8 @@
 
 - Protocol: [weight-space-study-v3.md](../research/weight-space-study-v3.md) (frozen above). Fresh panel cases frozen in `configs/wsp-v3-cases.json` (SHA-256 `5f4e9cc976b504bfea398bbf1a01545451ff63524cd72deb5874989a11ce1668`) and not loaded here. This job runs the frozen selection rule on the 24 v2 *design* cases only: dense Transformers simulation of the unchanged v2 construction, α ∈ {0, 2, 3, 4, 6, 8}, greedy 48-token continuations. No adapter, no vLLM, no evaluation-case prompt.
 - Bounds: one A10G container, 2 cores/16 GiB, 900-second execution, 600-second startup, zero retries, network blocked. Bound USD 0.551 at A10G USD 1.10/hour, CPU USD 0.0473/core-hour, RAM USD 0.008/GiB-hour; expected under USD 0.25. Within the v3 cap.
+- Selection completed (app `ap-JgVRpUAxxd7L0Xh5cHlbm2`, stopped; `artifacts/wsp-v3-select/20261107T234522Z.json`, SHA-256 `1d5d7f5566c3bba76617428aca8808aa7f809fd79a505bf1c6333a4d2118d1d5`; 364 seconds). Design prefix cases whose greedy first tool call is `read_file`: 0/12 at α=0, 0 at α=2, 4 at α=3, **11 at α=4**, 12 at α=6, 12 at α=8; non-target first tool call unchanged in 12/12 at every α. Frozen rule selects the smallest qualifying α: **α = 4**. The panel proceeds.
+
+## 8 November 2026 — v3 CPU packaging allocation (α = 4)
+
+- Same builder and bounds as the 8 November v2 packaging (one CPU container, 2 cores/8 GiB, 600-second execution, 900-second startup, network blocked, zero retries; bound USD 0.066, reserve USD 0.10). Inputs: the preserved v2 capture and the preserved v1 `wsp_read` adapter; α = 4.0; realized shift must reproduce α·d within 5%.
