@@ -18,17 +18,18 @@
 ## Goal and budget
 
 - Aim for a monetary prize in the Gemma 4 Developer Agent competition, initially targeting the E2B/E4B small-model category.
-- Use only the `ach-bj100` Modal workspace for this project. Set `MODAL_PROFILE=ach-bj100` explicitly on every Modal command; do not rely on the global active profile.
+- Use only the `onepiecification` Modal workspace for this project. Set `MODAL_PROFILE=onepiecification` explicitly on every Modal command; do not rely on the global active profile.
 - The user reports USD 30 of existing Modal credit. Prefer this credit for remote experiments. Total additional compute/API spending must remain within the user's EUR 100 ceiling; existing credits are not permission to exceed that ceiling.
 - Keep a spend/run ledger. Before a GPU run, estimate cost from current rates, bound resource count and runtime, and record the estimate. No idle deployments or automatic experiment sweeps. Initial baseline allocation: at most USD 2 estimated usage, within the reported credit.
 
 ## Reasoning effort and token use
 
+- !!! reasoning effort and token use section only applies to model other than claude
 - The user's routine setting is GPT-6.1 Sol, Extra High. Keep updates, logs, and research retrieval concise; reuse saved findings.
-- Before substantial interpretation of model weights, causal diagnosis from weights/activations, or designing/applying a weight edit, stop and ask the user to switch this chat to Ultra. If a supported tool can reliably change the current chat's selected effort, it may be used and the result must be verified. Do not claim to have changed effort without evidence.
+- Before substantial interpretation of model weights, causal diagnosis from weights/activations, or designing/applying a weight edit, stop and ask the user to switch this chat to Ultra (but medium is fine if using claude). If a supported tool can reliably change the current chat's selected effort, it may be used and the result must be verified. Do not claim to have changed effort without evidence.
 - Resume weight work only after the switch is confirmed. Ordinary setup, access checks, baseline inference, and collection of behavioral metrics can proceed at the routine setting.
 - After the weight-analysis/edit stage, remind the user to return to Extra High for routine execution.
-- Do not launch separate paid LLM calls or delegate work merely to emulate Ultra.
+- Do not launch separate paid LLM calls or delegate work merely to emulate Ultra (except you are claude).
 
 ## Runtime and reproducibility
 
