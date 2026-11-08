@@ -1,6 +1,6 @@
 # Novelty register
 
-Last focused overlap check: 5 November 2026. Status: exploratory; no novel result has been demonstrated. A search cannot establish that an idea is absent from all prior work or guarantee that nobody publishes before our submission. The deadline-bound next study is specified in [the WSP protocol](weight-space-study-v1.md).
+Last focused overlap check: 8 November 2026 (search summaries; see below). Status: exploratory; no novel result has been demonstrated. A search cannot establish that an idea is absent from all prior work or guarantee that nobody publishes before our submission. The deadline-bound next study is specified in [the WSP protocol](weight-space-study-v1.md).
 
 ## Verified overlapping work
 
@@ -13,6 +13,23 @@ Last focused overlap check: 5 November 2026. Status: exploratory; no novel resul
 | [csinva/weight-space-programming-autoresearch](https://github.com/csinva/weight-space-programming-autoresearch), checked 5 November | Author repository now reports 420 Qwen edit-prediction tests comparing numerical-weight access with the same edit description without numbers, with mostly negative findings and modest incremental predictive value. Not independently reproduced here. | A generic weights-versus-no-numbers prediction study is already covered; an autoresearch harness is insufficient novelty. |
 | [LoopFix author model-card lead](https://huggingface.co/nitayrabi/Cyber-Tiel-Coder-35B-A3B-LoopFix-GGUF), indexed primary text surfaced 5 November | Indexed card text describes quantized coding-agent edits plus chat-template changes and session evaluations. Canonical card/API/raw retrieval failed, so detailed attribution/performance remains unverified. | Generic quantized coding-agent loop editing may overlap directly. Retrieve and audit this lead before any such claim; do not treat reported gains as verified weight-only effects. |
 | [Public grader/environment discussion](https://www.kaggle.com/competitions/gemma-4-developer-agent/discussion/747248) and its linked grader-rebuild notebook | Participants already report missing dependencies, package shadowing, and false positives on Requests, including `requests_7427`. This primary discussion was retrieved through indexed text on 4 November; the linked rebuild has not been audited here. | Our rediscovery and import-path correction are development validation, not an original resource contribution. |
+
+## Recheck, 8 November 2026 (search summaries only; full texts not yet read)
+
+| Source (lead) | Overlap with our v2/v3 construction | Consequence |
+| --- | --- | --- |
+| [Steer2Edit](https://arxiv.org/html/2602.09870) (arXiv 2602.09870) | Turns a mean-difference steering vector into a closed-form, training-free component-level rank-one edit `ΔW = λ u kᵀ`, with `u` aligned to the steering vector. | Our output direction and rank-one form are covered. Cite and read before claiming any construction novelty. |
+| [Transmuting prompts into weights](https://arxiv.org/abs/2510.08734) (Mazzawi et al.) | Shows a prompt's effect on a block can be replicated by weight updates and argues the optimal "thought matrix" is a sum of rank-one, ROME-like updates. | Prompt-to-rank-one-weights is prior theory. Our work is an empirical agent deployment, not the idea. |
+| Yin et al., ACL 2026 ([paper](https://aclanthology.org/2026.acl-long.1206.pdf)) | Compiles an activation-steering direction into a persistent closed-form weight edit constrained to a null space (backdoor setting). | Closed-form compile-steering-to-weights is established; their null-space constraint resembles our covariance-whitened key. |
+| Prompt distillation into a LoRA (Kujanpää et al.; Valpola and Ilin) | Gradient-trained LoRA internalizes a privileged prompt. | The natural conventional baseline we did not run. |
+| [Instruction-Level Weight Shaping](https://arxiv.org/html/2509.00251v1), [W2T](https://www.alphaxiv.org/abs/2603.15990.md) | Adjacent: prompt edits as surrogates for low-rank updates; reading LoRA weights. | Cite as adjacent. |
+
+Net effect: any claim of a new editing method is **not available**. What remains is an empirical
+contribution: a design-set-selected, whitened keyed rank-one edit built from prompt-versus-base
+activations, deployed as a standard PEFT adapter on a quantized E4B served by vLLM, evaluated on a
+synthetic agent-loop behaviour with zero, random and sign-flipped controls and a documented
+failure-then-pass sequence (v1, v2, v3). The competitive conventional baseline (a gradient-trained
+prompt-distillation LoRA) is untested and must be named as a limitation.
 
 We still need a focused review of model editing and activation-steering literature before freezing any mechanism-level claim. Existing low-rank factorization is a deployment format, not our research novelty.
 
