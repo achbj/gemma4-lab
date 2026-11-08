@@ -562,3 +562,7 @@
 ## 8 November 2026 — v3 amendment 2 frozen (distillation baseline)
 
 - The user approved the gradient-trained prompt-distillation baseline. Frozen: [weight-space-study-v3-amendment-2.md](../research/weight-space-study-v3-amendment-2.md), SHA-256 `aaca6d4ced7af1f0867a91298c0b9300c2d52ebbab3d6d4d7226e00c833da174`. Training on design cases only (rank 8, layer 29 `o_proj`, lr 2e-3, ≤ 120 steps, stop at first checkpoint meeting the design-set rule); then one 5-arm temperature-0 panel on the v3 fresh cases. Each job gets its own bounded entry below.
+
+## 8 November 2026 — v3 distillation training allocation
+
+- Frozen amendment 2. Train the rank-8 gradient LoRA on layer 29 `o_proj` on design cases only (hook simulation on the quantized model; no evaluation prompt loaded). Step cap 120, evaluation every 20 steps, stop at first qualifying checkpoint. Bounds: one A10G container, 2 cores/16 GiB, 1,800-second execution, 600-second startup, zero retries, network blocked; bound (1800+600)/3600 × USD 1.3226 = USD 0.882, reserve USD 1.00. If gradients do not reach the factors the job reports it and stops.
