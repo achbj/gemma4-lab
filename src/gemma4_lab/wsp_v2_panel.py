@@ -16,6 +16,7 @@ ADAPTERS = {
     "a": "wsp2_a",
     "neg": "wsp2_neg",
     "read": "wsp_read",
+    "distill": "wsp_read",
 }
 
 
