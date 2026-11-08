@@ -1,6 +1,6 @@
 # A Training-Free Rank-One Prompt Distillation for a Quantized Gemma 4 Coding Agent: Controlled Evidence and Its Limits
 
-Draft of 8 November 2026 (UTC). Kaggle Writeup limit: 3,000 words. Author information not yet
+Draft of 8 November 2026 (UTC), updated with the v4 competition-setting result. Kaggle Writeup limit: 3,000 words. Author information not yet
 finalized. Pre-submission checks still open are listed at the end.
 
 ## Abstract
@@ -16,7 +16,10 @@ edit completed 21 and 23 of 24 target workflows in two greedy-decoding runs on f
 for the unchanged model and zero or norm-matched random adapters, and 0 for its sign-flipped copy; the
 instruction prompt and a gradient-trained rank-8 LoRA each completed 24. Under temperature-0.7
 sampling the result is not robust: one seed passed and one failed because the edit made the model emit
-empty completions, and one was incomplete. The method is prior work in model editing; the contribution is
+empty completions, and one was incomplete. In the competition's own setting (temperature 0.2, thinking
+enabled) with independent per-trajectory seeds on 36 new cases, one batch passed (edit 15 of 24 versus
+3 for base) and one did not (10 versus 6), so the effect is real in direction but not reliable;
+the instruction prompt completed only 10-11. The method is prior work in model editing; the contribution is
 a controlled deployment study with failures preserved. It covers one synthetic behaviour, not real repairs.
 
 ## 1. Introduction
@@ -110,13 +113,34 @@ Robustness is therefore not established. Because every request in a batch shared
 target contexts differ only in coefficients, each seed is close to one draw per arm; base rereads were 9
 of 24 under seed 101 and 24 of 24 under seed 103. Within-seed counts are not independent samples.
 
+**Competition setting, temperature 0.2 with thinking (v4).** To test the setting the main entry
+runs in, we froze a further protocol: 36 new cases, temperature 0.2, top_p 0.95, thinking enabled,
+independent per-trajectory sampling seeds, two batches (seeds 201, 202), the same alpha = 4 edit with
+no re-tuning. Target workflows complete, of 24:
+
+| Arm | Batch A | Batch B |
+| --- | ---: | ---: |
+| base | 3 | 6 |
+| edit | 15 | 10 |
+| sign-flipped edit | 2 | 4 |
+| prompt | 10 | 11 |
+
+Batch A passed every gate (edit beat base by net +12, p = 0.0002, and the sign-flipped edit by +13; one
+non-target loss). Batch B failed the net-+6 gate (edit beat base by +4, p = 0.17). By the frozen rule
+the outcome is mixed. The first action was `read_file` in 12 and 10 of 24 edit trajectories, against 6 and
+5 for base and 18 and 21 for the prompt: the edit moves behaviour in the intended direction at roughly half
+the prompt's strength. The empty-completion failure did not recur. Between 8 and 15 of 24 trajectories in
+every arm, the prompt included, ended on the six-request budget, which caps completions in thinking mode.
+Pooled counts (edit 25 of 48, base 9, sign-flipped 6, prompt 21) are descriptive only.
+
 ## 5. Limitations
 
 One synthetic behaviour in one template family; fresh cases differ from design cases only in coefficients.
 No real-repair claim: the edit has not been run on real issues, and earlier real-task screens of prompt
 changes showed no repair gain. The competition's baseline agent samples at temperature 0.2 with a thinking
-budget; we tested only temperature 0 and 0.7, without thinking, so behaviour in the actual harness
-setting is unknown, and the observed empty-completion failure is a warning. Non-target cases are at
+budget; v4 tested that setting, but the 4,096-token thinking budget was approximated by enabling thinking
+with an 8,192-token output limit and was not separately enforced, and a six-request cap truncates
+many thinking-mode trajectories in every arm. Non-target cases are at
 ceiling (every arm, including the harmful sign-flipped edit, completes 12 of 12), so side-effect detection
 is weak. Greedy single draws vary by about +-2 workflows. The gradient baseline used untuned
 hyperparameters. We did not ablate numerical weight access, so we cannot say whether seeing weights helped
@@ -125,7 +149,7 @@ design. The edit uses activations from forward passes and was designed by an LLM
 ## 6. Reproducibility
 
 Protocols, case generators, adapter builders, ledger and hashed reports are in the repository. Runs used
-Modal A10G with the competition's pinned wheels and `gemma-4-e4b-it-qat-w4a16-ct` v2, for about USD 8 in
+Modal A10G with the competition's pinned wheels and `gemma-4-e4b-it-qat-w4a16-ct` v2, for about USD 11 in
 total. Incidents are recorded: a lost terminal event in the first panel (gate recomputed from streamed rows
 with unit-tested code), a batch cut by its execution limit, a report-path collision that forced a seed
 rerun, and a cancelled batch.
