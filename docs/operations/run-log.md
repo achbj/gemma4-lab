@@ -596,3 +596,7 @@
 ## 8 November 2026 — v4 allocation (competition-setting robustness)
 
 - The user reported USD 26.98 Modal credit left after I proposed a USD 6 cap for one more round; I read this as approval of that cap (no other cap was stated). Frozen protocol: [weight-space-study-v4.md](../research/weight-space-study-v4.md); cases `configs/wsp-v4-cases.json` (SHA-256 `f8f5d54c45a10b997b31f6fea029f48e8acb7988520eb110343bd3b7779c8f47`). Two parallel A10G batches (`configs/wsp-v4-a.json`, `-b.json`), 144 trajectories each, temperature 0.2 with thinking, per-trajectory seeds; 4,500-second execution (`configs/baseline-a10g-long.toml`), 900-second startup, network blocked; bound USD 1.9847 each, USD 3.97 total, reserve USD 4.4 of the USD 6 cap. Estimated study spend after: about USD 12 of USD 14 total (USD 8 + 6).
+
+## 8 November 2026 — v4 completed: mixed (A passes, B fails)
+
+- Batches A and B completed (144 valid trajectories each; apps stopped). Target completions: A base 3, edit 15, sign-flipped 2, prompt 10 (gates pass); B base 6, edit 10, sign-flipped 4, prompt 11 (edit vs base net +4, fails the net >= 6 gate). Verdict mixed under the frozen rule. Record: [wsp-v4-result.md](../research/wsp-v4-result.md). Estimated spend about USD 3.5; study total about USD 11.3 of USD 14 (USD 8 + 6). No further GPU jobs planned.
