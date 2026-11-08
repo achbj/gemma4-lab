@@ -109,7 +109,7 @@ def main(prepared: str):
     destination = (
         ROOT
         / SETTINGS.get("artifact_dir", "artifacts/wsp-v2-panel")
-        / datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+        / (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-" + SETTINGS["name"])
         / "run.json"
     )
     report = {
