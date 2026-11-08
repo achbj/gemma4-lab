@@ -2,7 +2,7 @@ import json
 import unittest
 from pathlib import Path
 
-from gemma4_lab.wsp_v2_panel import ARMS, assess_seeds, assess_v2, sign_test_p
+from gemma4_lab.wsp_v2_panel import ARMS, assess_seeds, assess_v2, sign_test_p, trajectory_seed
 
 CASES = json.loads((Path(__file__).resolve().parents[1] / "configs/wsp-v2-cases.json").read_text())[
     "cases"
@@ -157,3 +157,13 @@ class SeedTest(unittest.TestCase):
         self.assertTrue(result["by_seed"]["1"]["primary_passed"])
         self.assertFalse(result["by_seed"]["3"]["primary_passed"])
         self.assertFalse(result["all_seeds_primary_passed"])
+
+
+class TrajectorySeedTest(unittest.TestCase):
+    def test_distinct_and_reproducible(self):
+        ids = [c["id"] for c in EVAL]
+        seeds = {(i, a): trajectory_seed(201, i, a) for i in ids for a in ("base", "a")}
+        self.assertEqual(len(set(seeds.values())), len(seeds))
+        self.assertEqual(trajectory_seed(201, ids[0], "a"), seeds[(ids[0], "a")])
+        self.assertNotEqual(trajectory_seed(201, ids[0], "a"), trajectory_seed(202, ids[0], "a"))
+        self.assertTrue(all(0 <= v < 2**31 for v in seeds.values()))

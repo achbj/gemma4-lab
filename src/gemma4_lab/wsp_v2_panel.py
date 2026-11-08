@@ -1,5 +1,6 @@
 """Pre-registered gate for weight-space study v2 plus the paired panel runner."""
 
+import hashlib
 import math
 import tempfile
 import time
@@ -26,6 +27,12 @@ def sign_test_p(wins: int, losses: int) -> float:
     if n == 0:
         return 1.0
     return sum(math.comb(n, k) for k in range(wins, n + 1)) / 2**n
+
+
+def trajectory_seed(seed: int, case_id: str, arm: str) -> int:
+    """Independent, reproducible sampling seed per (batch seed, case, arm) trajectory."""
+    digest = hashlib.sha256(f"{seed}:{case_id}:{arm}".encode()).digest()
+    return int.from_bytes(digest[:4], "big") % 2**31
 
 
 def _done(row) -> bool:
@@ -235,7 +242,12 @@ def run_panel(files, prepared, settings, prompts, context, cases, execution_limi
                         name,
                         prompts[condition["prompt"]],
                         context,
-                        {**settings, "seed": seed},
+                        {
+                            **settings,
+                            "seed": trajectory_seed(seed, case["id"], name)
+                            if settings.get("per_trajectory_seed")
+                            else seed,
+                        },
                         server.base_url,
                         model,
                         requests,

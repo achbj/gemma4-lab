@@ -185,6 +185,8 @@ def _run_case(case, condition, prompt, context, settings, base_url, model, http)
                 "seed": settings["seed"],
                 "stream": False,
             }
+            if settings.get("chat_template_kwargs"):
+                payload["chat_template_kwargs"] = settings["chat_template_kwargs"]
             row["requests"].append(payload)
             row["generation_requests"] += 1
             try:
