@@ -1,0 +1,77 @@
+{
+  "name": "wsp-v4-b",
+  "protocol": "docs/research/weight-space-study-v4.md",
+  "artifact_dir": "artifacts/wsp-v4",
+  "runtime_config": "configs/baseline-a10g-long.toml",
+  "cases": "configs/wsp-v4-cases.json",
+  "case_role": "eval",
+  "base_prompt": "submissions/wsp-base-v1/prompts/system.md",
+  "prompt_control": "submissions/edit-integrity-v1-3m/prompts/system.md",
+  "context_prompt": "submissions/behavior-diagnostic-v1/prompts/context.md",
+  "conditions": [
+    {
+      "name": "base",
+      "prompt": "base"
+    },
+    {
+      "name": "a",
+      "prompt": "base"
+    },
+    {
+      "name": "neg",
+      "prompt": "base"
+    },
+    {
+      "name": "prompt",
+      "prompt": "prompt"
+    }
+  ],
+  "expected_arms": [
+    "base",
+    "a",
+    "neg",
+    "prompt"
+  ],
+  "order": "Rotate the four arms left by the case index modulo four; 36 cases x 4 arms = 144 trajectories; per-trajectory seeds derived from batch seed, case id and arm.",
+  "max_actions": 6,
+  "case_timeout_seconds": 300,
+  "request_timeout_seconds": 240,
+  "max_tokens": 8192,
+  "temperature": 0.2,
+  "top_p": 0.95,
+  "seed": 202,
+  "seeds": [
+    202
+  ],
+  "minimum_application_effect_nats": 0.001,
+  "control_tolerance_nats": 0.05,
+  "application_effect_to_noise_ratio": 10,
+  "app_names": [
+    "base",
+    "zero",
+    "a",
+    "neg",
+    "random"
+  ],
+  "application_prefixes": [
+    "The capital of France is",
+    "def add(a, b):\n    return",
+    "To list files in a directory, run"
+  ],
+  "application_order": [
+    "base",
+    "zero",
+    "a",
+    "neg",
+    "random",
+    "random",
+    "neg",
+    "a",
+    "zero",
+    "base"
+  ],
+  "per_trajectory_seed": true,
+  "chat_template_kwargs": {
+    "enable_thinking": true
+  }
+}
