@@ -27,6 +27,8 @@ if modal.is_local():
         "configs/wsp-v3-panel.json",
         "configs/wsp-v3-seeds.json",
         "configs/wsp-v3-distill.json",
+        "configs/wsp-v3-seeds-102.json",
+        "configs/wsp-v3-seeds-103.json",
     ):
         raise ValueError("Unknown frozen panel file")
     SETTINGS = json.loads((ROOT / PANEL).read_text())
