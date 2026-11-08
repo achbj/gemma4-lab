@@ -1,217 +1,135 @@
-# From Weight Edits to Verified Repairs
+# A Training-Free Rank-One Prompt Distillation for a Quantized Gemma 4 Coding Agent
 
-## A controlled feasibility study of quantized Gemma coding agents
+## Controlled evidence, including two failures, from a frozen-protocol study
 
-Internal draft, 6 November 2026. **Not ready for submission.** The first task-directed
-weight edit failed its behavioral gate. An original contribution and held-out evidence
-remain unestablished. Final Kaggle Writeup limit: 3,000 words. Author information is
-not yet finalized.
+Draft of 8 November 2026. Final Kaggle Writeup limit: 3,000 words. **Pending items are marked
+[PENDING]; nothing marked so is established.** Author information not yet finalized.
 
-## Abstract — provisional
+## Abstract
 
-Direct weight editing by general-purpose language models raises a practical question:
-can such interventions improve completed software repairs in a frozen quantized coding
-agent? We tested one static-prototype rank-one intervention against the unchanged model,
-zero and norm-matched random edits, and a prompt control on 12 inspected synthetic
-recovery cases. Numerical controls confirmed application, but the proposed edit completed
-9/12 workflows versus 10/12 for base/random and 12/12 for the prompt. All passing
-controls were retained. An earlier four-issue development panel found no verified repair
-gain from the prompt. The proposed weight edit failed its prerequisite gate and was not
-advanced to real repairs. These small feasibility results establish neither a general
-weight-space capability conclusion nor a novel mechanism.
+Small coding agents often fail at a specific step of the repair loop. We ask whether a
+closed-form, rank-one weight edit can carry one such behaviour, rereading source after a failed
+partial-line edit, into a quantized Gemma 4 E4B served through the competition's standard
+PEFT-adapter path. The edit uses the output shift between a prompted and an unprompted agent at
+one decision token, whitened by background key statistics, and is installed as a rank-1 component
+of a rank-8 adapter on one attention output projection. Two earlier constructions failed under
+frozen gates (a static-prototype edit and the same activation-derived edit at strength 1). With
+the strength selected from design cases only and a fresh 36-case panel, the edit completed 21 of
+24 target workflows versus 5 for the unchanged model, 5 for a zero adapter, 4 for a norm-matched
+random adapter and 0 for its sign-flipped copy; the instruction prompt completed 24. [PENDING:
+sampling-seed robustness and a gradient-trained distillation baseline.] The construction is prior
+work in steering and model editing; our contribution is a controlled deployment study with its
+failures preserved. It covers one synthetic behaviour, not real repairs.
 
-## Introduction
+## 1. Introduction
 
-Software-repair agents must navigate repositories, edit source, test relevant behavior
-and submit a valid patch within limited resources. Improved behavior in a small
-continuation task may not improve end-to-end repairs. Quantized deployment adds a
-further requirement: an intervention must actually be applied through the scored
-serving route without changing the approved base model.
+Instructions in a system prompt cost context and are fragile for small models. Weight-space
+programming proposes that a general-purpose model can read and rewrite weights directly [1]. We
+study a narrower, testable question under real deployment limits: the approved E4B v2 quantized
+checkpoint, the harness's standard PEFT adapters, and vLLM serving. A design that only changes
+token statistics is not enough; we require a change in a specific agent behaviour that survives
+that path, against controls that rule out nonspecific perturbation.
 
-Weight-space programming offers a possible development method: a general-purpose
-model reasons about numerical parameters and writes a deliberate intervention without
-gradient training. Published examples differ in scale, information access and feedback.
-We do not assume that success on small game networks transfers to a pretrained Gemma
-coding agent. Our research question is whether a specific intervention produces a
-controlled, useful effect that survives deployment and transfers to verified repairs.
+## 2. Related work and claim boundary
 
-## Methods — completed and planned work
+The algebra is established. ROME [2] applies closed-form rank-one key-value updates. Steer2Edit [3]
+converts mean-difference steering vectors into closed-form rank-one component edits;
+Mazzawi et al. [4] argue that a prompt's effect on a block equals ROME-like rank-one updates; Yin
+et al. [5] compile steering directions into closed-form, null-space-constrained edits; gradient
+prompt-distillation into LoRA is a standard alternative. The weight-space-programming article [1]
+and two public follow-ups report LLM-directed weight edits. We claim no new editing method. Our
+contributions are empirical: (i) a design-set-selected, whitened rank-one edit from
+prompt-versus-base activations deployed as a standard adapter on a quantized E4B; (ii) controls
+including a sign-flipped and a norm-matched random edit; (iii) a record of what failed first.
+Related-work search was rechecked on 8 November 2026 from search summaries; full texts of [3-5]
+must be read before submission. We do not test blind weight reading or the article's other claims.
 
-Completed engineering uses the approved E4B version-2 quantized checkpoint, official
-compiler/ADK/tool wheels and standard PEFT packaging. A zero/random diagnostic adapter
-pair was checked on Modal A10 and the official Kaggle image with L4x4. This demonstrates
-the tested routing and numerical application, not semantic understanding of weights.
+## 3. Method
 
-Public development tasks are separated from 68 reserved issues by repository/base
-commit metadata. Model inputs exclude reference solutions and verification-only tests.
-Each real-task fixture must distinguish the unchanged checkout from its reference
-patch before agent outcomes are interpreted. Runtime adaptations and all exclusions
-are recorded; local development evaluation is not claimed to be full hidden-scorer parity.
+**Behaviour.** After an edit leaves a syntax error, the base agent repeats a stale replacement; a
+prompt instructing "reread, then replace the whole line" makes it call `read_file` first. In
+replays at the decision token, 12 of 12 design cases reread under that prompt and 0 of 12 under the
+base prompt. Cases are seeded synthetic tool sessions (an arithmetic `adjust` function) scored by a
+restricted checker and the official editor; a workflow is complete only if the final source is
+correct, was checked after the last edit, and was submitted.
 
-The editor inspected numerical projection statistics, learned gains and derived label
-prototypes after checking all eight base-file hashes. The fixed construction uses the
-final attention output projection and its shared layer-23 value source. It maps learned
-embeddings for error/ok through the source value path, orthogonalizes the error prototype
-against ok, and adds a rank-one output change toward a gain-adjusted read_file/edit_file
-embedding difference. The delta norm is fixed at 1% of the decoded output matrix norm,
-represented in rank-8/alpha-8 PEFT. A zero edit and one seeded random edit with matched
-stored factor/delta norms control application and nonspecific perturbation.
+**Construction.** On 12 design cases we replay each history under both prompts and record, at the
+last token, the input `k` and output `o` of `self_attn.o_proj` in layers 12-38. With `d` the mean
+prompted-minus-base output and `k*` the mean base input, the layer maximizing
+`‖d‖/‖mean o_base‖` is chosen (layer 29, input width 4096). A ridge-regularized covariance `C` of
+that layer's input over all tokens of 12 non-target design cases whitens the key:
+`ΔW = α d (C⁻¹k*)ᵀ / (k*ᵀC⁻¹k*)`, so `ΔW k* = α d`. It is stored as one rank-1 component in a
+rank-8, alpha-8 PEFT adapter, bf16. Realized shift error after rounding is 0.17%.
 
-These static token prototypes approximate deep-layer inputs; no actual hidden-state
-detector or causal defect was established. Construction used no gradients or full-model
-forward passes, but did include four linear value projections of label prototypes.
-The editor knew architecture, labels and prior behavioral development traces, so this is
-task-informed editing rather than blind weight reading or feedback-free discovery.
-The proposal, controls, thresholds and budget were recorded before inference. One primary
-intervention and at most one documented revision bound the search; no revision is selected.
+**Controls.** Base; a zero adapter (same A, B = 0); a seeded random adapter with matched factor
+norms; the sign-flipped edit; the prompt; base repeat. Application was verified separately in vLLM:
+all active adapters move first-token log-probabilities by 0.09-0.76 nats on three fixed prefixes
+with zero control drift, so an unapplied adapter is excluded.
 
-The synthetic screen used the same 1,536-token/six-action/60-second protocol for all
-five conditions, rotating their order by case. This differs from the full-agent study's
-shared 8,192-token context correction. The latter was tested once on the same four
-inspected development cases with the edit-integrity prompt, changing only the output
-allowance. It was an operational recurrence check against a historical draw, not a
-matched prompt comparison. A candidate must be frozen before reserved content is inspected.
+**Protocols.** Each experiment was frozen, with gates, thresholds, cases and budget, and hashed in a
+ledger before any inference. Evaluation cases are seeded, disjoint from every earlier coefficient
+pair, and never used for design.
 
-## Experiments and observed preliminary results
+## 4. Results
 
-| Experiment | Observed result | Scope |
-| --- | --- | --- |
-| Zero/random adapter application | Fixed numerical/routing controls passed on Modal and Kaggle | Deployment only |
-| Fresh-coefficient recovery screen | Prompt control 9/9 initially wrong cases versus baseline 7/9; both preserved 3/3 passing controls | Synthetic, shared templates |
-| Fresh four-issue Rich comparison | 0/4 verified repairs for both prompts | Selected development cases, one draw per condition |
-| 8,192-token context correction | 0/4 verified repairs; no observed context error; two unverified tool-budget stops | No successful input exceeded the old 16,384-token boundary |
-| Tool cap 10 → 30 at fixed time and sampling | 0/4 verified repairs in both draws; four verified failures at cap 30 | All new attempts used at most nine charged calls; extra allowance unexercised |
-| Requested-behavior check prompt | One verified repair versus zero in the preserved ten-call control | Both arms scored zero on issue-specific checks. The candidate missed the promotion gate. |
-| Symbol-first and direct source localization | Each reproduced the same verified `rich_2943` patch, with two exact targets and one early target | The early-localization gate required two of three specified issues. Both candidates missed it. |
-| Fresh operation anchoring pair | 0/3 verified repairs in both arms, exact bodies 1/3 → 2/3, early bodies 0/3 in both | One pre-run reference exclusion. Both arms missed the repair and early-target gate. |
-| Analyzer availability ablation | Root agent repaired 1/3 versus 0/3 in the saved control. Early bodies remained 0/3. | The verified progress repair followed the eighth navigation attempt. The candidate missed the early-target gate. |
-| Line-anchored root navigation | Root agent reached 3/3 exact bodies, 3/3 early bodies (by attempt 3) and 1/3 verified repairs (`rich_3905` in 6 calls). | Passed the early-localization gate on the inspected panel; requires fresh development transfer. |
-| Fresh line-anchored transfer vs starter @ 8k | Starter `wsp-base-v1` resolved 1/3 (`rich_4077`) vs 0/3 (`line-anchored-root-v1-8k`); exact bodies 1/3 each; early bodies 1/3 vs 0/3. | One pre-run reference exclusion (`rich_3486`). Mandatory `grep`-first missed missing-method owner `file_proxy.py` while fixing `start_line=1` clipping on `segment.py`. Candidate rejected. |
-| Task-directed static-prototype weight edit | Base/zero/random 10/12, proposed edit 9/12, prompt 12/12; all 60 trajectories valid | Failed specific synthetic hypothesis; no real-repair promotion |
-| Frozen-candidate reserved evaluation | Pending | No generalization claim yet |
+**Failure 1 (v1).** A static-prototype edit built from token embeddings completed 9 of 12
+workflows versus 10 for base and 12 for the prompt; rejected.
 
-In the real-task screen, each condition had three failed verified attempts and one
-unverified budget termination. The edited-prompt condition also encountered a context
-limit error; its recovered partial patch was still verified and failed. This prevents
-a clean attribution to the prompt instructions alone. Raw traces expose navigation,
-shared-budget exhaustion, destructive edits and visible-test success without satisfying
-new behavior. These observations do not diagnose a weight defect.
+**Failure 2 (v2).** The activation-derived edit at α = 1 on 36 panel cases (288 trajectories, 8
+arms) completed 3 of 24 target workflows versus 4 for base, with zero rereads; the gate failed
+although the adapter was applied. A post-hoc diagnostic showed the key fires on evaluation prompts
+(dot product 0.99) and the effect is monotone in α but α = 1 recovers about 6% of the prompt's
+log-probability margin. This diagnostic used evaluation prompts and is reported as exploratory.
 
-The context-correction check had two verified failures and two stops before editing at
-the ten-tool cap. The maximum successful input was 15,751 tokens, so the new headroom
-was not directly exercised. No token-limit nudge was observed, but the pinned ATIF
-recorder omits response finish reasons and cannot certify no truncation. This ordinary
-configuration check adds no original method or repair-gain claim.
+**Pass (v3).** A second protocol changed only α, chosen by a frozen rule on design cases (smallest
+α in {2, 3, 4, 6, 8} with ≥ 11/12 design prefix cases rereading and 12/12 non-target first actions
+unchanged): α = 4. On 36 fresh cases (216 trajectories, temperature 0):
 
-The follow-up changed only the tool cap while preserving the wall-clock allowance.
-It reached verification on all four cases and failed all four. The two previously
-unverified cases each used seven calls in the new draw, within the original cap. Thus
-their progress cannot establish that additional calls helped; the cap control failed
-its repair gate. This conventional comparison does not support a novelty claim.
+| Arm | Target complete (of 24) | First action = reread | Non-target (of 12) |
+| --- | ---: | ---: | ---: |
+| base | 5 | 0 | 12 |
+| zero adapter | 5 | 0 | 12 |
+| random, norm-matched | 4 | 0 | 12 |
+| **edit (α = 4)** | **21** | **20** | **12** |
+| sign-flipped edit | 0 | 0 | 12 |
+| prompt | 24 | 24 | 12 |
 
-The requested-behavior prompt produced a verified one-line hash-cache fix in
-`rich_2943`. A separate public-issue replay failed on the original source and passed
-on the exact submitted patch. The agent had run 26 stock style tests without checking
-the stale hash after metadata removal. Both arms scored zero on issue-specific
-checks. One historical draw per arm and different observed GPU device labels limit
-attribution. This result establishes a development repair and leaves the proposed
-workflow mechanism unconfirmed. [Behavior-check report](../development-behavior-check-v1.md)
+The edit beat base, zero and random by net +16, +16, +17 target workflows (one-sided exact sign
+tests p < 1e-4) and the sign-flipped edit by +21; it lost no non-target case. The sign-flipped
+edit removed even the base's occasional successes, and the random edit perturbed token statistics
+more than the real one without effect, so the gain is directional and specific.
 
-Two localization prompts reproduced the same one-line repair on the inspected panel.
-The first trial exposed a tool mismatch. An exact similarity query returns neighboring
-nodes after excluding the query itself. A bounded source lookup corrected the tool
-choice, while the agent still pursued `add_column` on the issue naming `add_row`.
-Both sampled candidates reached one of three early source targets. These traces
-separate lookup feasibility, selection of the requested operation and verified repair.
-[Localization report](../development-localization-v1.md)
+**Robustness [PENDING].** [Sampling at temperature 0.7 over seeds 101-103: per-seed gates.]
 
-The fresh paired screen carried the issue operation through source lookup and edit
-selection. The agent saw one additional exact body after the early threshold and
-made a partial grapheme loop fix. A replay of the submitted blob showed termination
-for a leading combining mark and a remaining timeout for a leading variation selector.
-The matched control and candidate each resolved zero of three qualified issues.
-[Fresh paired report](../development-operation-anchor-v1.md)
+**Distillation baseline [PENDING].** [A rank-8 LoRA at the same module trained by gradient descent on
+the same design cases: target completions versus the edit.]
 
-Removing the analyzer tool registration yielded a verified disabled-progress fix
-on the same three cases. The source arrived on attempt eight and the visible test
-request was rejected at the tool cap. The independent verifier and a replay of the
-exact patch both passed. Source coverage fell from two exact bodies to one while
-the repair count rose from zero to one. This historical comparison supplies a
-verified example and a measure of tool use for the two sampled configurations.
-[Analyzer ablation](../development-operation-anchor-v1.md#analyzer-availability-ablation)
+## 5. Limitations
 
-A single-factor update to the root localization section (`line-anchored-root-v1-8k`)
-required a line-numbered `grep -rnF` or `grep -rnE` search on the first navigation
-call and explicit `start_line` windows matching the 150-line `read_file` cap. On the
-same three qualified cases, exact source coverage rose from 1/3 to 3/3 and early
-target coverage from 0/3 to 3/3 (all three target bodies visible by navigation
-attempt three before the first edit), while preserving 1/3 verified repairs
-(`rich_3905` in six tool calls, including a passing visible test run before
-submission). This passed the early-localization gate on the inspected panel; fresh
-uninspected transfer remains required.
-[Line-anchored navigation](../development-operation-anchor-v1.md#line-anchored-root-navigation-correction)
+One synthetic behaviour in one template family; fresh cases differ from design cases only in
+coefficients. No real-repair claim: the edit has not been tested on real SWE issues, and earlier
+real-task screens of prompt changes showed no repair gain. Non-target cases are at ceiling (every
+arm, including the harmful sign-flipped edit, completes 12 of 12), so side-effect detection is weak.
+The prompt still outperforms the edit, so its value is removing an instruction, not exceeding one.
+The strength range was motivated by a post-hoc diagnostic on earlier evaluation prompts, a researcher
+degree of freedom; selection itself used design cases only and testing used fresh cases. Single
+checkpoint, single draw per arm at temperature 0 in the primary result. Numerical access to weights
+was not ablated, so we cannot say whether seeing weights helped the design. The edit uses
+activations from forward passes and was designed by an LLM assistant with knowledge of prior traces.
 
-Evaluating `line-anchored-root-v1-8k` on a fresh four-issue Rich panel against the
-context-corrected starter (`wsp-base-v1`) rejected promotion: after excluding one
-Python-3.12-unresolvable reference control (`rich_3486`), `wsp-base-v1` resolved 1/3
-(`rich_4077`: `proxy isatty`) versus 0/3 for `line-anchored-root-v1-8k`. The paired
-traces isolate an opposition between two task structures: the starter matched `proxy`
-to `./rich/file_proxy.py` in `## Workspace Layout` and added `FileProxy.isatty` in
-six calls, whereas mandatory `grep`-first searched `isatty` across existing
-definitions (`console.py`) and missed the target file; conversely, on >150-line
-existing-symbol tasks (`rich_3521`, `rich_3772`), `wsp-base-v1` clipped or repeated
-`start_line=1` reads (`1–150` four times on `traceback.py`), while
-`line-anchored-root-v1-8k` paginated cleanly and exposed the full `segment.py`
-target body on attempt four.
-[Fresh transfer report](../development-line-anchored-v1.md#paired-result)
+## 6. Reproducibility
 
-The weight screen had exact base/zero action/source/workflow agreement, zero measured
-token-control drift and detected effects from both active edits. All three compiled
-adapter routes responded. Despite application success, the proposed edit produced zero
-paired workflow wins, one loss and zero first-action source rereads on the three prefix
-cases. Its regression alternated failed replacements and rereads without fixing the
-observed corrupted line. The prompt completed all three. Application is therefore
-insufficient evidence for this construction's intended behavioral effect. This single
-heuristic does not test the published blind task-identification or game-network claims.
-
-## Related work and claim boundary
-
-Takehi et al. report direct weight reading/writing across several tasks, including a
-Qwen reasoning-loop correction and a Gemma 3 math experiment without established
-improvement. ValerioDolci reports Gemma 4 translation edits with controls. The csinva
-autoresearch repository tests numerical-weight access against description-only controls.
-An author model-card lead also concerns quantized coding-agent loop edits, but requires
-full retrieval and attribution review. We cannot claim novelty merely from Gemma,
-quantization, low-rank packaging or agent-loop correction. Rank-one model rewriting is
-also established prior work, including ROME; our prototype heuristic is not ROME.
-
-Any final contribution must state the specific demonstrated insight beyond this work.
-The [novelty register](../novelty.md) is rechecked at claim selection and before submission.
-Reproduction and expected engineering functionality remain distinct from original work.
-
-## Limitations and conclusion — pending final evidence
-
-Current results concern small inspected templates, one checkpoint, one edit strength,
-one random direction and one deterministic draw. The proposed weight benefit failed
-its synthetic test; semantic selectivity and held-out repair transfer remain unestablished.
-No numerical-access ablation isolates whether inspecting weights improved edit design.
-A negative feasibility result alone does not establish an original prize-worthy insight.
-The final paper needs a defensible contribution, appropriate confirmation and final
-prior-work review. No general conclusion about WSP success or failure follows here.
+All protocols, case generators, adapter builders, ledgers and hashed reports are in the repository;
+runs used Modal A10G with the competition's pinned wheels and the approved
+`gemma-4-e4b-it-qat-w4a16-ct` v2 checkpoint, spending about USD 5-6 in total. The first run's
+final summary event was lost to a size limit and its gate recomputed from streamed rows with the
+unit-tested code; this is noted in the record.
 
 ## References
 
-1. [Takehi et al. — Sparks of Weight-Space Programming](https://rikiyat.github.io/blog/weight-space-programming/).
-2. [ValerioDolci — frontier-weight-edit](https://github.com/ValerioDolci/frontier-weight-edit).
-3. [csinva — weight-space-programming-autoresearch](https://github.com/csinva/weight-space-programming-autoresearch).
-4. [LoopFix model-card lead — retrieval pending](https://huggingface.co/nitayrabi/Cyber-Tiel-Coder-35B-A3B-LoopFix-GGUF).
-5. [Competition overview](https://www.kaggle.com/competitions/gemma-4-developer-agent/overview).
-6. [Meng et al. — Locating and Editing Factual Associations in GPT (ROME)](https://arxiv.org/abs/2202.05262).
-
-Internal evidence: [protocol](../weight-space-study-v1.md),
-[adapter validation](../adapter-compatibility.md),
-[synthetic screen](../behavior-diagnostic-v2.md),
-[real-task screen](../development-panel-v2.md), [context check](../development-context-v1.md),
-[tool-budget control](../development-tool-budget-v1.md),
-[first designed weight edit](../wsp-screen-v1.md),
-[run ledger](../../operations/run-log.md).
+1. Takehi et al. Sparks of Weight-Space Programming, 2 Nov 2026. rikiyat.github.io/blog/weight-space-programming
+2. Meng et al. Locating and Editing Factual Associations in GPT (ROME). arXiv 2202.05262.
+3. Steer2Edit: From Activation Steering to Component-Level Editing. arXiv 2602.09870.
+4. Mazzawi et al. Transmuting prompts into weights. arXiv 2510.08734.
+5. Yin et al. ACL 2026, arXiv-listed paper on compiling steering directions into weight edits (aclanthology.org/2026.acl-long.1206).
+6. Competition overview: kaggle.com/competitions/gemma-4-developer-agent
