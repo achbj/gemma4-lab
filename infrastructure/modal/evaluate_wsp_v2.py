@@ -22,7 +22,11 @@ if modal.is_local():
     from gemma4_lab.modal_runtime import build_runtime_image
 
     PANEL = os.environ.get("GEMMA4_PANEL", "configs/wsp-v2-panel.json")
-    if PANEL not in ("configs/wsp-v2-panel.json", "configs/wsp-v3-panel.json"):
+    if PANEL not in (
+        "configs/wsp-v2-panel.json",
+        "configs/wsp-v3-panel.json",
+        "configs/wsp-v3-seeds.json",
+    ):
         raise ValueError("Unknown frozen panel file")
     SETTINGS = json.loads((ROOT / PANEL).read_text())
     CONFIG = load_config(ROOT / SETTINGS["runtime_config"])

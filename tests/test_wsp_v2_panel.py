@@ -2,7 +2,7 @@ import json
 import unittest
 from pathlib import Path
 
-from gemma4_lab.wsp_v2_panel import ARMS, assess_v2, sign_test_p
+from gemma4_lab.wsp_v2_panel import ARMS, assess_seeds, assess_v2, sign_test_p
 
 CASES = json.loads((Path(__file__).resolve().parents[1] / "configs/wsp-v2-cases.json").read_text())[
     "cases"
@@ -123,3 +123,37 @@ class SixArmTest(unittest.TestCase):
         result = assess_v2(rows, EVAL, PASS_APP, v3)
         self.assertTrue(result["primary_passed"], result)
         self.assertNotIn("base_repeat", result["target_comparisons_a_vs"])
+
+
+class SeedTest(unittest.TestCase):
+    def test_per_seed_gate_requires_every_seed(self):
+        arms = ("base", "a", "neg", "prompt")
+        target = [c["id"] for c in EVAL if c["family"] == "prefix_corruption"]
+
+        def rows_for_seed(seed, a_wins):
+            winners = set(target[:a_wins])
+            return [
+                {
+                    "case_id": c["id"],
+                    "condition": arm,
+                    "family": c["family"],
+                    "seed": seed,
+                    "started": True,
+                    "completed": True,
+                    "valid_for_comparison": True,
+                    "workflow_complete": (
+                        True
+                        if c["family"] != "prefix_corruption"
+                        else (c["id"] in winners if arm in ("a", "prompt") else False)
+                    ),
+                    "actions": [{"name": "read_file"}],
+                }
+                for c in EVAL
+                for arm in arms
+            ]
+
+        rows = rows_for_seed(1, 12) + rows_for_seed(2, 12) + rows_for_seed(3, 3)
+        result = assess_seeds(rows, EVAL, PASS_APP, arms, [1, 2, 3])
+        self.assertTrue(result["by_seed"]["1"]["primary_passed"])
+        self.assertFalse(result["by_seed"]["3"]["primary_passed"])
+        self.assertFalse(result["all_seeds_primary_passed"])

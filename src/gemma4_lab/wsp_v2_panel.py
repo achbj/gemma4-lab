@@ -110,6 +110,20 @@ def assess_v2(
     }
 
 
+def assess_seeds(rows, cases, application, arms, seeds) -> dict:
+    """Apply the v3 gate form independently to each sampling seed (amendment 1)."""
+    by_seed = {
+        str(seed): assess_v2([r for r in rows if r.get("seed") == seed], cases, application, arms)
+        for seed in seeds
+    }
+    return {
+        "by_seed": by_seed,
+        "all_seeds_primary_passed": all(a["primary_passed"] for a in by_seed.values()),
+        "target_completed_by_seed": {k: a["target_completed"] for k, a in by_seed.items()},
+        "a_vs_base_by_seed": {k: a["target_comparisons_a_vs"]["base"] for k, a in by_seed.items()},
+    }
+
+
 def assess_application(token_cases, settings):
     from gemma4_lab.adapter_probe import logprob_distance
 
@@ -151,8 +165,10 @@ def run_panel(files, prepared, settings, prompts, context, cases, execution_limi
     start, server, rows, token_cases = time.monotonic(), None, [], []
     final = {"stage": "finished", "completed": False}
     arms = settings["conditions"]
+    seeds = settings.get("seeds", [settings["seed"]])
     schedule = [
-        (case, condition)
+        (case, condition, seed)
+        for seed in seeds
         for i, case in enumerate(cases)
         for condition in (arms[i % len(arms) :] + arms[: i % len(arms)])
     ]
@@ -206,7 +222,7 @@ def run_panel(files, prepared, settings, prompts, context, cases, execution_limi
                 token_cases.append(case)
             application = assess_application(token_cases, settings)
             yield {"stage": "application-assessment", "assessment": application}
-            for case, condition in schedule:
+            for case, condition, seed in schedule:
                 remaining = execution_limit_seconds - (time.monotonic() - start)
                 if remaining < settings["case_timeout_seconds"] + 30:
                     row = _skipped(case, condition["name"], "insufficient_execution_allocation")
@@ -218,24 +234,31 @@ def run_panel(files, prepared, settings, prompts, context, cases, execution_limi
                         name,
                         prompts[condition["prompt"]],
                         context,
-                        settings,
+                        {**settings, "seed": seed},
                         server.base_url,
                         model,
                         requests,
                     )
+                row["seed"] = seed
                 rows.append(row)
                 yield {"stage": "case", "result": row}
+            names = tuple(a["name"] for a in arms)
             final.update(
                 completed=all(r["started"] and r["completed"] for r in rows),
                 application=application,
-                assessment=assess_v2(rows, cases, application, tuple(a["name"] for a in arms)),
+                assessment=(
+                    assess_seeds(rows, cases, application, names, seeds)
+                    if "seeds" in settings
+                    else assess_v2(rows, cases, application, names)
+                ),
             )
     except Exception as exc:
         final.update(
             error_type=type(exc).__name__, error=str(exc), traceback=traceback.format_exc()
         )
-        for case, condition in schedule[len(rows) :]:
+        for case, condition, seed in schedule[len(rows) :]:
             row = _skipped(case, condition["name"], "run_error")
+            row["seed"] = seed
             rows.append(row)
             yield {"stage": "case", "result": row}
     finally:
