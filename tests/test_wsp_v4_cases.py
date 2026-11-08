@@ -5,7 +5,7 @@ from pathlib import Path
 
 from gemma4_lab.behavior_diagnostics import SeededSession
 from gemma4_lab.wsp_v2_cases import used_pairs
-from gemma4_lab.wsp_v4_cases import generate, earlier_pairs
+from gemma4_lab.wsp_v4_cases import earlier_pairs, generate
 from tests.test_wsp_v2_cases import exact_edit
 
 CONFIGS = Path(__file__).resolve().parents[1] / "configs"
