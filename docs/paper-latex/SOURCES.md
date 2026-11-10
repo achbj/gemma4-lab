@@ -2,7 +2,7 @@
 
 | Section | File |
 | --- | --- |
-| Failures first (static edit, alpha 1) | `docs/research/wsp-v2-panel-result.md`, `weight-space-study-v1.md` |
+| Failures first (static edit, alpha 1) | `docs/research/wsp-screen-v1.md` (static edit), `wsp-v2-panel-result.md` (alpha 1) |
 | Method, strength rule, layer choice | `weight-space-study-v2.md`, `weight-space-study-v3.md`, `src/gemma4_lab/wsp_v2_adapter.py` |
 | Greedy panels | `wsp-v3-panel-result.md`, `wsp-v3-distill-result.md` |
 | LoRA baseline | `weight-space-study-v3-amendment-2.md`, `infrastructure/modal/wsp_v3_distill.py` |

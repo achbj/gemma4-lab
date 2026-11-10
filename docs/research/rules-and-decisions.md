@@ -27,6 +27,7 @@ Main-track limits are one daily submission and two selected finals. Paper-track 
 - Evaluation equally weights novelty, quality, relevance, verifiability and clarity. A replication, a deployment check or an inconclusive negative result does not automatically establish an original contribution.
 - The account's entered-competition check confirms main entry but does not confirm paper entry; manual confirmation is pending. No paper or public notebook has been submitted.
 - Source cache: ignored `data/raw/official/paper/pages-20261105.json`, retrieved with `competition_list_pages`, SHA-256 `c0fb77b91008bdab66b3751dcf3bae01320f100713701bb20bf5865707dce48f`. Entry check: `artifacts/runtime-validation/paper-track-entry-check-20261105.json`.
+- 8 November: the user reported signing up for the Paper Track on Kaggle (user-reported; not re-verified through the API). No Writeup has been submitted.
 - 6 November read-only recheck: `artifacts/runtime-validation/paper-track-entry-recheck-20261106.json` lists the main competition but does not confirm separate Paper Track entry. The listing may omit Writeup tracks, so it is not proof of non-entry. Manual confirmation remains pending; no account or submission change was made.
 
 ## Baseline decision record
