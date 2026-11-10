@@ -5,13 +5,17 @@ import json
 
 def _status(observation) -> str:
     try:
-        return json.loads((observation or {}).get("content", "")).get("status", "")
+        result = json.loads((observation or {}).get("content", ""))
+        return result.get("error_type") or result.get("status", "")
     except (ValueError, AttributeError):
         return ""
 
 
 def summarize_trace(trace: dict) -> dict:
-    """Tool order, failed edit_file calls, and what the agent called next."""
+    """Tool order, edit_file calls the editor rejected, and what the agent called next.
+
+    Budget-exhaustion errors are not edit failures and are not counted.
+    """
     calls, empty, models = [], 0, set()
     for step in trace["steps"]:
         if step.get("source") != "agent":
@@ -25,7 +29,11 @@ def summarize_trace(trace: dict) -> dict:
         for index, call in enumerate(made):
             last = index == len(made) - 1
             calls.append((call["function_name"], _status(step.get("observation")) if last else ""))
-    failed = [i for i, (name, status) in enumerate(calls) if name == "edit_file" and status != "ok"]
+    failed = [
+        i
+        for i, (name, status) in enumerate(calls)
+        if name == "edit_file" and status == "FileEditError"
+    ]
     return {
         "tools": [name for name, _ in calls],
         "edit_calls": sum(name == "edit_file" for name, _ in calls),
