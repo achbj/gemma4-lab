@@ -42,10 +42,9 @@ After an edit leaves a syntax error, the base agent repeats a stale replacement;
 
 On 12 design cases we replay each history under both prompts and record, at the last token, the input $k$ and output $o$ of `self_attn.o_proj` in layers 12–38. Let $d$ be the mean prompted-minus-base output and $k^\ast$ the mean base input; the layer maximizing $\lVert d\rVert/\lVert\bar o_{\text{base}}\rVert$ is used (layer 29, input width 4096). A ridge-regularized covariance $C$ of that input over all tokens of 12 non-target design cases whitens the key, so that the edit responds to what is distinctive about the target situation and stays near zero on ordinary inputs:
 $$
-$$
 \Delta W \;=\; \alpha\,\frac{d\,(C^{-1}k^\ast)^{\top}}{k^{\ast\top}C^{-1}k^\ast},\qquad \Delta W\,k^\ast=\alpha\,d .
 $$
-```
+
 It is installed as one rank-1 component of a rank-8, $\alpha_{\text{LoRA}}=8$ bf16 adapter; the realized shift error is 0.17%. The strength $\alpha$ is the smallest value in $\{2,3,4,6,8\}$ for which greedy decoding on design cases rereads in at least 11 of 12 target cases and leaves the first tool call unchanged in all 12 non-target cases ($\alpha=4$). No evaluation case enters design or selection.
 
 ## Controls and baseline
