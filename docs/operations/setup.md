@@ -2,16 +2,16 @@
 
 ## Verified access
 
-On 4 November 2026, the Modal API confirmed workspace `ach-bj100`. Kaggle browser sign-in completed as `bjacharya`, the user confirmed competition entry, and authenticated file listing/downloads succeeded. Credentials remain in the services' normal home-directory configuration and are not copied into this repository.
+On 4 November 2026, the Modal API confirmed workspace `ach-bj100`; on 7 November the user moved the project to workspace `onepiecification` (see the [run ledger](run-log.md)), which every runner now requires. Kaggle browser sign-in completed as `bjacharya`, the user confirmed competition entry, and authenticated file listing/downloads succeeded. Credentials remain in the services' normal home-directory configuration and are not copied into this repository.
 
 Use an explicit profile for every Modal command:
 
 ```sh
-MODAL_PROFILE=ach-bj100 .venv/bin/modal token info
-MODAL_PROFILE=ach-bj100 .venv/bin/modal billing summary --for 'this month' --json
+MODAL_PROFILE=onepiecification .venv/bin/modal token info
+MODAL_PROFILE=onepiecification .venv/bin/modal billing summary --for 'this month' --json
 ```
 
-The checked billing summary reported USD 0 billed this month. It did not report remaining credit; the USD 30 balance is user-reported.
+The summary reports metered cost and applied credits but not the remaining balance; balances are user-reported. `modal billing report --for 'this month' --json` breaks cost down by app. The workspace is shared with other projects, so read this project's spend from the `gemma4-*` apps only.
 
 ## Authentication on a fresh machine
 

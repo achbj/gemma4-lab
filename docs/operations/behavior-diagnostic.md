@@ -8,14 +8,14 @@ feedback; it does not measure competition repair accuracy.
 Run from the repository with its orchestration environment:
 
 ```sh
-MODAL_PROFILE=ach-bj100 .venv/bin/modal run infrastructure/modal/behavior_diagnostic.py
+MODAL_PROFILE=onepiecification .venv/bin/modal run infrastructure/modal/behavior_diagnostic.py
 ```
 
 For the separately frozen fresh-case edit-recovery screen, select its configuration
 before the Modal module is imported (resource decorators are evaluated at import):
 
 ```sh
-MODAL_PROFILE=ach-bj100 GEMMA4_DIAGNOSTIC_CONFIG=configs/behavior-diagnostic-v2.json \
+MODAL_PROFILE=onepiecification GEMMA4_DIAGNOSTIC_CONFIG=configs/behavior-diagnostic-v2.json \
   .venv/bin/modal run infrastructure/modal/behavior_diagnostic.py
 ```
 
@@ -29,7 +29,7 @@ image and approved E4B cache. It creates no deployment or adapter. Only syntheti
 case data and the two prompts are sent to the function. Network access is blocked;
 the model server is local to the remote container. There are no automatic retries.
 Monitor the invocation to completion; cancel a still-unscheduled app after fifteen
-minutes with `MODAL_PROFILE=ach-bj100 .venv/bin/modal app stop APP_ID`.
+minutes with `MODAL_PROFILE=onepiecification .venv/bin/modal app stop APP_ID`.
 
 All twelve seed states must pass their preconditions using the official resilient
 editor before model serving starts. Each condition receives the same seeded history.
