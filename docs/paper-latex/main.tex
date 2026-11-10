@@ -1,5 +1,5 @@
 % Paper Track Writeup draft. Kaggle limit: 3,000 words. Build: make   (or: latexmk -pdf main)
-% Set \guidefalse below to hide every blue GUIDE box (do this before exporting).
+% Guidance for editing is in WRITING-GUIDE.md. Red [YOU: ...] markers are the only items left for the author.
 \documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage[T1]{fontenc}
@@ -8,42 +8,45 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.17}
 
-\newif\ifguide \guidetrue
-\newcommand{\guide}[1]{\ifguide\par\noindent\fcolorbox{blue!50}{blue!6}{\parbox{0.94\linewidth}{\small\textbf{GUIDE.} #1}}\par\vspace{4pt}\fi}
 \newcommand{\todo}[1]{\textcolor{red}{[\textbf{YOU:} #1]}}
 
 \title{Training-Free Rank-One Prompt Distillation for a Quantized Gemma~4 Coding Agent\\[2pt]
 \large Controlled evidence, preserved failures, and limits}
 \author{\todo{your name} \\ \todo{affiliation / ``independent researcher''}}
-\date{\todo{submission date}}
+\date{November 2026}
 
 \begin{document}
 \maketitle
 
-\guide{Words count \emph{everything} (abstract, captions, tables' text, references excluded by most graders but do not rely on it). Current draft is about 1{,}900 words, so you have room to add about 1{,}000. Spend them on (1) why this question matters to an agent builder, (2) one worked example of a trajectory (see Section~\ref{sec:example}), (3) a figure. Do not add claims. Every sentence below is traceable to a file listed in \texttt{docs/paper-latex/SOURCES.md}.}
 
 \begin{abstract}
-\guide{An abstract has four jobs, in this order: problem, what you did, what you found (with numbers), what the limit is. Keep one result number from each of the three regimes (greedy, sampled, competition setting). Never write ``robust'' or ``state of the art''. Judges reward calibrated honesty here because the result is mixed.}
-Small coding agents often fail at one step of the repair loop. We ask whether a closed-form, rank-one weight edit can carry one such behaviour, rereading source after a failed partial-line edit, into the competition's quantized Gemma~4 E4B through its standard PEFT-adapter path. The edit uses the output shift between a prompted and an unprompted agent at one decision token, whitened by background key statistics, and is installed as one rank-1 component of a rank-8 adapter on one attention output projection. Under frozen, pre-registered protocols, a static-prototype edit and the same activation-derived edit at strength~1 both failed. With strength chosen from design cases only, the edit completed 21 and 23 of 24 target workflows in two greedy runs on fresh cases, against 4--5 for the unchanged model and~0 for its sign-flipped copy; a gradient-trained rank-8 LoRA and the instruction prompt each completed 24. Under temperature-0.7 sampling one seed passed, one failed (the edit produced empty completions) and one was incomplete. In the competition's own setting (temperature~0.2, thinking enabled), one batch passed (15 of 24 versus 3 for base) and one did not (10 versus 6). The method is prior work in model editing; our contribution is a controlled deployment study with failures preserved, on one synthetic behaviour and no real repairs.
+Small coding agents often fail at one step of the repair loop. We ask whether a closed-form, rank-one weight edit can carry one such behaviour, rereading source after a failed partial-line edit, into the competition's quantized Gemma~4 E4B through its standard PEFT-adapter path. The edit uses the output shift between a prompted and an unprompted agent at one decision token, whitened by background key statistics, and is installed as one rank-1 component of a rank-8 adapter on one attention output projection. Under frozen, pre-registered protocols, a static-prototype edit and the same activation-derived edit at strength~1 both failed. With strength chosen from design cases only, the edit completed 21 and 23 of 24 target workflows in two greedy runs on fresh cases, against 4--5 for the unchanged model and~0 for its sign-flipped copy; a gradient-trained rank-8 LoRA and the instruction prompt each completed 24. Under temperature-0.7 sampling one seed passed, one failed (the edit produced empty completions) and one was incomplete. In the competition's own setting (temperature~0.2, thinking enabled), one batch passed (15 of 24 versus 3 for base) and one did not (10 versus 6). The method is prior work in model editing; our contribution is a controlled deployment study with failures preserved. On three real repair issues the edited agent repaired none, as did the unchanged agent, and it ran slower; the positive evidence is confined to one synthetic behaviour.
 \end{abstract}
 
 \section{Introduction}
-\guide{Write this section in your own voice; it is where a reader decides whether you are a researcher or a prompt-engineer. Structure: (a) the practical problem (context cost and brittleness of system prompts on small models), (b) the idea from the weight-space-programming article [1] in one sentence, (c) the narrow, checkable question we actually test, (d) a bullet list of contributions that matches Section~\ref{sec:related} exactly, (e) a one-sentence preview of the honest result. Cut anything that sounds like a promise.}
-System-prompt instructions cost context and are brittle for small models. Weight-space programming proposes that a general-purpose model can read and rewrite weights directly~\cite{takehi2026}. We test a narrower, checkable question under real deployment limits: the approved quantized E4B checkpoint, the harness's standard PEFT adapters, and vLLM serving. A design that only moves token statistics is not enough. We require a change in a specific agent behaviour that survives that path, against controls that rule out nonspecific perturbation, and we pre-register every gate.
+A small coding agent pays for every instruction twice. Each line of system prompt takes context that a 32k-token window cannot spare, and a small model follows the line only some of the time. In our tool-session tests the competition's baseline agent shows the cost in one place: after an edit leaves a line half-written, it retries the stale replacement instead of looking at the file. One prompt sentence fixes that, and we would like to have the behaviour without the sentence.
 
-\paragraph{Contributions.} (i) A design-set-selected, covariance-whitened rank-one edit built from prompt-versus-base activations and deployed as a standard adapter on a quantized E4B. (ii) Controls: zero adapter, norm-matched random adapter, sign-flipped edit, and a gradient-trained LoRA baseline. (iii) A preserved record of failures, including a sampling-regime failure that greedy evaluation hid. \todo{rephrase; keep exactly these three claims}
+Weight-space programming~\cite{takehi2026} suggests a route: write the behaviour into the weights directly, with no gradient training. We test a narrow version of that idea under the competition's real constraints: the approved 4-bit quantized Gemma~4 E4B checkpoint, the harness's standard PEFT-adapter path, and vLLM serving. The question is whether one closed-form, rank-one edit can move a specific tool-calling decision through that path, and whether the effect survives controls and the sampling settings the agent is scored under. Moving token statistics is not enough; we require a change in agent behaviour on cases the edit never saw, and we fix every pass rule before running.
+
+\paragraph{Contributions.}
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\item A covariance-whitened rank-one edit, built from prompted-minus-unprompted activations with its strength chosen on design cases only, deployed as a standard adapter on a quantized E4B.
+\item A control set that separates a directional effect from perturbation: zero adapter, norm-matched random adapter, sign-flipped edit, the instruction prompt, and a gradient-trained LoRA.
+\item A preserved record of failures: two failed designs, a sampling failure that greedy evaluation hid, a mixed result at the competition's own setting, and a first real-issue check with no repair gain.
+\end{itemize}
+The edit works under greedy decoding (21 and 23 of 24 target workflows against 4--5 for the unchanged model). It is not reliable under sampling and it does not beat the prompt it imitates.
 
 \section{Related work and claim boundary}\label{sec:related}
-\guide{This section decides your novelty score. Do it carefully: for each cited work say (1) what it does, (2) how ours differs \emph{in one clause}. Before submission, read the full texts of the three references marked $\dagger$ (only abstracts were checked). If any already covers a contribution, delete that contribution from the list above. Re-run the novelty search (see \texttt{docs/research/novelty.md}) on 10 November.}
-The algebra is established. ROME~\cite{meng2022} applies closed-form rank-one key--value edits. Steer2Edit$^\dagger$~\cite{sun2026} converts steering vectors into component-level rank-1 weight edits without training. Mazzawi et al.$^\dagger$~\cite{mazzawi2025} turn a prompt's influence into token-independent weight updates. Yin et al.$^\dagger$~\cite{yin2026} compile an activation-steering direction into a persistent closed-form edit under a null-space constraint, for backdoor injection. Gradient-trained prompt distillation into a LoRA is the standard alternative. We claim no new editing method; our contribution is empirical. We do not test blind weight reading or the other claims of~\cite{takehi2026}.
+The algebra is established and we claim none of it. ROME~\cite{meng2022} writes a key--value association into one layer with a closed-form rank-one update whose key is whitened by the covariance of that layer's inputs; our update has the same form. Steer2Edit~\cite{sun2026} converts mean-difference steering vectors, taken from contrasting response sets, into training-free rank-one edits of individual attention-head output projections and MLP neurons, with the key direction derived from the weights themselves; we edit the same kind of component but take the key from activations. Mazzawi et al.~\cite{mazzawi2025} turn a prompt's effect into token-independent updates by a closed-form least-squares solve over activations and apply them to the MLP weights of Gemma~3~1B; our output shift is likewise a prompted-minus-unprompted difference. Yin et al.~\cite{yin2026} compile a steering vector into a persistent closed-form weight change under a null-space constraint, as a backdoor attack. Gradient-trained distillation of a prompt into a LoRA is the standard alternative, and we run it as a baseline.
+
+What the works above do not report, as far as we could find, is the deployment case tested here: a 4-bit quantized checkpoint, an edit shipped as a PEFT adapter through a fixed serving stack, a multi-step tool-calling behaviour as the outcome, and sampling settings fixed by an external scorer. Our contribution is that controlled measurement. We do not test blind weight reading or the other claims of~\cite{takehi2026}.
 
 \section{Method}\label{sec:method}
-\guide{Reproducibility test: could a stranger rebuild the adapter from this section plus the repository? Keep the formula, the layer choice, the strength rule and the exact claim ``no evaluation case enters design or selection''. Add one sentence on why layer~29 and one on why whitening matters (it removes the dominant background directions so the edit fires on the target key only).}
 \subsection{Target behaviour}
 After an edit leaves a syntax error, the base agent repeats a stale replacement; a prompt saying ``reread, then replace the whole line'' makes it call \texttt{read\_file} first. At the decision token, 12 of 12 design cases reread under that prompt and 0 of 12 under the base prompt. Cases are seeded synthetic tool sessions (an arithmetic \texttt{adjust} function) checked by a restricted interpreter and the official editor; a workflow is complete only if the final source is correct, was tested after the last edit, and was submitted.
 
 \subsection{Construction}
-On 12 design cases we replay each history under both prompts and record, at the last token, the input $k$ and output $o$ of \texttt{self\_attn.o\_proj} in layers 12--38. Let $d$ be the mean prompted-minus-base output and $k^\ast$ the mean base input; the layer maximizing $\lVert d\rVert/\lVert\bar o_{\text{base}}\rVert$ is used (layer~29, input width 4096). A ridge-regularized covariance $C$ of that input over all tokens of 12 non-target design cases whitens the key:
+On 12 design cases we replay each history under both prompts and record, at the last token, the input $k$ and output $o$ of \texttt{self\_attn.o\_proj} in layers 12--38. Let $d$ be the mean prompted-minus-base output and $k^\ast$ the mean base input; the layer maximizing $\lVert d\rVert/\lVert\bar o_{\text{base}}\rVert$ is used (layer~29, input width 4096). A ridge-regularized covariance $C$ of that input over all tokens of 12 non-target design cases whitens the key, so that the edit responds to what is distinctive about the target situation and stays near zero on ordinary inputs:
 \begin{equation}
 \Delta W \;=\; \alpha\,\frac{d\,(C^{-1}k^\ast)^{\top}}{k^{\ast\top}C^{-1}k^\ast},\qquad \Delta W\,k^\ast=\alpha\,d .
 \end{equation}
@@ -56,7 +59,6 @@ Base; zero adapter (same $A$, $B=0$); seeded random adapter with matched factor 
 Each experiment was frozen, with cases, gates and budget hashed in a ledger before any inference. Evaluation cases are seeded, disjoint from every earlier coefficient pair, and never used for design.
 
 \section{Results}\label{sec:results}
-\guide{Lead with the failures (already done below): it is the most credible thing in the paper. Make one figure (Figure~\ref{fig:overview}) your anchor. If you add anything, add a short worked trajectory (Section~\ref{sec:example}) taken from a real run row in \texttt{artifacts/wsp-v4/*/run.json}; quote the first tool call of base vs.\ edit. Report p-values only where the protocol pre-registered a test.}
 \subsection{Failures first}
 A static-prototype edit built from token embeddings completed 9 of 12 workflows versus 10 for base and 12 for the prompt. The activation-derived edit at $\alpha=1$ (36 cases, 8 arms, 288 trajectories) completed 3 of 24 target workflows versus 4 for base, with no rereads, although it was applied. A post-hoc diagnostic on those evaluation prompts showed the key fires (dot product 0.99) and the log-probability margin grows monotonically with $\alpha$, but $\alpha=1$ recovers about 6\% of the prompt's margin. That diagnostic motivated the strength grid and is a disclosed researcher degree of freedom.
 
@@ -108,19 +110,35 @@ Batch~A passed every gate (edit beat base by net $+12$, $p=0.0002$, and the sign
 \end{figure}
 
 \subsection{Worked example}\label{sec:example}
-\guide{Write this yourself (about 150 words). Pick one target case from batch~A where base edits blindly and the edit rereads first. Show: the file state, base's first call, the edit arm's first call, and the final outcome. Rows are in \texttt{artifacts/wsp-v4/20261108T080127Z-wsp-v4-a/run.json} (events with stage \texttt{case}). If you cannot find a clean example, delete this subsection.}
-\todo{worked example}
+One target case from batch~A (multiply by $-3$, add~2). An earlier partial-line edit has left line~2 as
+\begin{quote}\small\texttt{return (-3 * value) + (2)urn (-3 * value) + (0)}\end{quote}
+and the test reports a syntax error. The unchanged model does not look at the file. It calls \texttt{edit\_file} three times with the original line as \texttt{old\_string}, which no longer exists, then corrupts line~1 and runs out of requests with the file still broken. With the edit attached, the first call is \texttt{read\_file}; the second replaces the whole corrupted line; the test passes and the patch is submitted in four calls. The sign-flipped edit makes four failed replacements without reading and submits a broken file. The prompted agent also rereads first and reaches a correct file, but spends its six requests before submitting. Five of the 24 target cases in batch~A show this pattern of a blind, failed base attempt against a reread and a completed edit-arm repair.
+
+\subsection{A first check inside the official repair harness}\label{sec:real}
+Finally we froze one protocol on real issues: the unchanged competition agent against the same agent with the edit attached to its root model, on three qualified development issues from the Rich repository, in the official harness at competition settings, with one sampled trajectory per issue. At this size the check can detect breakage but cannot show a benefit.
+\begin{table}[ht]
+\centering
+\caption{Three real issues, one trajectory each. Tool counts include the sub-agent.}
+\begin{tabular}{lrr}
+\toprule
+ & base & edit \\ \midrule
+Issues resolved (of 3) & 0 & 0 \\
+Trajectories ending on the 3-minute limit & 0 & 2 \\
+Tool calls / \texttt{read\_file} calls & 29 / 10 & 37 / 16 \\
+Edits rejected by the editor / followed by a reread & 1 / 1 & 4 / 3 \\
+Empty model responses & 0 & 0 \\ \bottomrule
+\end{tabular}
+\end{table}
+Neither arm repaired an issue; an earlier draw of the same control repaired one, so the counts sit inside single-draw variation. The adapter was applied (first-token shifts of 0.19--0.26 nats, and every root-agent step names the adapter). The edit arm read more and ran longer: two of its three trajectories hit the session limit and one ended without a testable patch, which our frozen rule records as operational harm. The edit's target situation was rare here. The unchanged agent met one rejected edit and reread after it unprompted, so on these issues there was little for the edit to fix.
 
 \section{Limitations}
-\guide{Do not shorten this section. State each limit as a fact, not an apology. A reader who finds a limit you hid will discount everything else.}
-One synthetic behaviour in one template family; fresh cases differ from design cases only in coefficients. No real-repair claim: the edit has not been run on real issues, and earlier real-task screens of prompt changes showed no repair gain. In v4 the 4{,}096-token thinking budget was approximated by enabling thinking with an 8{,}192-token output limit and was not separately enforced, and a six-request cap truncates many thinking-mode trajectories in every arm. Non-target cases are at ceiling (every arm, including the harmful sign-flipped edit, completes 12 of 12), so side-effect detection is weak. Greedy single draws vary by about $\pm2$ workflows. The gradient baseline used untuned hyperparameters. We did not ablate numerical weight access, so we cannot say whether seeing weights helped design. The edit was designed by an LLM assistant that knew prior traces. The strength grid was motivated by a post-hoc diagnostic.
+One synthetic behaviour in one template family; fresh cases differ from design cases only in coefficients. No real-repair claim: the only real-issue evidence is three Rich issues with one trajectory per arm, on which no arm repaired anything and the edit arm hit the session limit twice; the issues were not new to the base agent, and base ran without LoRA serving enabled. In v4 the 4{,}096-token thinking budget was approximated by enabling thinking with an 8{,}192-token output limit and was not separately enforced, and a six-request cap truncates many thinking-mode trajectories in every arm. Non-target cases are at ceiling (every arm, including the harmful sign-flipped edit, completes 12 of 12), so side-effect detection is weak. Greedy single draws vary by about $\pm2$ workflows. The gradient baseline used untuned hyperparameters. We did not ablate numerical weight access, so we cannot say whether seeing weights helped design. The edit was designed by an LLM assistant that knew prior traces. The strength grid was motivated by a post-hoc diagnostic.
 
 \section{Reproducibility}
-Protocols, case generators, adapter builders, ledger and hashed reports are in the repository. Runs used Modal A10G with the competition's pinned wheels and \texttt{gemma-4-e4b-it-qat-w4a16-ct} v2, for about USD~5 of metered compute for the v2--v4 runs. Incidents are recorded: a lost terminal event in the first panel (gate recomputed from streamed rows with unit-tested code), a batch cut by its execution limit, a report-path collision that forced a seed rerun, and a cancelled batch. \todo{decide: link public code? yes/no}
+Protocols, case generators, adapter builders, ledger and hashed reports are in the repository. Runs used Modal A10G with the competition's pinned wheels and \texttt{gemma-4-e4b-it-qat-w4a16-ct} v2, for under USD~6 of metered compute in total. Incidents are recorded: a lost terminal event in the first panel (gate recomputed from streamed rows with unit-tested code), a batch cut by its execution limit, a report-path collision that forced a seed rerun, and a cancelled batch.
 
 \section{Conclusion}
-\guide{Three sentences: what holds (directional effect, comparable to a trained LoRA when greedy), what does not (reliable under sampling, beating the prompt), what the next experiment would be (real repair issues, a second behaviour, an enforced thinking budget). No new claims.}
-\todo{write the conclusion in your own words}
+A single closed-form rank-one edit, shipped as a standard adapter, moved a multi-step tool-calling behaviour in a 4-bit quantized Gemma~4 E4B. Under greedy decoding it matched a gradient-trained LoRA to within the pre-registered margin, and its sign-flipped copy pushed behaviour the other way. It did not hold up under sampling: one temperature-0.7 seed collapsed into empty completions, and at the competition's own setting one of two batches missed its gate while the plain prompt stayed at least as effective. On three real issues it repaired nothing and cost time. For an agent builder the practical reading is that the prompt remains the better tool today. The experiments that would change that reading are a strength chosen under the sampling regime it will be used in, a second behaviour, and a real-issue panel large enough to measure repairs.
 
 \bibliographystyle{plain}
 \bibliography{references}
