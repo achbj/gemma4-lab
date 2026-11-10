@@ -2,165 +2,141 @@
 
 # Training-Free Rank-One Prompt Distillation for a Quantized Gemma 4 Coding Agent
 
-*Controlled evidence, preserved failures, and limits*
+*Regime boundaries, causal controls, and preserved failures*
 
-**[YOU: your name], [YOU: affiliation]. November 2026.**
+**[YOU: Author 1], [YOU: Author 2], [YOU: Author 3]**  
+*Independent Researchers — November 2026*
 
 ## Abstract
 
-Small coding agents often fail at one step of the repair loop. We ask whether a closed-form, rank-one weight edit can carry one such behaviour, rereading source after a failed partial-line edit, into the competition’s quantized Gemma 4 E4B through its standard PEFT-adapter path. The edit uses the output shift between a prompted and an unprompted agent at one decision token, whitened by background key statistics, and is installed as one rank-1 component of a rank-8 adapter on one attention output projection. Under frozen, pre-registered protocols, a static-prototype edit and the same activation-derived edit at strength 1 both failed. With strength chosen from design cases only, the edit completed 21 and 23 of 24 target workflows in two greedy runs on fresh cases, against 4–5 for the unchanged model and 0 for its sign-flipped copy; a gradient-trained rank-8 LoRA and the instruction prompt each completed 24. Under temperature-0.7 sampling one seed passed, one failed (the edit produced empty completions) and one was incomplete. In the competition’s own setting (temperature 0.2, thinking enabled), one batch passed (15 of 24 versus 3 for base) and one did not (10 versus 6). The method is prior work in model editing; our contribution is a controlled deployment study with failures preserved. On three real repair issues the edited agent repaired none, as did the unchanged agent, and it ran slower; the positive evidence is confined to one synthetic behaviour.
+Small coding agents often fail at one step of the repair loop. We ask whether a closed-form, rank-one weight edit can carry one such behaviour—rereading source after a failed partial-line edit—into the competition's 4-bit quantized Gemma 4 E4B through its standard PEFT-adapter path, and what governs when that transfer holds or breaks. The edit uses the output shift between a prompted and an unprompted agent at one decision token, whitened by background key statistics, installed as one rank-1 component of a rank-8 adapter on layer 29 `self_attn.o_proj`. Under frozen, pre-registered protocols, a static-prototype edit and the activation-derived edit at unit strength ($\alpha=1$) both failed. A post-hoc diagnostic revealed why: although the whitened key fires on held-out prefixes (cosine $0.99$), a single-layer rank-1 shift at $\alpha=1$ recovers only $6\%$ of the full prompt's $+3.32$-nat log-probability margin, leaving the reread decision below the $0$-nat greedy boundary ($-0.47$ nats). With $\alpha=4$ chosen on design cases only to cross that boundary ($+0.15$ nats), the edit completed 21 and 23 of 24 target workflows in two greedy runs on fresh cases, against 4–5 for base and 0 for its sign-flipped copy, matching a gradient-trained rank-8 LoRA (24/24) within the pre-registered margin. Because greedy selection masks a thin logit margin ($+0.15$ vs. $+2.65$ nats for the prompt), the effect weakens under stochastic decoding: at temperature 0.7 (shared seed) one seed passed and one collapsed into empty stop-token completions; at the competition's setting (temperature 0.2, thinking enabled, independent seeds), first-action rereads dropped to roughly half the prompt's rate (22/48 vs. 39/48), passing all gates in batch A (15 vs. 3 workflows) but missing the net-$+6$ gate in batch B (10 vs. 6), while completing slightly more total workflows than the prompt (25/48 vs. 21/48) under the six-request thinking cap. On three real repair issues where the target error rarely arose, neither arm repaired an issue and the edit arm ran slower.
 
 ## Introduction
 
-A small coding agent pays for every instruction twice. Each line of system prompt takes context that a 32k-token window cannot spare, and a small model follows the line only some of the time. In our tool-session tests the competition’s baseline agent shows the cost in one place: after an edit leaves a line half-written, it retries the stale replacement instead of looking at the file. One prompt sentence fixes that, and we would like to have the behaviour without the sentence.
+A small coding agent pays for every instruction twice: each line of system prompt consumes context in a 32k-token window, and a small model follows the line only some of the time. In our tool-session tests the competition's baseline agent shows this cost after an edit leaves a line half-written, retrying the stale replacement instead of inspecting the file. One prompt sentence fixes that, and we ask whether the behaviour can be written into the weights without the sentence.
 
-Weight-space programming (Takehi et al. 2026) suggests a route: write the behaviour into the weights directly, with no gradient training. We test a narrow version of that idea under the competition’s real constraints: the approved 4-bit quantized Gemma 4 E4B checkpoint, the harness’s standard PEFT-adapter path, and vLLM serving. The question is whether one closed-form, rank-one edit can move a specific tool-calling decision through that path, and whether the effect survives controls and the sampling settings the agent is scored under. Moving token statistics is not enough; we require a change in agent behaviour on cases the edit never saw, and we fix every pass rule before running.
+Weight-space programming (Takehi et al. 2026) and model editing (Meng et al. 2022; Sun et al. 2026; Mazzawi et al. 2025) suggest closed-form updates with no gradient training. Moving from single-token benchmarks to a deployed coding agent introduces four constraints rarely tested together: a 4-bit quantized checkpoint (`gemma-4-e4b-it-qat-w4a16-ct`), a standard PEFT adapter served through vLLM, a multi-step tool loop where one bad action corrupts state, and stochastic thinking-mode decoding fixed by an external scorer. We test whether one closed-form, rank-one edit can move a tool-calling decision through that stack, and map the regime boundary where rank-one distillation succeeds and where it breaks down.
 
 **Contributions.**
 
-- A covariance-whitened rank-one edit, built from prompted-minus-unprompted activations with its strength chosen on design cases only, deployed as a standard adapter on a quantized E4B.
-
-- A control set that separates a directional effect from perturbation: zero adapter, norm-matched random adapter, sign-flipped edit, the instruction prompt, and a gradient-trained LoRA.
-
-- A preserved record of failures: two failed designs, a sampling failure that greedy evaluation hid, a mixed result at the competition’s own setting, and a first real-issue check with no repair gain.
-
-The edit works under greedy decoding (21 and 23 of 24 target workflows against 4–5 for the unchanged model). It is not reliable under sampling and it does not beat the prompt it imitates.
+- **Causal directional transfer under greedy decoding:** A covariance-whitened rank-one edit ($\alpha=4$, chosen on design cases only) deployed as a PEFT adapter on a quantized E4B lifts target workflows from 4–5/24 (base, zero, and norm-matched random controls) to 21–23/24, matches a gradient-trained LoRA (24/24) within the pre-registered margin, and reverses to 0/24 under sign-flipping.
+- **Mechanistic diagnosis of the greedy-to-sampling gap:** A single-layer rank-one update recovers $\approx 0.20$ nats per unit of $\alpha$ against a $+3.32$-nat multi-layer prompt shift. Choosing the smallest $\alpha$ that flips greedy decoding ($\alpha=4$, mean margin $+0.15$ nats) yields near-perfect deterministic behaviour while leaving the decision near $50\%$ once stochastic sampling and intermediate thinking tokens intervene.
+- **Preserved failures and operational trade-offs:** We report two failed initial designs, a high-temperature ($T=0.7$) stop-token collapse that greedy evaluation hid, a mixed two-batch outcome under competition thinking settings (edit rereads 22/48 vs. prompt 39/48, yet finishes 25/48 vs. 21/48 workflows due to lower turn overhead), and a three-issue real harness check showing latency cost when the target fault is rare.
 
 ## Related work and claim boundary
 
-The algebra is established and we claim none of it. ROME (Meng et al. 2022) writes a key–value association into one layer with a closed-form rank-one update whose key is whitened by the covariance of that layer’s inputs; our update has the same form. Steer2Edit (Sun et al. 2026) converts mean-difference steering vectors, taken from contrasting response sets, into training-free rank-one edits of individual attention-head output projections and MLP neurons, with the key direction derived from the weights themselves; we edit the same kind of component but take the key from activations. Mazzawi et al. (Mazzawi et al. 2025) turn a prompt’s effect into token-independent updates by a closed-form least-squares solve over activations and apply them to the MLP weights of Gemma 3 1B; our output shift is likewise a prompted-minus-unprompted difference. Yin et al. (Yin et al. 2026) compile a steering vector into a persistent closed-form weight change under a null-space constraint, as a backdoor attack. Gradient-trained distillation of a prompt into a LoRA is the standard alternative, and we run it as a baseline.
+The linear algebra of rank-one updates is established and we claim none of it. ROME (Meng et al. 2022) writes a key–value association into one layer with a closed-form rank-one update whitened by input covariance; our update has the same form. Steer2Edit (Sun et al. 2026) converts contrasting-response steering vectors into training-free rank-one edits of attention projections and MLP neurons using weight-derived keys; we edit `self_attn.o_proj` using activation-derived keys and covariance. Mazzawi et al. (2025) condense prompt effects into token-independent updates via a closed-form least-squares solve over activations on Gemma 3 1B MLP weights; our output shift is likewise a prompted-minus-unprompted difference. Yin et al. (2026) compile a steering vector into a persistent closed-form weight change under a null-space constraint as a backdoor attack. Gradient-trained LoRA distillation is the standard alternative, which we run as a baseline.
 
-What the works above do not report, as far as we could find, is the deployment case tested here: a 4-bit quantized checkpoint, an edit shipped as a PEFT adapter through a fixed serving stack, a multi-step tool-calling behaviour as the outcome, and sampling settings fixed by an external scorer. Our contribution is that controlled measurement. We do not test blind weight reading or the other claims of (Takehi et al. 2026).
+What prior works do not characterize, as far as we could find, is how closed-form rank-one prompt distillation behaves across the deployment gap of a quantized, multi-turn tool agent: shipping the edit as a PEFT adapter on a 4-bit quantized checkpoint through vLLM, separating directional steering from perturbation via sign-flipped controls, and measuring how thin single-layer logit margins interact with stochastic sampling and thinking-mode rollouts. We do not test blind weight reading or the broader claims of Takehi et al. (2026).
 
 ## Method
 
-## Target behaviour
+### Target behaviour
 
-After an edit leaves a syntax error, the base agent repeats a stale replacement; a prompt saying “reread, then replace the whole line” makes it call `read_file` first. At the decision token, 12 of 12 design cases reread under that prompt and 0 of 12 under the base prompt. Cases are seeded synthetic tool sessions (an arithmetic `adjust` function) checked by a restricted interpreter and the official editor; a workflow is complete only if the final source is correct, was tested after the last edit, and was submitted.
+After an edit leaves a syntax error, the base agent repeats a stale replacement; a prompt saying “reread, then replace the whole line” makes it call `read_file` first. At the decision token, 12/12 design cases reread under that prompt and 0/12 under base. Cases are seeded synthetic tool sessions (an arithmetic `adjust` function) checked by a restricted interpreter and the official editor; a workflow is complete only if the final source is correct, tested after the last edit, and submitted.
 
-## Construction
+### Construction
 
-On 12 design cases we replay each history under both prompts and record, at the last token, the input $k$ and output $o$ of `self_attn.o_proj` in layers 12–38. Let $d$ be the mean prompted-minus-base output and $k^\ast$ the mean base input; the layer maximizing $\lVert d\rVert/\lVert\bar o_{\text{base}}\rVert$ is used (layer 29, input width 4096). A ridge-regularized covariance $C$ of that input over all tokens of 12 non-target design cases whitens the key, so that the edit responds to what is distinctive about the target situation and stays near zero on ordinary inputs:
+On 12 design cases we replay each history under both prompts and record, at the last token before the tool call, the input $k$ and output $o$ of `self_attn.o_proj` in layers 12–38. Let $d$ be the mean prompted-minus-base output and $k^\ast$ the mean base input; the layer maximizing $\lVert d\rVert/\lVert\bar o_{\text{base}}\rVert$ is used (layer 29, width 4096). A ridge-regularized covariance $C$ over all tokens of 12 non-target design cases whitens the key, so the edit responds to what is distinctive about the target state and stays near zero on ordinary inputs:
 $$
 \Delta W \;=\; \alpha\,\frac{d\,(C^{-1}k^\ast)^{\top}}{k^{\ast\top}C^{-1}k^\ast},\qquad \Delta W\,k^\ast=\alpha\,d .
 $$
 
-It is installed as one rank-1 component of a rank-8, $\alpha_{\text{LoRA}}=8$ bf16 adapter; the realized shift error is 0.17%. The strength $\alpha$ is the smallest value in $\{2,3,4,6,8\}$ for which greedy decoding on design cases rereads in at least 11 of 12 target cases and leaves the first tool call unchanged in all 12 non-target cases ($\alpha=4$). No evaluation case enters design or selection.
+It is installed as one rank-1 component of a rank-8, $\alpha_{\text{LoRA}}=8$ bf16 adapter ($0.17\%$ shift error). The strength $\alpha$ is the smallest value in $\{2,3,4,6,8\}$ for which greedy decoding on design cases rereads in at least 11/12 target cases and leaves the first tool call unchanged in all 12/12 non-target cases ($\alpha=4$). No evaluation case enters design or selection.
 
-## Controls and baseline
+### Controls, baseline, and frozen protocols
 
-Base; zero adapter (same $A$, $B=0$); seeded random adapter with matched factor norms; sign-flipped edit; the instruction prompt; and a base repeat (v2 only). The gradient baseline is a rank-8 LoRA on the same module trained on the same 24 design cases (teacher: the prompted agent’s continuation; preservation targets on non-target cases), stopped at the first checkpoint meeting the same design-set rule (step 40). Adapter application in vLLM was verified separately: active adapters shift first-token log-probabilities by 0.09–0.76 nats on three fixed prefixes with zero control drift.
-
-## Protocols
-
-Each experiment was frozen, with cases, gates and budget hashed in a ledger before any inference. Evaluation cases are seeded, disjoint from every earlier coefficient pair, and never used for design.
+We compare six arms: unchanged **base**; **zero adapter** ($B=0$); seeded **random adapter** with matched factor norms; **sign-flipped edit** ($\alpha=-4$); the instruction **prompt**; and a **gradient-trained LoRA** baseline (rank-8 on the same module, trained on the 24 design cases with the prompted continuation as teacher and preservation targets on non-target cases, stopped at step 40 upon meeting the design-set rule). Adapter application in vLLM was verified separately: active adapters shift first-token log-probabilities by 0.09–0.76 nats on three fixed prefixes with 0.0 nats zero-control drift. Every experiment was frozen before inference, with cases, gates, and budgets hashed in a ledger; evaluation cases use disjoint coefficient pairs never seen in design.
 
 ## Results
 
-## Failures first
+### Failures first and the logit-margin mechanism
 
-A static-prototype edit built from token embeddings completed 9 of 12 workflows versus 10 for base and 12 for the prompt. The activation-derived edit at $\alpha=1$ (36 cases, 8 arms, 288 trajectories) completed 3 of 24 target workflows versus 4 for base, with no rereads, although it was applied. A post-hoc diagnostic on those evaluation prompts showed the key fires (dot product 0.99) and the log-probability margin grows monotonically with $\alpha$, but $\alpha=1$ recovers about 6% of the prompt’s margin. That diagnostic motivated the strength grid and is a disclosed researcher degree of freedom.
+Two initial designs failed their pre-registered gates. A static-prototype edit built from token embeddings completed 9/12 workflows on a development screen versus 10/12 for base and 12/12 for the prompt (4/24 in the full panel). Next, the activation-derived edit at $\alpha=1$ (36 fresh cases, 8 arms, 288 trajectories) completed 3/24 target workflows versus 4/24 for base, with 0/24 first-action rereads, even though vLLM checks confirmed first-token shifts of 0.09–0.27 nats.
 
-## Greedy decoding, fresh cases ($\alpha=4$)
+A post-hoc diagnostic on those 24 evaluation prefixes explained why $\alpha=1$ produced zero behavioural change despite firing cleanly. On held-out prefixes, the whitened key fires with mean dot product $0.99$ (cosine $0.9995$), and the teacher-forced margin $\Delta \ell = \log P(\texttt{read\_file}) - \log P(\texttt{edit\_file})$ grows monotonically with $\alpha$ (versus $+2.65$ nats for the prompt):
+$$
+\Delta \ell(\alpha):\quad -0.85\;(\alpha=-1) < -0.67\;(\alpha=0,\text{base}) < -0.47\;(\alpha=1) < -0.29\;(\alpha=2) < +0.15\;(\alpha=4) < +0.91\;(\alpha=8)\text{ nats.}
+$$
 
-| Arm                   |  Run 1 |  Run 2 |
-|:----------------------|-------:|-------:|
-| base                  |      5 |      4 |
-| zero adapter          |      5 |      – |
-| random, norm-matched  |      4 |      – |
-| **edit**              | **21** | **23** |
-| sign-flipped edit     |      0 |      0 |
-| gradient-trained LoRA |      – |     24 |
-| prompt                |     24 |     24 |
+Because the prompt acts across all layers and positions, it shifts $\Delta\ell$ by $+3.32$ nats ($-0.67$ to $+2.65$ nats). A single-layer shift at $\alpha=1$ adds $+0.20$ nats ($\approx 6\%$ of the prompt's shift), leaving $\Delta \ell < 0$ on all 24 cases (0/24 rereads). At $\alpha=4$, the mean margin crosses zero to $+0.15$ nats (22/24 cases $>0$). That diagnostic motivated the design-set strength grid and is a disclosed researcher degree of freedom.
 
-Target workflows complete, of 24 (greedy). Non-target workflows were 12 of 12 in every arm. A dash means the arm was not run.
+### Greedy decoding on fresh cases ($\alpha=4$)
 
-Run 1 (216 trajectories) passed all four pre-registered gates: the edit beat base, zero and random by net $+16$, $+16$, $+17$ target workflows (one-sided exact sign tests, $p<10^{-4}$), beat the sign-flipped edit by $+21$ and lost no non-target case. Run 2 (180 trajectories) repeated the pattern. Identical adapters and settings gave 21 and 23, so single greedy draws carry about $\pm2$ serving noise. The sign-flipped edit removed even the base’s occasional successes, so the gain is directional. Under the frozen comparability rule (within 3 workflows) the edit is comparable to the gradient-trained LoRA (23 vs. 24), which trained in about five minutes; the edit’s value is that it needs no optimizer, not accuracy.
+With $\alpha=4$ selected on design cases only, we ran two pre-registered greedy panels on 36 fresh cases: Run 1 (6 arms, 216 trajectories) tested perturbation controls, and Run 2 (5 arms, 180 trajectories) tested the gradient-trained LoRA.
 
-## Sampling at temperature 0.7
+|Arm|First `read_file` (Run 1 / Run 2)|Workflows complete (Run 1 / Run 2)|
+|:---|:---:|:---:|
+|base|0 / 0|5 / 4|
+|zero adapter|0 / –|5 / –|
+|random, norm-matched|0 / –|4 / –|
+|**edit ($\alpha=4$)**|**20 / 22**|**21 / 23**|
+|sign-flipped edit ($\alpha=-4$)|0 / 0|0 / 0|
+|gradient-trained LoRA|– / 24|– / 24|
+|prompt|24 / 24|24 / 24|
 
-Seed 101: edit 24, base 18, sign-flipped 6, prompt 24 (pass). Seed 103: edit 4, base 24, sign-flipped 0, prompt 24 (fail); in 20 of 24 target cases the edit’s first sampled completion was empty (one token, then stop). Seed 102 was cancelled at 63 of 144 rows and is incomplete. Robustness is not established. Because every request in a batch shared one sampling seed, each seed is close to one draw per arm; within-seed counts are not independent samples.
+*Table 1. Greedy evaluation on 36 fresh cases ($\alpha=4$, out of 24; non-target 12/12 in every arm).*
 
-## Competition setting: temperature 0.2 with thinking
+Run 1 passed all four pre-registered gates: the edit beat base, zero, and random controls by net $+16$, $+16$, and $+17$ target workflows (one-sided exact sign tests, $p<10^{-4}$), beat the sign-flipped edit by $+21$ ($p=4.8\times 10^{-7}$), and lost zero non-target cases. The random control perturbed token log-probabilities more strongly than the edit (0.47–0.76 vs. 0.19–0.26 nats) yet produced 0 rereads and 4 completions, while the sign-flipped edit eliminated even base's occasional successes (4–5 down to 0). Run 2 repeated the pattern: under the frozen comparability rule (within 3 workflows), the edit (23/24) is comparable to the gradient-trained LoRA (24/24, trained in $\sim$5 minutes). Identical adapters gave 21 and 23 across runs ($\pm 2$ serving noise in temperature-0 vLLM batching).
 
-We then froze a further protocol: 36 new cases, temperature 0.2, top_p 0.95, thinking enabled, independent per-trajectory seeds, two batches (seeds 201, 202), and the same $\alpha=4$ edit with no re-tuning.
+### Sampling at temperature 0.7 and stop-token collapse
 
-| Batch        | base | edit | sign-flipped | prompt |
-|:-------------|-----:|-----:|-------------:|-------:|
-| A (seed 201) |    3 |   15 |            2 |     10 |
-| B (seed 202) |    6 |   10 |            4 |     11 |
+At temperature 0.7 without thinking, seed 101 passed (edit 24/24 complete and 24/24 rereads, base 18/24, sign-flipped 6/24, prompt 24/24). Seed 102 was cancelled at 63/144 rows (incomplete). Seed 103 failed: edit dropped to 4/24 while base reached 24/24, sign-flipped 0/24, and prompt 24/24. Trace inspection revealed two findings: (1) **Stop-token collapse:** in 20/24 target cases under seed 103, the $\alpha=4$ edit's first completion was empty (one token, finish reason `stop`), a side effect hidden by greedy decoding; and (2) **Shared-seed correlation:** because all requests in a v3 batch shared one RNG seed across similar prefixes, each seed acted nearly as one draw per arm (allowing base to hit 24/24 and edit to hit 20/24 empty stops on seed 103).
 
-Target workflows complete, of 24, in the competition setting.
+### Competition setting: temperature 0.2 with thinking and independent seeds
 
-Batch A passed every gate (edit beat base by net $+12$, $p=0.0002$, and the sign-flipped edit by $+13$; one non-target loss). Batch B failed the net-$+6$ gate (edit beat base by $+4$, $p=0.17$). By the frozen rule the outcome is mixed. The first action was `read_file` in 12 and 10 of 24 edit trajectories, against 6 and 5 for base and 18 and 21 for the prompt: the edit moves behaviour in the intended direction at roughly half the prompt’s strength. The empty-completion failure did not recur. Between 8 and 15 of 24 trajectories in every arm, the prompt included, ended on the six-request budget, which caps completions in thinking mode.
+To fix the shared-seed flaw and test the competition regime, we froze protocol v4: 36 new cases, temperature 0.2, `top_p` 0.95, thinking enabled, *independent per-trajectory seeds*, two batches (seeds 201 and 202, 144 trajectories each), and the same $\alpha=4$ edit with no re-tuning.
 
-**Figure 1. Target workflows complete (of 24) in every regime.** The edit's advantage over base is clear under greedy decoding, reverses in one sampled seed, and is partial at the competition's setting. (Seed 102 omitted: incomplete. The PDF shows this as a bar chart.)
+|Batch|First `read_file` (base/edit/flip/prompt)|Workflows complete (base/edit/flip/prompt)|
+|:---|:---:|:---:|
+|A (seed 201)|6 / **12** / 2 / 18|3 / **15** / 2 / 10|
+|B (seed 202)|5 / **10** / 3 / 21|6 / **10** / 4 / 11|
+|**Pooled (of 48)**|**11 / 22 / 5 / 39**|**9 / 25 / 6 / 21**|
 
-| Regime | base | edit | sign-flipped | prompt |
-| --- | --- | --- | --- | --- |
-| Greedy, run 1 | 5 | 21 | 0 | 24 |
-| Greedy, run 2 | 4 | 23 | 0 | 24 |
-| T = 0.7, seed 101 | 18 | 24 | 6 | 24 |
-| T = 0.7, seed 103 | 24 | 4 | 0 | 24 |
-| T = 0.2 + thinking, batch A | 3 | 15 | 2 | 10 |
-| T = 0.2 + thinking, batch B | 6 | 10 | 4 | 11 |
+*Table 2. Competition setting ($T=0.2$, thinking enabled, independent seeds; out of 24 per batch).*
 
-## Worked example
+Batch A passed every gate: edit beat base by net $+12$ workflows ($p=0.0002$) and sign-flipped by $+13$, with one non-target loss (11/12 vs. 12/12). Batch B moved in the same direction (10 vs. 6 base and 4 sign-flipped; non-target 11/12 vs. 11/12) but missed the net-$+6$ gate ($+4$, $p=0.17$), making the protocol outcome **mixed**. No empty completions occurred (0/48). Table 2 shows two effects under thinking-mode sampling:
+- **Dilution of first-action steering:** On the immediate `read_file` decision, the ordering sign-flipped (5/48) $<$ base (11/48) $<$ edit (22/48) $<$ prompt (39/48) holds in both batches, but the edit's reread rate drops from $\sim 88\%$ in greedy to $46\%$. An edit calibrated at the pre-generation token with a $+0.15$-nat margin loses roughly half its pull once stochastic sampling and intermediate `<think>` tokens intervene before the tool call.
+- **Turn-budget trade-off vs. the prompt:** Despite fewer first-action rereads (22/48 vs. 39/48), the edit completed slightly *more* workflows than the prompt (25/48 vs. 21/48; 15 vs. 10 in batch A). Between 8 and 15 of 24 trajectories per arm ended on the six-request budget, which caps completions when thinking mode consumes turns.
 
-One target case from batch A (multiply by $-3$, add 2). An earlier partial-line edit has left line 2 as
+### Worked example
 
-> `return (-3 * value) + (2)urn (-3 * value) + (0)`
+One target case from batch A (multiply by $-3$, add $2$) illustrates both directional repair and turn-budget overhead. An earlier partial-line edit left line 2 as `return (-3 * value) + (2)urn (-3 * value) + (0)` and the test reports a syntax error. Base does not inspect the file: it calls `edit_file` three times with the stale line as `old_string`, corrupts line 1, and exhausts its budget with the file broken. With the $\alpha=4$ edit, the first call is `read_file`; the second replaces the corrupted line; the test passes and the patch is submitted in four calls. The sign-flipped edit makes four blind replacements and submits a broken file. The prompted agent also rereads first and fixes the file, but spends all six requests deliberating before submitting. Five of 24 target cases in batch A follow this pattern.
 
-and the test reports a syntax error. The unchanged model does not look at the file. It calls `edit_file` three times with the original line as `old_string`, which no longer exists, then corrupts line 1 and runs out of requests with the file still broken. With the edit attached, the first call is `read_file`; the second replaces the whole corrupted line; the test passes and the patch is submitted in four calls. The sign-flipped edit makes four failed replacements without reading and submits a broken file. The prompted agent also rereads first and reaches a correct file, but spends its six requests before submitting. Five of the 24 target cases in batch A show this pattern of a blind, failed base attempt against a reread and a completed edit-arm repair.
+### A first check inside the official repair harness
 
-## A first check inside the official repair harness
+Finally, we froze a breakage protocol on real issues: the unchanged competition agent against the same agent with the $\alpha=4$ edit on its root model, on three qualified `Rich` issues (`rich_4077`, `rich_3772`, `rich_3521`) in the official harness at competition settings, one sampled trajectory per issue.
 
-Finally we froze one protocol on real issues: the unchanged competition agent against the same agent with the edit attached to its root model, on three qualified development issues from the Rich repository, in the official harness at competition settings, with one sampled trajectory per issue. At this size the check can detect breakage but cannot show a benefit.
+|Metric|base|edit ($\alpha=4$)|
+|:---|:---:|:---:|
+|Issues resolved (of 3)|0|0|
+|Trajectories ending on 3-minute limit|0|2|
+|Tool calls / `read_file` calls|29/10|37/16|
+|Edits rejected / followed by reread|1/1|4/3|
+|Empty model responses|0|0|
 
-|                                                     |    base |    edit |
-|:----------------------------------------------------|--------:|--------:|
-| Issues resolved (of 3)                              |       0 |       0 |
-| Trajectories ending on the 3-minute limit           |       0 |       2 |
-| Tool calls / `read_file` calls                      | 29 / 10 | 37 / 16 |
-| Edits rejected by the editor / followed by a reread |   1 / 1 |   4 / 3 |
-| Empty model responses                               |       0 |       0 |
+*Table 3. Three real `Rich` issues in the official harness, one trajectory per arm. Tool counts include the sub-agent.*
 
-Three real issues, one trajectory each. Tool counts include the sub-agent.
-
-Neither arm repaired an issue; an earlier draw of the same control repaired one, so the counts sit inside single-draw variation. The adapter was applied (first-token shifts of 0.19–0.26 nats, and every root-agent step names the adapter). The edit arm read more and ran longer: two of its three trajectories hit the session limit and one ended without a testable patch, which our frozen rule records as operational harm. The edit’s target situation was rare here. The unchanged agent met one rejected edit and reread after it unprompted, so on these issues there was little for the edit to fix.
+Neither arm repaired an issue (an earlier base draw repaired 1/3, within single-draw variation). The adapter was verified active in vLLM (0.19–0.26 nat shifts, zero drift). Consistent with the synthetic panels, the edit arm called `read_file` more often (16 vs. 10), but because the target fault was rare here—base met one rejected edit and reread after it unprompted—extra reading cost time without repair benefit: two edit trajectories hit the 3-minute limit and one ended without a testable patch, flagged as operational harm by our frozen rule.
 
 ## Limitations
 
-One synthetic behaviour in one template family; fresh cases differ from design cases only in coefficients. No real-repair claim: the only real-issue evidence is three Rich issues with one trajectory per arm, on which no arm repaired anything and the edit arm hit the session limit twice; the issues were not new to the base agent, and base ran without LoRA serving enabled. In v4 the 4,096-token thinking budget was approximated by enabling thinking with an 8,192-token output limit and was not separately enforced, and a six-request cap truncates many thinking-mode trajectories in every arm. Non-target cases are at ceiling (every arm, including the harmful sign-flipped edit, completes 12 of 12), so side-effect detection is weak. Greedy single draws vary by about $\pm2$ workflows. The gradient baseline used untuned hyperparameters. We did not ablate numerical weight access, so we cannot say whether seeing weights helped design. The edit was designed by an LLM assistant that knew prior traces. The strength grid was motivated by a post-hoc diagnostic.
+- **Task and template scope:** Positive evidence comes from one synthetic repair pattern in one template family (coefficient variation only). Non-target cases are at ceiling (12/12 across arms), limiting side-effect sensitivity. The three-issue `Rich` check is a single-draw breakage screen, and base ran without LoRA serving enabled (verified at 0.0 nat drift against a zero adapter).
+- **Decoding and budget constraints:** In v4, the 4,096-token thinking budget was approximated via an 8,192-token output limit, and the six-request cap truncates 8–15 of 24 thinking trajectories per arm. Temperature-0 vLLM batching carries $\pm 2$ workflow serving variance.
+- **Design degrees of freedom:** The strength grid ($\alpha \in \{2,3,4,6,8\}$) was motivated by the post-hoc margin diagnostic after $\alpha=1$ failed, though $\alpha=4$ was chosen strictly on design cases before generating v3/v4 test cases. The gradient LoRA used untuned hyperparameters, and we did not ablate numerical weight access during design.
 
 ## Reproducibility
 
-Protocols, case generators, adapter builders, ledger and hashed reports are in the repository. Runs used Modal A10G with the competition’s pinned wheels and `gemma-4-e4b-it-qat-w4a16-ct` v2, for under USD 6 of metered compute in total. Incidents are recorded: a lost terminal event in the first panel (gate recomputed from streamed rows with unit-tested code), a batch cut by its execution limit, a report-path collision that forced a seed rerun, and a cancelled batch.
+Protocols, case generators, adapter builders, ledger, and SHA-256-hashed reports are in the repository. Runs used Modal A10G GPUs with the competition's pinned wheels and the approved checkpoint (`gemma-4-e4b-it-qat-w4a16-ct` v2) for under USD 6 of metered compute in total (USD 4.85 across v2–v4 plus USD 0.70 for the real-issue check), conducted independently without institutional compute or funding. Operational incidents are logged: a lost terminal summary event in v2 (recomputed from streamed rows with unit-tested code), a seed-101 timeout at 196/432 rows, a report-path collision requiring seed 103, and the cancelled seed-102 batch.
 
 ## Conclusion
 
-A single closed-form rank-one edit, shipped as a standard adapter, moved a multi-step tool-calling behaviour in a 4-bit quantized Gemma 4 E4B. Under greedy decoding it matched a gradient-trained LoRA to within the pre-registered margin, and its sign-flipped copy pushed behaviour the other way. It did not hold up under sampling: one temperature-0.7 seed collapsed into empty completions, and at the competition’s own setting one of two batches missed its gate while the plain prompt stayed at least as effective. On three real issues it repaired nothing and cost time. For an agent builder the practical reading is that the prompt remains the better tool today. The experiments that would change that reading are a strength chosen under the sampling regime it will be used in, a second behaviour, and a real-issue panel large enough to measure repairs.
-
-
+A single closed-form, covariance-whitened rank-one weight edit, shipped as a standard PEFT adapter, installs a multi-step tool-recovery behaviour into a 4-bit quantized Gemma 4 E4B under greedy decoding—lifting completions from 4–5/24 to 21–23/24, matching a gradient-trained LoRA (24/24), and reversing to 0/24 under sign-flipping. At the same time, our diagnostic and multi-regime evaluation show why greedy success does not automatically translate to production agents: selecting the minimum strength that crosses the $0$-nat greedy boundary ($\alpha=4$, $+0.15$ nats) leaves a thin margin that loses half its pull under stochastic thinking-mode rollouts and can induce stop-token collapse at high temperature ($T=0.7$). For practitioners today, a plain prompt or a 5-minute gradient LoRA remains more reliable; making training-free rank-one edits competitive under stochastic reasoning will require calibrating strength directly under thinking-mode rollouts and gating the adapter so it activates only when an edit error occurs.
 
 ## References
 
-Mazzawi, Hanna, Benoit Dherin, Michael Munn, Adrian Goldwaser, Michael Wunder, and Javier Gonzalvo. 2025. “Transmuting Prompts into Weights.” *arXiv Preprint arXiv:2510.08734*.
-
-
-
-Meng, Kevin, David Bau, Alex Andonian, and Yonatan Belinkov. 2022. “Locating and Editing Factual Associations in GPT.” *Advances in Neural Information Processing Systems*.
-
-
-
-Sun, Chung-En, Ge Yan, Zimo Wang, and Tsui-Wei Weng. 2026. “Steer2Edit: From Activation Steering to Component-Level Editing.” *arXiv Preprint arXiv:2602.09870*.
-
-
-
-Takehi, Rikiya, Jayden Teoh, Alex Zhang, and Omar Khattab. 2026. *Sparks of Weight-Space Programming: LLMs Can Natively Read & Write Neural Network Weights*. <a href="https://rikiyat.github.io/blog/weight-space-programming" class="uri">Https://rikiyat.github.io/blog/weight-space-programming</a>.
-
-
-
-Yin, Rui, Tianxu Han, Naen Xu, et al. 2026. “Compiling Activation Steering into Weights via Null-Space Constraints for Stealthy Backdoors.” *Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 26228–45.
-
-
+1. Mazzawi, Hanna, Benoit Dherin, Michael Munn, Adrian Goldwaser, Michael Wunder, and Javier Gonzalvo. 2025. “Transmuting Prompts into Weights.” *arXiv:2510.08734*.
+2. Meng, Kevin, David Bau, Alex Andonian, and Yonatan Belinkov. 2022. “Locating and Editing Factual Associations in GPT.” *Advances in Neural Information Processing Systems*, arXiv:2202.05262.
+3. Sun, Chung-En, Ge Yan, Zimo Wang, and Tsui-Wei Weng. 2026. “Steer2Edit: From Activation Steering to Component-Level Editing.” *arXiv:2602.09870*.
+4. Takehi, Rikiya, Jayden Teoh, Alex Zhang, and Omar Khattab. 2026. *Sparks of Weight-Space Programming: LLMs Can Natively Read & Write Neural Network Weights*. https://rikiyat.github.io/blog/weight-space-programming
+5. Yin, Rui, Tianxu Han, Naen Xu, et al. 2026. “Compiling Activation Steering into Weights via Null-Space Constraints for Stealthy Backdoors.” *Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 26228–26245.
