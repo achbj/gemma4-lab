@@ -6,6 +6,39 @@ from pathlib import Path
 MODEL_ALIAS = "gemma-4-e4b-it-qat-w4a16-ct"
 MODEL_SOURCE = f"google/gemma-4/Other/{MODEL_ALIAS}/2"
 MODEL_PATH = Path("/cache/models/e4b-v2")
+APPLICATION_PREFIXES = (
+    "The capital of France is",
+    "def add(a, b):\n    return",
+    "To list files in a directory, run",
+)
+
+
+def adapter_submission(root: Path) -> Path | None:
+    """Return the submission directory when it ships LoRA adapters, else None."""
+    return root if (root / "adapters").is_dir() else None
+
+
+def adapter_application(top_logprobs, base_model: str, adapters: list[str]) -> dict:
+    """Show each served adapter changes next-token log-probabilities and the base repeats.
+
+    top_logprobs(model, prompt) returns one top-k {token: logprob} mapping. Synthetic
+    prefixes only; a listed adapter name alone is not evidence of application.
+    """
+    from gemma4_lab.adapter_probe import logprob_distance
+
+    drift, effects = 0.0, {name: [] for name in adapters}
+    for prompt in APPLICATION_PREFIXES:
+        before = top_logprobs(base_model, prompt)
+        for name in adapters:
+            effects[name].append(logprob_distance(top_logprobs(name, prompt), before))
+        drift = max(drift, logprob_distance(top_logprobs(base_model, prompt), before))
+    threshold = max(0.001, 10 * drift)
+    return {
+        "passed": bool(adapters) and all(max(v) > threshold for v in effects.values()),
+        "maximum_base_drift_nats": drift,
+        "effect_threshold_nats": threshold,
+        "effect_lower_bounds_nats": effects,
+    }
 
 
 def create_approved_server(

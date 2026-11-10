@@ -99,11 +99,20 @@ def validate_compiler() -> dict:
     tools = ToolRegistry()
     for name in TOOL_NAMES:
         tools.register(name, inert_tool(name))
+    adapter_settings = {}
+    if Path("/submission/adapters").is_dir():
+        from adk_submission import discover_adapters
+
+        adapter_settings = {
+            "adapter_manifest": discover_adapters("/submission"),
+            "adapter_resolver_fn": lambda base, info: CompileOnlyModel(model=info.name),
+        }
     agent = compile_submission(
         submission_dir="/submission",
         tool_registry=tools,
         model_registry=models,
         limits=limits,
+        **adapter_settings,
     )
     return {
         "stage": "compiler-only",
@@ -118,6 +127,10 @@ def validate_compiler() -> dict:
         if agent.generate_content_config is not None
         else None,
         "declared_models": sorted(declared),
+        "adapters": sorted(adapter_settings["adapter_manifest"].adapters)
+        if adapter_settings
+        else [],
+        "root_model": getattr(agent.model, "model", None),
         "model_calls": 0,
         "tool_calls": 0,
         "competition_limits_applied": False,

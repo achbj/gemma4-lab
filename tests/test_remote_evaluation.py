@@ -9,6 +9,27 @@ from pathlib import Path
 
 from gemma4_lab.assets import sha256
 from gemma4_lab.remote_evaluation import configure_workspace_imports, fixture_identity
+from gemma4_lab.remote_serving import adapter_application, adapter_submission
+
+
+class AdapterServingTests(unittest.TestCase):
+    def test_adapter_directory_selects_lora_serving(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.assertIsNone(adapter_submission(root))
+            (root / "adapters").mkdir()
+            self.assertEqual(adapter_submission(root), root)
+
+    def test_application_requires_every_adapter_to_move_tokens(self):
+        def served(shift):
+            return lambda model, prompt: {"1": -0.1 - shift.get(model, 0.0), "2": -3.0}
+
+        active = adapter_application(served({"edit": 0.5}), "base", ["edit"])
+        self.assertTrue(active["passed"])
+        self.assertEqual(active["maximum_base_drift_nats"], 0.0)
+        inert = adapter_application(served({"edit": 0.5}), "base", ["edit", "idle"])
+        self.assertFalse(inert["passed"])
+        self.assertFalse(adapter_application(served({}), "base", [])["passed"])
 
 
 class FixtureIdentityTests(unittest.TestCase):

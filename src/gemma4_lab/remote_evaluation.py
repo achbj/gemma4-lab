@@ -25,6 +25,15 @@ def evaluate_reference_task(task_payload: dict, models, *, controls_only: bool =
     settings = yaml.safe_load(Path("/submission/eval_config.yaml").read_text())["evaluation"]
     limits, generation = build_submission_limits()
     validate_directory("/submission", limits=limits)
+    adapter_settings = {}
+    if (Path("/submission") / "adapters").is_dir():
+        # Same discovery call the server uses; agents name adapters in their YAML.
+        from adk_submission import discover_adapters
+        from swegemma.config import ALLOWED_ADAPTER_EXTENSIONS
+
+        adapter_settings["adapter_manifest"] = discover_adapters(
+            "/submission", adapter_extensions=ALLOWED_ADAPTER_EXTENSIONS
+        )
     results_dir = Path("/runs") / task.instance_id
     results_dir.mkdir(parents=True, exist_ok=True)
     config = EvalConfig(
@@ -51,6 +60,7 @@ def evaluate_reference_task(task_payload: dict, models, *, controls_only: bool =
             event_retention_size=5,
         ),
         display_mode="quiet",
+        **adapter_settings,
         **settings,
     )
     evaluator = Evaluator(config)

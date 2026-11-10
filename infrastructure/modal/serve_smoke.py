@@ -269,7 +269,12 @@ def evaluate_panel(task_payloads: list[dict], execution_limit_seconds: int):
     import yaml
 
     from gemma4_lab.remote_evaluation import evaluate_reference_task
-    from gemma4_lab.remote_serving import create_approved_server
+    from gemma4_lab.remote_serving import (
+        MODEL_PATH,
+        adapter_application,
+        adapter_submission,
+        create_approved_server,
+    )
 
     started = time.monotonic()
     server = None
@@ -280,8 +285,35 @@ def evaluate_panel(task_payloads: list[dict], execution_limit_seconds: int):
             raise ValueError("The fixed panel permits at most four cases")
         if any(task.get("patch") for task in task_payloads):
             raise ValueError("Reference solutions must be stripped before a GPU panel")
-        server, metadata = create_approved_server()
+        adapters = adapter_submission(Path("/submission"))
+        server, metadata = create_approved_server(submission_directory=adapters)
         server.start()
+        if adapters is not None:
+            import requests
+
+            def top_logprobs(model, prompt):
+                response = requests.post(
+                    server.base_url + "/completions",
+                    json={
+                        "model": model,
+                        "prompt": prompt,
+                        "temperature": 0,
+                        "seed": 20261105,
+                        "max_tokens": 1,
+                        "logprobs": 20,
+                        "return_tokens_as_token_ids": True,
+                    },
+                    timeout=60,
+                )
+                response.raise_for_status()
+                return response.json()["choices"][0]["logprobs"]["top_logprobs"][0]
+
+            names = sorted(p.name for p in (adapters / "adapters").iterdir() if p.is_dir())
+            metadata["adapter_application"] = adapter_application(
+                top_logprobs, str(MODEL_PATH), names
+            )
+            if not metadata["adapter_application"]["passed"]:
+                raise ValueError("Served adapter did not change the fixed token distributions")
         metadata.update(
             python=platform.python_version(),
             packages={d.metadata["Name"]: d.version for d in distributions()},
