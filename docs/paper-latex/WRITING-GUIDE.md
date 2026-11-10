@@ -31,7 +31,7 @@ Deadline: Kaggle Paper Track Writeup, **12 Nov 2026 23:59 UTC**; aim to submit o
 | Greedy: edit 21 and 23 of 24, base 5 and 4, sign-flipped 0, prompt 24, LoRA 24 | `wsp-v3-panel-result.md`, `wsp-v3-distill-result.md` |
 | T=0.7: seed 101 pass, 103 fail (empty completions), 102 incomplete | `wsp-v3-seeds-result.md` |
 | T=0.2 + thinking: A 15/3, B 10/6 (edit/base) | `wsp-v4-result.md` |
-| Cost about USD 11 | `docs/operations/run-log.md` |
+| Cost about USD 5 metered (v2-v4 runs) | `docs/operations/run-log.md`, 10 Nov billing entry |
 
 ## Pre-submission checklist
 

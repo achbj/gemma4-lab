@@ -600,3 +600,9 @@
 ## 8 November 2026 — v4 completed: mixed (A passes, B fails)
 
 - Batches A and B completed (144 valid trajectories each; apps stopped). Target completions: A base 3, edit 15, sign-flipped 2, prompt 10 (gates pass); B base 6, edit 10, sign-flipped 4, prompt 11 (edit vs base net +4, fails the net >= 6 gate). Verdict mixed under the frozen rule. Record: [wsp-v4-result.md](../research/wsp-v4-result.md). Estimated spend about USD 3.5; study total about USD 11.3 of USD 14 (USD 8 + 6). No further GPU jobs planned.
+
+## 10 November 2026 — actual metered spend checked; project audit
+
+- `MODAL_PROFILE=onepiecification modal billing report --for 'this month' --json` (read-only): this project's apps total **USD 4.85** metered in November (`gemma4-wsp-v2-panel` 4.416, covering every v2/v3/v4 panel; `wsp-v3-select` 0.137; `wsp-v3-distill` 0.126; `wsp-v2-diagnose` 0.073; `wsp-v2-capture` 0.056; activation feasibility 0.025; staging, smoke and CPU preparation 0.021). Earlier entries' "estimated study spend" figures (about USD 7.8 after v3, 11.3 after v4) were sums of allocation bounds and overstate actual spend by more than half. The paper's cost statement is corrected to about USD 5.
+- The same report shows an app outside this repository, `wisp-quant`, with USD 20.28 metered on 8-9 November in the shared workspace. Workspace-wide: USD 25.13 of ephemeral-app usage offset by USD 25.13 of credits, USD 0 billed. This project did not launch it; the user should confirm it is theirs. Remaining credit is not reported by the API. No app was running at the check.
+- Audit fixes (no compute): stale `ach-bj100` commands in operations docs and README replaced with `onepiecification`; README layout and links brought up to date; strategy status added; Paper Track sign-up recorded as user-reported.

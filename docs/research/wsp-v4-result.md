@@ -18,3 +18,5 @@ Protocol: [weight-space-study-v4.md](weight-space-study-v4.md) (SHA-256 `3d8970d
 - Pooled (descriptive only, not pre-registered): edit 25/48, base 9/48, sign-flipped 6/48, prompt 21/48.
 
 Limits: still one synthetic family with coefficient-only variation; thinking budget not separately enforced; the 6-request cap truncates thinking-mode trajectories; no real-repair evidence. Spend: two batches of at most USD 1.98 each, estimated about USD 3.5 actual; study total about USD 11.3 of the USD 14 combined cap.
+
+Correction, 10 November: the spend figures above are allocation-based upper estimates. The Modal billing report shows USD 4.85 of metered compute for all `gemma4-*` apps in November (v2-v4 runs combined); see the ledger entry of 10 November.

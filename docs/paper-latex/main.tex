@@ -60,8 +60,8 @@ Each experiment was frozen, with cases, gates and budget hashed in a ledger befo
 \subsection{Failures first}
 A static-prototype edit built from token embeddings completed 9 of 12 workflows versus 10 for base and 12 for the prompt. The activation-derived edit at $\alpha=1$ (36 cases, 8 arms, 288 trajectories) completed 3 of 24 target workflows versus 4 for base, with no rereads, although it was applied. A post-hoc diagnostic on those evaluation prompts showed the key fires (dot product 0.99) and the log-probability margin grows monotonically with $\alpha$, but $\alpha=1$ recovers about 6\% of the prompt's margin. That diagnostic motivated the strength grid and is a disclosed researcher degree of freedom.
 
-\subsection{Greedy decoding, fresh cases ($\alpha=4$)}
-\begin{table}[h]
+\subsection{Greedy decoding, fresh cases (\texorpdfstring{$\alpha=4$}{alpha = 4})}
+\begin{table}[ht]
 \centering
 \caption{Target workflows complete, of 24 (greedy). Non-target workflows were 12 of 12 in every arm. A dash means the arm was not run.}
 \begin{tabular}{lrr}
@@ -79,7 +79,7 @@ Seed 101: edit 24, base 18, sign-flipped 6, prompt 24 (pass). Seed 103: edit 4, 
 
 \subsection{Competition setting: temperature 0.2 with thinking}
 We then froze a further protocol: 36 new cases, temperature 0.2, top\_p 0.95, thinking enabled, independent per-trajectory seeds, two batches (seeds 201, 202), and the same $\alpha=4$ edit with no re-tuning.
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Target workflows complete, of 24, in the competition setting.}
 \begin{tabular}{lrrrr}
@@ -90,7 +90,7 @@ A (seed 201) & 3 & 15 & 2 & 10 \\ B (seed 202) & 6 & 10 & 4 & 11 \\ \bottomrule
 \end{table}
 Batch~A passed every gate (edit beat base by net $+12$, $p=0.0002$, and the sign-flipped edit by $+13$; one non-target loss). Batch~B failed the net-$+6$ gate (edit beat base by $+4$, $p=0.17$). By the frozen rule the outcome is mixed. The first action was \texttt{read\_file} in 12 and 10 of 24 edit trajectories, against 6 and 5 for base and 18 and 21 for the prompt: the edit moves behaviour in the intended direction at roughly half the prompt's strength. The empty-completion failure did not recur. Between 8 and 15 of 24 trajectories in every arm, the prompt included, ended on the six-request budget, which caps completions in thinking mode.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \begin{tikzpicture}
 \begin{axis}[ybar, width=0.95\linewidth, height=6.2cm, bar width=5pt, ymin=0, ymax=26,
@@ -116,7 +116,7 @@ Batch~A passed every gate (edit beat base by net $+12$, $p=0.0002$, and the sign
 One synthetic behaviour in one template family; fresh cases differ from design cases only in coefficients. No real-repair claim: the edit has not been run on real issues, and earlier real-task screens of prompt changes showed no repair gain. In v4 the 4{,}096-token thinking budget was approximated by enabling thinking with an 8{,}192-token output limit and was not separately enforced, and a six-request cap truncates many thinking-mode trajectories in every arm. Non-target cases are at ceiling (every arm, including the harmful sign-flipped edit, completes 12 of 12), so side-effect detection is weak. Greedy single draws vary by about $\pm2$ workflows. The gradient baseline used untuned hyperparameters. We did not ablate numerical weight access, so we cannot say whether seeing weights helped design. The edit was designed by an LLM assistant that knew prior traces. The strength grid was motivated by a post-hoc diagnostic.
 
 \section{Reproducibility}
-Protocols, case generators, adapter builders, ledger and hashed reports are in the repository. Runs used Modal A10G with the competition's pinned wheels and \texttt{gemma-4-e4b-it-qat-w4a16-ct} v2, for about USD~11 in total. Incidents are recorded: a lost terminal event in the first panel (gate recomputed from streamed rows with unit-tested code), a batch cut by its execution limit, a report-path collision that forced a seed rerun, and a cancelled batch. \todo{decide: link public code? yes/no}
+Protocols, case generators, adapter builders, ledger and hashed reports are in the repository. Runs used Modal A10G with the competition's pinned wheels and \texttt{gemma-4-e4b-it-qat-w4a16-ct} v2, for about USD~5 of metered compute for the v2--v4 runs. Incidents are recorded: a lost terminal event in the first panel (gate recomputed from streamed rows with unit-tested code), a batch cut by its execution limit, a report-path collision that forced a seed rerun, and a cancelled batch. \todo{decide: link public code? yes/no}
 
 \section{Conclusion}
 \guide{Three sentences: what holds (directional effect, comparable to a trained LoRA when greedy), what does not (reliable under sampling, beating the prompt), what the next experiment would be (real repair issues, a second behaviour, an enforced thinking budget). No new claims.}

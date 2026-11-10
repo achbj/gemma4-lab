@@ -1,3 +1,5 @@
+> Working copy for editing is now the LaTeX version in [docs/paper-latex/](../../paper-latex/main.tex); this Markdown draft is kept as the text source for pasting into Kaggle and must be re-synced before submission.
+
 # A Training-Free Rank-One Prompt Distillation for a Quantized Gemma 4 Coding Agent: Controlled Evidence and Its Limits
 
 Draft of 8 November 2026 (UTC), updated with the v4 competition-setting result. Kaggle Writeup limit: 3,000 words. Author information not yet
@@ -149,8 +151,8 @@ design. The edit uses activations from forward passes and was designed by an LLM
 ## 6. Reproducibility
 
 Protocols, case generators, adapter builders, ledger and hashed reports are in the repository. Runs used
-Modal A10G with the competition's pinned wheels and `gemma-4-e4b-it-qat-w4a16-ct` v2, for about USD 11 in
-total. Incidents are recorded: a lost terminal event in the first panel (gate recomputed from streamed rows
+Modal A10G with the competition's pinned wheels and `gemma-4-e4b-it-qat-w4a16-ct` v2, for about USD 5 of
+metered compute for the v2-v4 runs (Modal billing report, 10 November). Incidents are recorded: a lost terminal event in the first panel (gate recomputed from streamed rows
 with unit-tested code), a batch cut by its execution limit, a report-path collision that forced a seed
 rerun, and a cancelled batch.
 
