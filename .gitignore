@@ -16,3 +16,6 @@ artifacts/
 build/
 dist/
 operations/
+# Internal working notes, kept local only
+AGENTS.md
+docs/
