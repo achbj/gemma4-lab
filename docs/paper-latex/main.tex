@@ -135,7 +135,7 @@ Batch~A passed every gate: edit beat base by net $+12$ workflows ($p=0.0002$) an
 ]
 \addplot[thick, black!70, dashed, domain=-1.5:8.5] {0};
 \addplot[thick, blue!75!black, domain=-1.5:8.5] {2.65};
-\node[font=\scriptsize, blue!75!black, anchor=south west] at (axis cs:-1.3,2.68) {prompt ($+2.65$~nats)};
+\node[font=\scriptsize, blue!75!black, anchor=north west] at (axis cs:-1.3,2.6) {prompt ($+2.65$~nats)};
 \node[font=\scriptsize, black!70, anchor=south west] at (axis cs:-1.3,0.05) {greedy threshold ($0$~nats)};
 \addplot[thick, mark=*, mark size=2pt, red!80!black] coordinates {
     (-1,-0.85) (0,-0.67) (1,-0.47) (2,-0.29) (4,0.15) (8,0.91)
@@ -151,7 +151,7 @@ Batch~A passed every gate: edit beat base by net $+12$ workflows ($p=0.0002$) an
     width=0.52\linewidth,
     height=5.0cm,
     bar width=4.5pt,
-    ymin=0, ymax=31,
+    ymin=0, ymax=26,
     ytick={0,8,16,24},
     ylabel={Workflows complete (of 24)},
     symbolic x coords={Greedy 1,Greedy 2,T0.2 A,T0.2 B},
@@ -160,7 +160,8 @@ Batch~A passed every gate: edit beat base by net $+12$ workflows ($p=0.0002$) an
     label style={font=\footnotesize},
     title style={font=\footnotesize\bfseries},
     title={(b) Completed workflows across regimes},
-    legend style={font=\scriptsize,at={(0.5,0.98)},anchor=north,legend columns=2,draw=none,fill=none},
+    legend style={font=\scriptsize,at={(0.5,-0.22)},anchor=north,legend columns=4,draw=none,fill=none,/tikz/every even column/.append style={column sep=6pt}},
+    legend image code/.code={\draw[#1,draw=black!70] (0cm,-0.08cm) rectangle (0.18cm,0.12cm);},
     enlarge x limits=0.18
 ]
 \addplot[fill=gray!60,draw=black!70] coordinates {(Greedy 1,5)(Greedy 2,4)(T0.2 A,3)(T0.2 B,6)};
