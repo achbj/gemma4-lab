@@ -34,7 +34,7 @@ def main() -> int:
     )
     args = parser.parse_args()
     root = PROJECT_ROOT / "data/raw/official"
-    manifest_path = PROJECT_ROOT / "docs/research/official-assets.json"
+    manifest_path = PROJECT_ROOT / "configs/official-assets.json"
     try:
         config = load_config(args.config)
         if args.command == "plan":
@@ -64,7 +64,7 @@ def main() -> int:
                 root,
                 config["sources"],
                 args.task_id,
-                PROJECT_ROOT / "docs/research/fixtures" / f"{args.task_id}.json",
+                PROJECT_ROOT / "configs/fixtures" / f"{args.task_id}.json",
             )
             result = {"task_id": args.task_id, "files": len(manifest["files"])}
         elif args.command == "verify":

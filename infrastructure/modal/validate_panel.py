@@ -20,7 +20,7 @@ if modal.is_local():
     CANDIDATE = os.environ.get("GEMMA4_CANDIDATE", CANDIDATE)
     fixtures = ROOT / "data/raw/official/evaluation"
     for directory in fixtures.iterdir():
-        manifest = ROOT / f"docs/research/fixtures/{directory.name}.json"
+        manifest = ROOT / f"configs/fixtures/{directory.name}.json"
         if not directory.is_dir() or not manifest.is_file():
             raise ValueError("Every mounted fixture requires a provenance manifest")
         fixture_identity(directory, json.loads(manifest.read_text()))

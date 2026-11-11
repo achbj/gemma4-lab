@@ -56,7 +56,7 @@ def load_task_payloads(root: Path, task_ids: list[str]) -> list[dict]:
 
 def task_identity(root: Path, task: dict) -> dict:
     task_id = task["instance_id"]
-    manifest = json.loads((root / f"docs/research/fixtures/{task_id}.json").read_text())
+    manifest = json.loads((root / f"configs/fixtures/{task_id}.json").read_text())
     if manifest["task_id"] != task_id:
         raise ValueError("Fixture manifest belongs to another task")
     return {

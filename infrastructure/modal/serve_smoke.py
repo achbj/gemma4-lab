@@ -51,7 +51,7 @@ if modal.is_local():
         from gemma4_lab.remote_evaluation import fixture_identity
 
         for fixture_dir in (ROOT / "data/raw/official/evaluation").iterdir():
-            fixture_manifest = ROOT / f"docs/research/fixtures/{fixture_dir.name}.json"
+            fixture_manifest = ROOT / f"configs/fixtures/{fixture_dir.name}.json"
             if not fixture_dir.is_dir() or not fixture_manifest.is_file():
                 raise ValueError("Every mounted fixture must have a recorded manifest")
             fixture_identity(fixture_dir, json.loads(fixture_manifest.read_text()))
@@ -423,7 +423,7 @@ def main(
             raise ValueError("The initial allocation covers only the recorded Requests fixtures")
         from gemma4_lab.remote_evaluation import fixture_identity
 
-        fixture = json.loads((ROOT / f"docs/research/fixtures/{task_id}.json").read_text())
+        fixture = json.loads((ROOT / f"configs/fixtures/{task_id}.json").read_text())
         task_payload = next(
             task
             for line in (ROOT / "data/raw/official/competition/tasks.jsonl")
