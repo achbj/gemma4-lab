@@ -73,4 +73,4 @@ The rank-one edit is built and evaluated by `infrastructure/modal/prepare_wsp_v2
 
 ## AI assistance
 
-This project was developed with the help of AI coding assistants: Argom (high reasoning effort) and Claude Opus 5.5 (medium reasoning effort). They supported implementation, experiment tooling, analysis and documentation. Experimental design decisions, budget approvals and all reported claims were reviewed by the author, who remains responsible for the work.
+This project was developed with the help of AI coding assistants: Gemini Argon (high reasoning effort) and Claude Opus 5.5 (medium reasoning effort). They supported implementation, experiment tooling, analysis and documentation. Experimental design decisions, budget approvals and all reported claims were reviewed by the author, who remains responsible for the work.
