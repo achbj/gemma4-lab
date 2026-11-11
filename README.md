@@ -70,3 +70,7 @@ Reports are written under `artifacts/`. Each run is bounded by the timeout in it
 ## Weight-edit study
 
 The rank-one edit is built and evaluated by `infrastructure/modal/prepare_wsp_v2.py`, `wsp_v3_select.py` and `evaluate_wsp_v2.py`, using the frozen cases and panels in `configs/wsp-v*.json`. The gradient-trained comparison is `wsp_v3_distill.py`.
+
+## AI assistance
+
+This project was developed with the help of AI coding assistants: Argom (high reasoning effort) and Claude Opus 5.5 (medium reasoning effort). They supported implementation, experiment tooling, analysis and documentation. Experimental design decisions, budget approvals and all reported claims were reviewed by the author, who remains responsible for the work.
